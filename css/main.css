@@ -1,0 +1,128 @@
+/* custom font icons */
+@import "./font-icons/style.css";
+
+/* hightlight.js for syntax highlighting */
+@import "./github.css";
+
+a {
+  color: #444;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #ff4081;
+  text-decoration: none;
+}
+*{
+  box-sizing:border-box;
+  -moz-box-sizing:border-box; /* Firefox */
+  -webkit-box-sizing:border-box; /* Safari */
+}
+
+html {
+  font-family: 'Roboto', "Helvetica Neue",Helvetica,"Segoe UI",Arial,"Microsoft YaHei",FreeSans,Arimo,"Droid Sans","wenquanyi micro hei",sans-serif;
+  -webkit-font-smoothing: antialiased;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background: #f5f6f9;
+  height: 100%;
+  width: 100%;
+}
+
+body, h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+body {
+  font-size: 15px;
+  line-height: 24px;
+}
+.muidocs-checkbox-example {
+  position: 'absolute';
+  border: 2px solid #FF9800;
+  background-color: #4CAF50;
+}
+input,button,textarea{
+  outline: none;
+}
+/*Layout Settings*/
+.right-box,.left-box,.left-box-show,.right-box-show{
+  position: absolute;
+  height: 100%;
+  -webkit-transition: all 0.5s ;
+  -moz-transition: all 0.5s ;
+  transition: all 0.5s ;
+}
+.right-box,.right-box-show{
+  background:  rgb(251,251,251);
+}
+@media screen and (max-width: 980px) {
+    .right-box {
+        width: 100% !important;
+        left: 0;
+    }
+    .left-box {
+        width: 265px;
+        left: -25%;
+    }
+    .right-box-show {
+        width: 100% !important;
+        left: 265px;
+    }
+    .left-box-show {
+      width: 265px;
+      left: 0;
+    }
+}
+@media screen and (min-width: 981px) {
+    .right-box {
+        left: 275px;
+    }
+    .left-box {
+        width: 275px;
+        left: 0;
+    }
+    .right-box-show {
+        width: 100% !important;
+        left: 0;
+    }
+    .left-box-show {
+      width: 275px;
+      left: -275px;
+    }
+}
+
+
+/*My Own Settings*/
+#App{
+  height: 100%;
+  width: 100%;
+}
+/*.expressionsContainer{
+  display: -moz-box; 
+  display: -ms-flexbox;
+  display: -webkit-box;
+  display: box; 
+  display: flexbox; 
+  display: -webkit-flex;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 100%;
+  font-size: 0;
+  line-height: 0;
+  box-shadow: 0px 0px 10px #777;
+}*/
+/*.emojiContaner{
+  width:40px;
+  height:40px;
+  padding:5px;
+  border:solid 1px #e3e3e3;
+  border-collapse:collapse;
+}
+.emojiContaner:hover{
+  border-color: #53C6EC;
+}*/
