@@ -37,13 +37,23 @@
 ```
 ### 移动端效果展示
 
+机器人：
+
 ![x1](./images/x1.jpg)
+
+登录&注册界面：
 
 ![x2](./images/x2.png)
 
+菜单栏：
+
 ![x3](./images/x3.png)
 
+好友设置：
+
 ![x4](./images/x4.png)
+
+个人设置：
 
 ![x5](./images/x5.png)
 
