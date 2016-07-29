@@ -1,15 +1,14 @@
 const  webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
-    entry:{
-        bundle:'./index.jsx',
-        //vendor:['react','redux','react-dom','react-redux','reqwest','react-router','redux-thunk']
-    },
+    // entry:{
+    //     bundle:'./index.jsx',
+    // },
+    entry:['babel-polyfill', './index.jsx'],
     output:{
-        path: '/Users/condy/nodejs/sails/CR/assets',
-        //publicPath:'bundle/',
+        path: __dirname + '/bundle',
+        // path:'/Users/condy/nodejs/sails/CR/assets/bundle/',
         filename: 'bundle.js',
-        //chunkFilename: '[name].chunk.js'
     },
     watch:true,
     resolve:{
@@ -32,18 +31,17 @@ module.exports = {
                 include: /flexboxgrid/,
             }
         ]
-    }
-//     plugins: [
-//         new webpack.optimize.UglifyJsPlugin({
-//             compress: {
-//                 warnings: false
-//             }
-//         }),
-//         new webpack.optimize.CommonsChunkPlugin('vendor',  'vendor.js'),        
-//         //new webpack.optimize.DedupePlugin(),
-//         new webpack.optimize.OccurenceOrderPlugin(),
-//         new webpack.DefinePlugin({
-//             'process.env.NODE_ENV': JSON.stringify('production')
-//         })
-//   ]
+    },
+    plugins: [
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            }
+        }),
+        //new webpack.optimize.DedupePlugin(),
+        new webpack.optimize.OccurenceOrderPlugin(),
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify('production')
+        })
+  ]
 }
