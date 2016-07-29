@@ -5,19 +5,19 @@ import Divider from 'material-ui/Divider'
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton'
 const theme = {
     theme1: {
-        src1: '/audio/ringcut1.mp3' ,
-        src2: '/audio/ringcut2.mp3' ,
-        src3: '/audio/ringcut3.mp3' 
+        src1: '/audio/rc1.wav' ,
+        src2: '/audio/rc2.wav' ,
+        src3: '/audio/rc3.wav'
     },
     theme2: {
-        src1: '/audio/ringcut4.mp3' ,
-        src2: '/audio/ringcut5.mp3' ,
-        src3: '/audio/ringcut6.mp3' 
+        src1: '/audio/gx1.wav' ,
+        src2: '/audio/gx2.wav' ,
+        src3: '/audio/gx3.wav' 
     },
     theme3: {
         src1: '/audio/ringcut7.mp3' ,
         src2: '/audio/ringcut1.mp3' ,
-        src3: '/audio/mary.wav' 
+        src3: '/audio/ringcut2.mp3' 
     }
 }
 
@@ -49,18 +49,15 @@ class Setting extends React.Component{
         super(props);
     }
     handleChange(e,value){
-        console.log('select value theme:',value);
         this.props.setAudioSrc(theme[value]);
         this.props.storageSetting();
     }
     handleAudioToggle(e,value){
-        console.log('select value audio:',value);
         this.props.setAudioState(!value);
         this.props.storageSetting();
     }
     handleNotificationToggle(e,value){
-        console.log('select value audio:',value);
-        this.setNotificationState(value);
+        this.props.setNotificationState(value);
         this.props.storageSetting();
     }
     render(){
@@ -102,13 +99,12 @@ class Setting extends React.Component{
                 </div>
                 <RadioButtonGroup 
                     name = 'shipSpeed'
-                    defaultSelected = 'theme1' 
                     style = {styles.radioGroup} 
                     onChange = {(e,value)=>{this.handleChange(e,value)}}
                 >
                     <RadioButton
                         value = "theme1"
-                        label = "正常主题音"
+                        label = "正常主题"
                         disabled = {isClose}
                         style = {styles.item}
                         labelStyle = {styles.label}
@@ -116,7 +112,7 @@ class Setting extends React.Component{
                     />
                     <RadioButton
                         value = "theme2"
-                        label = "辣耳朵主题音"
+                        label = "辣耳朵主题"
                         disabled = {isClose}
                         style = {styles.item}
                         labelStyle = {styles.label}
@@ -124,7 +120,7 @@ class Setting extends React.Component{
                     />
                     <RadioButton
                         value = "theme3"
-                        label = "鬼畜主题一"
+                        label = "鬼畜主题"
                         disabled = {isClose}
                         style = {styles.item}
                         labelStyle = {styles.label}

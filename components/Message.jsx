@@ -10,6 +10,7 @@ const styles = {
     },
     message:{
         display: 'inline-block',
+        textAlign: 'left',
         padding: '2px 6px 2px 6px',
         border: '1px solid #ccc',
         borderRadius: '9px',

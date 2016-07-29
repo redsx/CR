@@ -31,9 +31,3 @@ Avatar.propTypes = {
     getUserInfo: PropTypes.func
 }
 export default Avatar;
-
-// <MAvatar 
-//     src = {src}
-//     size = {size}
-//     onClick = {()=>{getUserInfo(nickname)}}
-// />

@@ -7,7 +7,7 @@ import ActionGrade from 'material-ui/svg-icons/action/grade'
 import ContentSend from 'material-ui/svg-icons/content/send'
 import ContentDrafts from 'material-ui/svg-icons/content/drafts'
 import CommunicationEmail from 'material-ui/svg-icons/social/poll.js'
-import People from 'material-ui/svg-icons/social/people.js'
+import Textsms from 'material-ui/svg-icons/communication/textsms.js'
 import Person from 'material-ui/svg-icons/social/person.js'
 
 import Avatar from '../containers/Avatar.js'
@@ -39,6 +39,10 @@ class SelfInfo extends React.Component{
     handleClick(value){
         this.props.setListShow(value);
     }
+    handleLogout(){
+        delete localStorage.token;
+        window.location = '/login';
+    }
     render(){
         let { avatar, nickname } = this.props.user;
         return (
@@ -69,7 +73,7 @@ class SelfInfo extends React.Component{
                         <IconButton
                             onClick = {()=>{this.handleClick(true)}}
                         >
-                        <People color = {'white'} />
+                        <Textsms color = {'white'} />
                         </IconButton> 
                     </a>
                     </li>
@@ -78,7 +82,7 @@ class SelfInfo extends React.Component{
                 <div style = {styles.iconBox} data-flex-box = '2' data-flex = 'dir:bottom'>
                 <ul style = {styles.iocnUl}>
                     <li style = {styles.iconList}>
-                    <a href = '/logout'>
+                    <a onClick = {()=>{this.handleLogout()}}>
                         <IconButton 
                             tooltip = '登出'
                         >
@@ -87,7 +91,7 @@ class SelfInfo extends React.Component{
                     </a>
                     </li>
                     <li style = {styles.iconList}>
-                            <a>
+                            <a href = 'http://blog.mdzzapp.com/#/article/纪录cr聊天室开发?_k=ey6sdw' target = '_blank'>
                                 <IconButton
                                     tooltip = '关于'
                                 >

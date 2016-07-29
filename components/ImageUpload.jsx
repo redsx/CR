@@ -38,8 +38,8 @@ class ImageUpload extends React.Component{
             let fileReader = new FileReader();
             fileReader.readAsDataURL(imgFile);
             fileReader.onload = function (event) {
-                var imgDataUrl = event.target.result;
-                var message = {
+                let imgDataUrl = event.target.result;
+                let message = {
                     content:imgDataUrl,
                     room: user.curRoom,
                     type: 'imageMessage',

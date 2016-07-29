@@ -26,6 +26,11 @@ const styles = {
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis'
     },
+    hr: {
+        lineHeight: '38px',
+        paddingTop: '10px',
+        fontSize: '15px'
+    },
     notification:{
         textAlign: 'center',
         marginRight: '5px',
@@ -95,50 +100,53 @@ class FriendList extends React.Component{
         return list
     }
     renderRoomList(){
+        let list = this.renderOnlineList();
         let setUserCurRoom = this.props.setUserCurRoom,  
             clearCount = this.props.clearCount,
             badgeCount = this.props.badgeCount,
             room = {};
-        room.avatar = 'http://oajmk96un.bkt.clouddn.com/ppp.png';
-        room.name = 'initRoom'
-        return (
-                <li
-                    style = {styles.li}
-                    data-flex = 'main:center box:first'
+        room.avatar = 'http://oajmk96un.bkt.clouddn.com/hdImg_6e40281f541d24709f2840adc72631a61469706694782.jpg';
+        room.name = 'MDZZ'
+        list.unshift(
+            <li
+                key = {room.name}
+                style = {styles.li}
+                data-flex = 'main:center box:first'
+            >
+                <Avatar 
+                    src = {room.avatar}
+                    size = {39}
+                    nickname = ''
+                />
+                <div
+                    data-flex = 'main:left cross:center box:last'
+                    onClick = {()=>{
+                            setUserCurRoom({
+                                curRoom: room.name,
+                                isPrivate: false
+                            });
+                            clearCount(room.name);
+                        }}
                 >
-                    <Avatar 
-                        src = {room.avatar}
-                        size = {39}
-                        nickname = ''
-                    />
-                    <div
-                        data-flex = 'main:left cross:center box:last'
-                        onClick = {()=>{
-                                setUserCurRoom({
-                                    curRoom: room.name,
-                                    isPrivate: false
-                                });
-                                clearCount(room.name);
-                            }}
+                    <span 
+                        style = {styles.span}
+                        data-flex-box = '2'
                     >
-                        <span 
-                            style = {styles.span}
-                            data-flex-box = '2'
+                        {room.name}
+                    </span>
+                    {
+                        badgeCount[room.name] ?
+                        <span
+                            style = {styles.notification}
                         >
-                            initRoom
+                            {badgeCount[room.name]}                                    
                         </span>
-                        {
-                            badgeCount[room.name] ?
-                            <span
-                                style = {styles.notification}
-                            >
-                                {badgeCount[room.name]}                                    
-                            </span>
-                            : null
-                        }
-                    </div>
-                </li>
-            )
+                        : null
+                    }
+                </div>
+            </li>
+        )
+        return list;
     }
     render(){
         let isShowRoom = this.props.isShowRoom;
@@ -149,7 +157,11 @@ class FriendList extends React.Component{
                     height:'100%',
                 }}
             >
-                <Subheader>online chats</Subheader>
+                <Subheader
+                    style = {styles.hr}
+                >
+                    {isShowRoom?'真正搅基...':'在线玩家'}
+                </Subheader>
                 <Divider />
                 <div
                     style = {{
