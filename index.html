@@ -11,12 +11,18 @@
     name="viewport"
     content="width=device-width, initial-scale=1, user-scalable=0, maximum-scale=1, minimum-scale=1"
   >
-  <link rel="stylesheet" type="text/css" href="css/main.css">
-  <link rel="stylesheet" type="text/css" href="css/data-flex-css-layout.min.css">
-  <script src="http://cdn.staticfile.org/plupload/2.1.8/plupload.full.min.js"></script>
+  <script>
+    var token = localStorage.getItem('token');
+    if(!token){
+      window.location = '/login'
+    }
+  </script>
+  <link rel="Shortcut Icon" href="/favicon.ico" />
+  <link rel="stylesheet" type="text/css" href="css/main.css" />
+  <link rel="stylesheet" type="text/css" href="css/data-flex-css-layout.min.css" />
 </head>
 <body>
   <div id="App"></div>
-  <script src="bundle/bundle.js"></script>
+  <script src="/bundle/bundle.js"></script>
 </body>
 </html>
