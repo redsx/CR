@@ -1,10 +1,8 @@
 const socketIOClient = require('socket.io-client');
 const sailsIOClient = require('sails.io.js');
-const Promise = require('bluebird');
-const upload = require('./Qiniu.js');
 
 export const io = sailsIOClient(socketIOClient);
-io.sails.url = 'http://localhost:1337';
+io.sails.url = 'http://jishuzhai.site:1338';
 
 // page UI state
 export const SET_MENU_STATE = 'SET_MENU_STATE';
@@ -64,11 +62,13 @@ export const setUserInfo = (user) => {
         user
     }
 }
-export const getInitUserInfo = () => {
+export const getInitUserInfo = (token) => {
     return (dispatch,getState) => {
         return new Promise((resolve)=>{
-            io.socket.get('/ws', (body,res) => {
-                console.log('/ws---------->',body)
+            io.socket.get('/ws',{token:token}, (body,res) => {
+                if(body.isNotLogin){
+                    return window.location = '/login';
+                }
                 body.isPrivate = false; 
                 dispatch(setUserInfo(body));
                 resolve(body);
@@ -88,7 +88,7 @@ export const getInitOnlineUser = () => {
         return new Promise((resolve)=>{
             io.socket.get('/onlineUsers', (body,res) => {
                 dispatch(setInitOnlineUser(body));
-                resolve('get init online user');
+                resolve();
             })
         })
     }
@@ -148,7 +148,6 @@ export const addMessage = (message) => {
 export const sendMessage = (message) => {
     return new Promise((resolve)=>{
         io.socket.get('/sendMsg',message, (body,res) => {
-            console.log('send message success:');
             resolve();
         })
     })
@@ -165,7 +164,6 @@ export const getHistoryMessage = (room) => {
     return (dispatch,getState) => {
         return new Promise((resolve)=>{
             io.socket.get('/history',{room:room}, (body,res) => {
-                console.log('getHistoryMessage body:',body);
                 dispatch(addHistoryUser(body.users))
                 dispatch(addHistoryMessage(room,body.messages))
                 resolve('get history');
@@ -191,7 +189,6 @@ export const addPrivateMessage = (message) => {
 export const sendPrivateMessage = (message) => {
         return new Promise((resolve)=>{
             io.socket.get('/sendPriMsg',message, (body,res) => {
-                console.log('send private message success:',body);
                 if(!body.isNotOnline){
                     resolve(body);
                 } else{
@@ -203,7 +200,6 @@ export const sendPrivateMessage = (message) => {
 export const sendPrivateImage = (message) => {
     return new Promise((resolve)=>{
         io.socket.get('/sendPriImg',{message:message}, (body,res) => {
-            console.log('send private image message success:',body);
             if(!body.isNotOnline){
                 resolve(body);
             } else{
@@ -223,7 +219,6 @@ export const getUserInfo = (nickname) => {
         return new Promise((resolve)=>{
             io.socket.get('/userInfo',{nickname:nickname}, (body,res) => {
                 body.isShow = true;
-                console.log('get user info:',body);
                 dispatch(showInfoCard(body));
                 resolve();
             })
@@ -250,7 +245,6 @@ export const hiddenInfoCard = () => {
 export const changeAvatar = (data) => {
     return new Promise((resolve)=>{
         io.socket.get('/changeAvatar', {data:data}, (body,res)=>{
-            console.log('change avatar:',body);
             resolve(body);
         })
     })

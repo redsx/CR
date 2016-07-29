@@ -15,6 +15,14 @@ const notification = {
     showNotification: function (title,options) {
         if(this.isPermissionGranted() && this.isNotificationSupported){
             var n = new Notification(title,options);
+            n.onshow =function () {
+                setTimeout(function () {
+                    n.close()
+                },1500);
+            }
+            n.onclick = function () {
+                n.close()
+            }
             return n;
         }
     }
