@@ -1,6 +1,5 @@
 ## CHATROOM—CR
 
----
 在线地址：[http://cr.mdzzapp.com](http://cr.mdzzapp.com)
 
 ### 功能列表
