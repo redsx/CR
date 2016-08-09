@@ -7,7 +7,8 @@ function mapStateToProps(state) {
         moment:state.pageState.expressionState.moment,
         paused: state.pageState.expressionState.paused,
         reverse: state.pageState.expressionState.reverse,
-        isShow: state.pageState.expressionState.reverse
+        isShow: state.pageState.expressionState.reverse,
+        storageExpressions: state.storageExpressions
     }
 }
 function mapDispatchToProps(dispatch) {
