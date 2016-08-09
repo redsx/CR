@@ -2,6 +2,24 @@
 
 在线地址：[http://cr.mdzzapp.com](http://cr.mdzzapp.com)
 
+### 最新内容
+
+- 图片查看
+
+ ![x3](./images/news-1.png)
+
+- 图片表情包
+
+ ![x3](./images/news-2.png)
+
+- title提醒
+
+ ![x3](./images/news-0.png)
+
+- @功能
+- 滚动条优化
+- 拖拽功能
+
 ### 功能列表
 
 - 实现群聊私聊
@@ -11,12 +29,6 @@
 - 实现特别关注
 - 实现屏蔽功能
 - 实现图片黏贴发送功能
-
-### 待实现功能
-
-- 隐身状态、离开状态自动回复
-- 好友功能
-- 群聊管理
 
 ### 技术栈
 - react
@@ -33,6 +45,8 @@
 |--messages // 存放消息
 |--privateMessages // 存放私聊消息
 |--setting // 存放设置
+|--imageSlide //存放图片信息，查看图片使用
+|--storageExpressions //存放表情包
 ```
 ### 移动端效果展示
 
