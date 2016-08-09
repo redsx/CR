@@ -5,6 +5,6 @@ import reducer from '../reducers'
 const finalCreactStore = applyMiddleware(thunk)(createStore);
 const store = finalCreactStore(reducer);
 // let unsubscribe = store.subscribe(() =>
-//     console.log('store监控:', store.getState())
+//     console.log('store监控:', store.getState().pageState.isNeedScroll)
 // );
 export default store;
