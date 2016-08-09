@@ -1,9 +1,23 @@
 import R from 'ramda'
 
-import { SET_MENU_STATE, SET_EXPRESSION_STATE, SET_INFOCARD_STATE, ADD_EXPRESSION, SHOW_INFO_CARD, HIDDEN_INFO_CARD, ADD_BADGE_COUNT, CLEAR_BADGE_COUNT, SET_LIST_SHOW } from '../actions'
+import {
+    SET_MENU_STATE,
+    SET_EXPRESSION_STATE, 
+    SET_INFOCARD_STATE, 
+    ADD_EXPRESSION, 
+    SHOW_INFO_CARD, 
+    HIDDEN_INFO_CARD, 
+    ADD_BADGE_COUNT, 
+    CLEAR_BADGE_COUNT, 
+    SET_LIST_STATE,
+    SET_IMAGEEXP_STATE,
+    SET_SCROLL_STATE
+} from '../actions'
 const defaultState = {
     isShowMenu:true,
     isShowRoom:true,
+    isShowImageExp: false,
+    isNeedScroll: false,
     expressionState: {
         moment:null,
         paused: true,
@@ -58,8 +72,16 @@ export default function pageState(state = defaultState,action) {
             deepCopy.badgeCount[action.room] = 0;
             return deepCopy;
         }
-        case SET_LIST_SHOW: {
+        case SET_LIST_STATE: {
             deepCopy.isShowRoom = action.isShow;
+            return deepCopy;
+        }
+        case SET_IMAGEEXP_STATE: {
+            deepCopy.isShowImageExp = action.isShow;
+            return deepCopy;
+        }
+        case SET_SCROLL_STATE: {
+            deepCopy.isNeedScroll = action.isNeedScroll;
             return deepCopy;
         }
         default: {

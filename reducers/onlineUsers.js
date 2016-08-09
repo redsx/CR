@@ -9,11 +9,15 @@ export default function onlineUsers(state={},action) {
         }
         case ADD_ONLINEUSER_INFO: {
             let obj = {};
-            obj[action.user.nickname] =  action.user;
-            return Object.assign({},deepCopy,obj);
+            if(deepCopy[action.user.nickname]){
+                deepCopy[action.user.nickname].isOnline = deepCopy[action.user.nickname].isOnline + 1; 
+            } else{
+                deepCopy[action.user.nickname] = action.user;
+            }
+            return deepCopy;
         }
         case SET_LOGOUTUSER_INFO: {
-            deepCopy[action.user].isOnline = false;
+            deepCopy[action.user].isOnline = deepCopy[action.user].isOnline - 1;
             return deepCopy;
         }
         case ADD_HISTORY_USER_INFO: {
