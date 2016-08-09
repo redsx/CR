@@ -18,10 +18,11 @@ const notification = {
             n.onshow =function () {
                 setTimeout(function () {
                     n.close()
-                },1500);
+                },3000);
             }
             n.onclick = function () {
-                n.close()
+                window.focus();
+                n.close();
             }
             return n;
         }

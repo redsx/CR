@@ -1,14 +1,18 @@
 const socketIOClient = require('socket.io-client');
 const sailsIOClient = require('sails.io.js');
+const R = require('ramda');
 
 export const io = sailsIOClient(socketIOClient);
-io.sails.url = 'http://jishuzhai.site:1338';
+// io.sails.url = 'http://jishuzhai.site:1338';
+io.sails.url = 'http://localhost:1338';
 
 // page UI state
 export const SET_MENU_STATE = 'SET_MENU_STATE';
 export const SET_EXPRESSION_STATE = 'SET_EXPRESSION_STATE';
 export const ADD_EXPRESSION = 'ADD_EXPRESSION';
-export const SET_LIST_SHOW = 'SET_LIST_SHOW';
+export const SET_LIST_STATE = 'SET_LIST_STATE';
+export const SET_IMAGEEXP_STATE = 'SET_IMAGEEXP_STATE';
+export const SET_SCROLL_STATE = 'SET_SCROLL_STATE';
 export const setMenuState = (menuState) => {
     return {
         type: SET_MENU_STATE,
@@ -49,8 +53,20 @@ export const addExpression = (emoji) => {
 }
 export const setListShow = (isShow) => {
     return {
-        type: SET_LIST_SHOW,
+        type: SET_LIST_STATE,
         isShow
+    }
+}
+export const setImageExpState = (isShow) => {
+    return {
+        type: SET_IMAGEEXP_STATE,
+        isShow
+    }
+}
+export const setScrollState = (isNeedScroll) => {
+    return {
+        type: SET_SCROLL_STATE,
+        isNeedScroll
     }
 }
 // init
@@ -270,8 +286,6 @@ export const SET_AUDIO_STATE = 'SET_AUDIO_STATE';
 export const SET_NOTIFICATION_STATE = 'SET_NOTIFICATION_STATE';
 export const SET_SPECIAL_USER = 'SET_SPECIAL_USER';
 export const SET_SHIELD_USER = 'SET_SHIELD_USER';
-// export const DELETE_SPECIAL_USER = 'DELETE_SPECIAL_USER';
-// export const DELETE_SHIELD_USER = 'DELETE_SHIELD_USER';
 export const setAudioSrc = (src) => {
     return {
         type:SET_AUDIO_SRC,
@@ -307,8 +321,112 @@ export const storageSetting = () => {
     return (dispatch,getState) => {
         const state = getState();
         if( typeof localStorage === 'object'){
-            const setting = JSON.stringify(state.setting)
-            localStorage.setItem(state.userState.nickname,setting);
+            let storage = {};
+            storage.setting = state.setting;
+            storage.expressions = state.storageExpressions;
+            storage = JSON.stringify(storage);
+            localStorage.setItem(state.userState.nickname,storage);
         }
+    }
+}
+
+// image Slide
+export const SET_SLIDE_STATE = 'SET_SLIDE_STATE';
+export const SET_SLIDE_ARR = 'SET_SLIDE_ARR';
+export const setSlideState = (isShow) => {
+    return {
+        type: SET_SLIDE_STATE,
+        isShow
+    }
+}
+export const setSlideArr = (slideArr) => {
+    return {
+        type: SET_SLIDE_ARR,
+        slideArr
+    }
+}
+export const findSlideArr = (index) => {
+    return (dispatch,getState) => {
+        let arr = [-1,-1,-1];
+        const state = R.clone(getState());
+        const history = state.userState.isPrivate ? state.privateMessages[state.userState.curRoom] : state.messages[state.userState.curRoom];
+        arr[1] = {
+            index:index,
+            image: history[index].content
+        };
+        for(let i = index - 1; i > -1; i--){
+            if(history[i].type === 'imageMessage'){
+                arr[0] = {
+                    index:i,
+                    image: history[i].content
+                };
+                break;
+            }
+        }
+        for(let j = index + 1; j < history.length; j++){
+            if(history[j].type === 'imageMessage'){
+                arr[2] = {
+                    index:j,
+                    image: history[j].content
+                };
+                break;
+            }
+        }
+        dispatch(setSlideArr(arr));
+    }
+}
+export const switchImage = (btn) => {
+    return (dispatch,getState) => {
+        const state = R.clone(getState());
+        const history = state.userState.isPrivate ? state.privateMessages[state.userState.curRoom] : state.messages[state.userState.curRoom];
+        let arr = R.clone(state.imageSlide.slideArr);
+        if(btn === 'pre'){
+            arr.pop();
+            for(let i = arr[0].index - 1; i > -1; i--){
+                if(history[i].type === 'imageMessage'){
+                    arr.unshift({
+                        index:i,
+                        image: history[i].content
+                    });
+                    break;
+                }
+            }
+            arr.length < 3? arr.unshift(-1):null;
+        } else{
+            arr.shift();
+            for(let j = arr[1].index + 1; j < history.length; j++){
+                if(history[j].type === 'imageMessage'){
+                    arr.push({
+                        index: j,
+                        image: history[j].content
+                    });
+                    break;
+                }
+            }
+            arr.length < 3? arr.push(-1):null;
+        }
+        dispatch(setSlideArr(arr));
+    }
+}
+//  expression store
+export const ADD_STORAGE_EXPRESSION = 'ADD_STORAGE_EXPRESSION';
+export const DELETE_STORAGE_EXPRESSION = 'DELETE_STORAGE_EXPRESSION';
+export const INIT_STORAGE_EXPRESSION = 'INIT_STORAGE_EXPRESSION';
+export const initStorageExpression = (expressions) => {
+    return {
+        type: INIT_STORAGE_EXPRESSION,
+        expressions
+    }
+}
+export const addStorageExpression = (expression) => {
+    return {
+        type: ADD_STORAGE_EXPRESSION,
+        expression
+    }
+}
+export const deleteStorageExpression = (expression) => {
+    return {
+        type: DELETE_STORAGE_EXPRESSION,
+        expression
     }
 }
