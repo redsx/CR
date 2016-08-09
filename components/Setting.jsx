@@ -138,7 +138,9 @@ class Setting extends React.Component{
                     <span> 
                         1. 未选择主题默认静音 <br/>
                         2. 以上设置均为本地设置  <br/> 
-                        3. 点击头像可修改头像信息
+                        3. 点击头像可修改头像信息 <br/>
+                        4. shift+点击头像可@ <br/>
+                        5. shift+点击表情可删除表情
                     </span>
                 </div>
             </div>

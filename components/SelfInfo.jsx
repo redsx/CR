@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 
 import IconButton from 'material-ui/IconButton'
 import FontIcon from 'material-ui/FontIcon'
-import Logout from 'material-ui/svg-icons/social/whatshot.js'
+import Logout from 'material-ui/svg-icons/action/exit-to-app.js'
 import ActionGrade from 'material-ui/svg-icons/action/grade'
 import ContentSend from 'material-ui/svg-icons/content/send'
 import ContentDrafts from 'material-ui/svg-icons/content/drafts'
@@ -83,18 +83,14 @@ class SelfInfo extends React.Component{
                 <ul style = {styles.iocnUl}>
                     <li style = {styles.iconList}>
                     <a onClick = {()=>{this.handleLogout()}}>
-                        <IconButton 
-                            tooltip = '登出'
-                        >
+                        <IconButton>
                         <Logout color = {'white'} />
                         </IconButton> 
                     </a>
                     </li>
                     <li style = {styles.iconList}>
                             <a href = 'http://blog.mdzzapp.com/#/article/纪录cr聊天室开发?_k=ey6sdw' target = '_blank'>
-                                <IconButton
-                                    tooltip = '关于'
-                                >
+                                <IconButton>
                                 <CommunicationEmail color = {'white'} />
                                 </IconButton> 
                             </a>

@@ -34,7 +34,7 @@ class HeadBar extends React.Component {
                     </IconButton> 
                 </div>
                 <div data-flex = 'main:center cross:center' data-flex-box = '1' style = {{paddingRight:'48px'}}>
-                    <strong  >{this.props.curRoom}</strong>
+                    <strong>{this.props.curRoom}</strong>
                 </div>
             </div>
             <Divider />            

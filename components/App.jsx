@@ -3,6 +3,7 @@ import React, {PropTypes} from 'react'
 import Menu from './Menu.jsx'
 import ChatArea from '../containers/ChatArea.js'
 import AudioGroup from '../containers/AudioGroup.js'
+import ImageSlide from '../containers/ImageSlide.js'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
@@ -38,7 +39,7 @@ class App extends React.Component{
         return (
             <MuiThemeProvider muiTheme={getMuiTheme()}>
                 <div style = {styles.container}>
-                    <AudioGroup />
+                    <ImageSlide />
                     <div 
                         className = {this.props.menuState?'left-box':'left-box-show'}
                     >
@@ -55,6 +56,7 @@ class App extends React.Component{
                             <ChatArea />
                         </div>
                     </div>
+                    <AudioGroup />
                 </div>
             </MuiThemeProvider>
         );

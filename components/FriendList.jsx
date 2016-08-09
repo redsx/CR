@@ -2,10 +2,10 @@ import React, { PropTypes } from 'react'
 
 import Avatar from '../containers/Avatar.js'
 
-import List from 'material-ui/List/List';
-import ListItem from 'material-ui/List/ListItem';
-import Subheader from 'material-ui/Subheader';
-import Divider from 'material-ui/Divider';
+import List from 'material-ui/List/List'
+import ListItem from 'material-ui/List/ListItem'
+import Subheader from 'material-ui/Subheader'
+import Divider from 'material-ui/Divider'
 
 const styles = {
     ul:{
@@ -47,15 +47,11 @@ class FriendList extends React.Component{
         super(props);
     }
     renderOnlineList(){
-        let onlineUsers = this.props.onlineUsers,
-            setUserCurRoom = this.props.setUserCurRoom,  
-            clearCount = this.props.clearCount,
-            badgeCount = this.props.badgeCount, 
-            nickname = this.props.nickname,
-            list = [];
+        let { onlineUsers, setUserCurRoom, clearCount, badgeCount, nickname, setScrollState } = this.props;
+        let list = [];
         for(let item in onlineUsers){
             let user = onlineUsers[item];
-            if(user.isOnline && user.nickname !== nickname){
+            if(user.isOnline > 0 && user.nickname !== nickname){
                 list.push(
                     <li
                         style = {styles.li}
@@ -75,9 +71,10 @@ class FriendList extends React.Component{
                                         isPrivate: true
                                     });
                                     clearCount(user.nickname);
+                                    setScrollState(true);
                                 }}
                         >
-                            <span 
+                            <span
                                 style = {styles.span}
                                 data-flex-box = '2'
                             >
@@ -101,10 +98,8 @@ class FriendList extends React.Component{
     }
     renderRoomList(){
         let list = this.renderOnlineList();
-        let setUserCurRoom = this.props.setUserCurRoom,  
-            clearCount = this.props.clearCount,
-            badgeCount = this.props.badgeCount,
-            room = {};
+        let { setUserCurRoom, clearCount, badgeCount, setScrollState } = this.props;
+        let  room = {};
         room.avatar = 'http://oajmk96un.bkt.clouddn.com/hdImg_6e40281f541d24709f2840adc72631a61469706694782.jpg';
         room.name = 'MDZZ'
         list.unshift(
@@ -126,6 +121,7 @@ class FriendList extends React.Component{
                                 isPrivate: false
                             });
                             clearCount(room.name);
+                            setScrollState(true);
                         }}
                 >
                     <span 
@@ -181,6 +177,7 @@ FriendList.propTypes = {
     onlineUsers: PropTypes.object,
     setUserCurRoom: PropTypes.func,
     clearCount: PropTypes.func,
+    setScrollState: PropTypes.func,
     badgeCount: PropTypes.object,
     nickname: PropTypes.string,
     isShowRoom: PropTypes.bool

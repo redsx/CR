@@ -76,7 +76,9 @@ class SpecialSetting extends React.Component{
                 </div>
                 <div style = {{paddingLeft:'20px'}}>
                     <span>
-                        以上设置均为本地设置
+                        1. 以上设置均为本地设置 <br/>
+                        2. shift+点击头像可@ <br/>
+                        3. shift+点击表情可删除表情
                     </span>
                 </div>
             </div>

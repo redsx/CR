@@ -7,18 +7,20 @@ import { changeAvatar } from '../actions'
 import Avatar from '../containers/Avatar.js'
 import Setting from '../containers/Setting.js'
 import SpecialSetting from '../containers/SpecialSetting.js'
+import Drag from './Drag.jsx'
 
 const styles = {
     box: {
-        position:'fixed',
-        top:'50%',
-        left:'50%',
-        marginTop:'-175px',
-        marginLeft:'-145px',
-        width:'290px',
+        position:'relative',
+        // top:'50%',
+        // left:'50%',
+        // marginTop:'-175px',
+        // marginLeft:'-145px',
+        width: '290px',
         height:'350px',
-        boxShadow:'0px 0px 10px #777',
-        borderRadius:'5px'
+        margin: '10px',
+        boxShadow: '0px 0px 10px #777',
+        borderRadius: '5px'
     },
     container:{
         width: '100%',
@@ -100,7 +102,7 @@ class InfoCard extends React.Component{
             }
         }
     }
-    render(){
+    renderInfoCard(){
         let { nickname, avatar, time, isShow } = this.props.infoCardState;
         let canChangeInfo = this.props.user.nickname === nickname;
         return !isShow?null:(
@@ -158,6 +160,20 @@ class InfoCard extends React.Component{
                         { canChangeInfo ? <Setting/> : <SpecialSetting nickname = {nickname}/> }
                     </div>
                 </div>
+            )
+    }
+    render(){
+        let isShow = this.props.infoCardState.isShow,
+            y = Math.round(window.innerHeight/2) - 185,
+            x = Math.round(window.innerWidth/2) - 155;
+        return !isShow?null:(
+                <Drag
+                    x = {x}
+                    y = {y}
+                    component = {
+                        this.renderInfoCard()
+                    }
+                />
             )
     }
 }

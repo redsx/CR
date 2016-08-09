@@ -5,9 +5,11 @@ import ContentSend from 'material-ui/svg-icons/content/send'
 import InsertPhoto from 'material-ui/svg-icons/editor/insert-photo.js'
 import Mood from 'material-ui/svg-icons/social/mood.js'
 
-import ImageUpload from '../containers/ImageUpload.js'
+// import ImageUpload from '../containers/ImageUpload.js'
 
 import { sendMessage, sendPrivateMessage, sendImage } from '../actions'
+import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../actions/ajax.js'
+
 
 const styles = {
     inputArea:{
@@ -75,42 +77,50 @@ class InputArea extends React.Component{
     handlePaste(e){
         let items = e.clipboardData.items,
             user = this.props.user,
-            addPrivateMessage = this.props.addPrivateMessage,
-            filename = 'paste' + (new Date()).getTime() + '.jpg';
+            addPrivateMessage = this.props.addPrivateMessage;
         if (e.clipboardData.types.indexOf('Files') !== -1) {
             for (let i = 0; i < items.length; i++) {
                 let item = items[i];
                 if( item && item.kind === 'file' && item.type.match(/^image\/\w+/) ){
-                    let fileReader = new FileReader();
-                    fileReader.readAsDataURL(item.getAsFile());
-                    fileReader.onload = function (event) {
-                        let imgDataUrl = event.target.result;
-                        let message = {
-                            content:imgDataUrl,
-                            room: user.curRoom,
-                            type: 'imageMessage',
-                            nickname: user.nickname,
-                            filename: filename
-                        }
-                        user.isPrivate?sendPrivateMessage(message).then((resault)=>{
-                            return addPrivateMessage(resault);
+                    let formdata = new FormData(),
+                        imgFile = item.getAsFile();
+                    if(imgFile.size > 3*1024*1024){
+                        alert('文件过大');
+                    } else{
+                        formdata.append('smfile',imgFile);
+                        ajaxHandle.request('post',UPLOAD_URL,formdata,null)
+                        .then((resault)=>{
+                            if(resault.code === 'success'){
+                                let message = {
+                                    content:resault.data.url,
+                                    room: user.curRoom,
+                                    type: 'imageMessage',
+                                    nickname: user.nickname
+                                }
+                                if(user.isPrivate){
+                                    return sendPrivateMessage(message);
+                                }
+                                return sendMessage(message);
+                            } else{
+                                throw new Error('uplode error');
+                            }
+                        }).then((resault)=>{
+                            if(user.isPrivate){
+                                return addPrivateMessage(resault);
+                            }
+                        }).catch((err)=>{
+                            console.log(err);
                         })
-                        :sendImage(message);
-                    }
-                    fileReader.onerror =function (err) {
-                        console.log(err);
                     }
                 }
             }
         }
     }
     render(){
-        let { expState, setExpressionShow, setExpressionHidden } = this.props;
+        let { expState, setExpressionShow, setExpressionHidden, isShowImageExp, setImageExpState } = this.props;
         return (
             <div data-flex = 'main:center' style = {styles.inputArea}>
-                <div 
-                    data-flex-box='0'
-                >
+                <div data-flex-box='0'>
                     <div 
                         style = {styles.clickDiv}
                         onClick = {()=>{
@@ -122,12 +132,22 @@ class InputArea extends React.Component{
                         <Mood color = '#555' />
                     </IconButton>
                 </div>
-                <div data-flex-box='0'>
-                    <ImageUpload />
+                <div data-flex-box = '0'>
+                    <div 
+                        style = {styles.clickDiv}
+                        onClick = {(e) => {
+                            e.stopPropagation();
+                            e.nativeEvent.stopImmediatePropagation();
+                            setImageExpState(!isShowImageExp);
+                        }}
+                    ></div>
+                    <IconButton>
+                        <InsertPhoto color = '#555' />
+                    </IconButton>
                 </div>
-                <div data-flex = 'main:center box:mean' data-flex-box='1' data-flex = 'main:center' style = {styles.inputBox}>
+                <div data-flex = 'main:center box:mean' data-flex-box = '1' data-flex = 'main:center' style = {styles.inputBox}>
                     <input 
-                        data-flex-box='1' 
+                        data-flex-box = '1' 
                         style = {styles.input}  
                         ref = 'input'
                         onPaste = {(e)=>{this.handlePaste(e)}}
@@ -146,9 +166,11 @@ class InputArea extends React.Component{
 }
 InputArea.propTypes = {
     isShowExpressions: PropTypes.bool,
+    isShowImageExp: PropTypes.bool,
     setExpressionShow: PropTypes.func,
     setExpressionHidden: PropTypes.func,
     addPrivateMessage: PropTypes.func,
+    setImageExpState: PropTypes.func,
     expression: PropTypes.object,
     user: PropTypes.object
 }
