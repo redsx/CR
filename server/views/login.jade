@@ -1,0 +1,36 @@
+html
+    head
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible" content="IE=edge")
+        meta(name="viewport",content="width=device-width, initial-scale=1, user-scalable=0, maximum-scale=1, minimum-scale=1")
+        link(rel="stylesheet" type="text/css" href="stylesheets/flex-css-layout.min.css")
+        link(rel="stylesheet" type="text/css" href="stylesheets/main.css")
+        title #{login?'login':'sign up'}
+    body
+        div(class="login-container" flex="main:center cross:center")
+            div(class="login")
+                div(class='wx-login-form' id='form')
+                    div(id="login-owl")
+                        div(class="login-hand login-hand-focus")
+                        div(class="login-hand-r login-hand-r-focus")
+                        div(class="login-arms")
+                            div(class="login-arm login-arm-focus")
+                            div(class="login-arm-r login-arm-r-focus")
+                    div(class="login-pad")
+                        div(class="login-control-group")
+                            div(class="login-controls")
+                                label(for="nickname" class="login-control-label") &#xe602;
+                                input(type="text" id="nickname" name='nickname' class="login-form-control" placeholder="nickname" autofocus="autofocus" required)
+                        div(class="login-control-group")
+                            div(class="login-controls")
+                                label(for="password" class="login-control-label") &#xe601;
+                                input(type="password" id="password" name='password' class="login-form-control" placeholder="password" autofocus="autofocus" required)
+                    div(class="login-actions")
+                        - if(login)
+                            a(href='/signUp') sign up &nbsp;&nbsp;
+                            button(class="login-btn" id='login') login
+                        - else
+                            a(href='/login') login &nbsp;&nbsp;
+                            button(class="login-btn" id='signUp') sign up
+        script(src='/javascripts/reqwest.min.js')
+        script(src='/javascripts/login.js')
