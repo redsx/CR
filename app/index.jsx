@@ -10,7 +10,7 @@ import App from './containers/App.js'
 import store from './store'
 
 import {
-    io,
+    socket,
     getInitUserInfo, 
     getInitOnlineUser, 
     addOnlineUser, 
@@ -32,8 +32,10 @@ import notification from './actions/notification.js'
 import favico from './actions/favicoNotification.js'
 
 favico.resetWhenDocVisibility();
+notification.requestPermission();
 
-io.socket.on('privateMessage', (message) => {
+socket.on('privateMessage', (message) => {
+    console.log('get private message:',message);
     const state = store.getState();
     if(state.setting.shield.indexOf(message.nickname) === -1){
         const audio = document.getElementById('audio1'),
@@ -48,13 +50,16 @@ io.socket.on('privateMessage', (message) => {
                 body: message.content,
                 icon: (store.getState()).onlineUsers[message.nickname].avatar,
             }) : null;
-            state.setting.special.indexOf(message.nickname) === -1 ? audio.play() : audioSpecial.play();
+            if(!state.setting.audio.isClose){
+                state.setting.special.indexOf(message.nickname) === -1 ? audio.play() : audioSpecial.play();
+            }
         } else if(!state.setting.audio.isClose && state.userState.curRoom !== message.room){
             state.setting.special.indexOf(message.nickname) === -1 ? audio.play() : audioSpecial.play();
         }
     }
 });
-io.socket.on('message', (message) => {
+socket.on('newMessage', (message) => {
+    console.log('get new message',message);
     const state = store.getState();
     if(state.setting.shield.indexOf(message.nickname) === -1){
         const audio = document.getElementById('audio1'),
@@ -69,31 +74,44 @@ io.socket.on('message', (message) => {
                 body: message.content,
                 icon: (store.getState()).onlineUsers[message.nickname].avatar,
             }) : null;
-            state.setting.special.indexOf(message.nickname) !== -1 || reg.test(message.content) ? audioSpecial.play() : audio.play() ;
+            if(!state.setting.audio.isClose){
+                state.setting.special.indexOf(message.nickname) !== -1 || reg.test(message.content) ? audioSpecial.play() : audio.play() ;
+            }
         } else if(!(message.nickname === state.userState.nickname) && !state.setting.audio.isClose && state.userState.curRoom !== message.room){
             state.setting.special.indexOf(message.nickname) !== -1 || reg.test(message.content) ? audioSpecial.play() : audio.play();
         }
     }
 });
 
-io.socket.on('changeInfo', (info)=>{
+socket.on('changeInfo', (info)=>{
+    console.log('change info:',info);
     store.dispatch(changeUserInfo(info));
 })
-io.socket.on('login', (user) => {
-    // console.log('login:',user.nickname);
+socket.on('user joined', (user) => {
+    console.log('user joined:',user.nickname);
+    store.dispatch(addMessage({
+        content: user.nickname+'加入了',
+        room: 'MDZZ',
+        type: 'systemMessage'
+    }));
     store.dispatch(addOnlineUser(user));
 })
-io.socket.on('logout', (user) => {
-    // console.log('logout:',user.nickname);
+socket.on('user leaved', (user) => {
+    console.log('user leaved:',user.nickname);
+    store.dispatch(addMessage({
+        content: user.nickname+'离开了',
+        room: 'MDZZ',
+        type: 'systemMessage'
+    }));
     store.dispatch(deleteLogoutUser(user.nickname));
 })
-io.socket.on('connect', () => {
+socket.on('connect', () => {
     const token = localStorage.getItem('token');
     if(!token){
         window.location = '/login';
     }
     getHistoryMessage('MDZZ')(store.dispatch).then((resault)=>{
-        return getInitOnlineUser()(store.dispatch);
+        return getInitOnlineUser()(store.dispatch)
     }).then((resault)=>{
         return getInitUserInfo(token)(store.dispatch);
     }).then((resault)=>{
@@ -120,8 +138,14 @@ io.socket.on('connect', () => {
         }
     })
 })
-io.socket.on('disconnect', () => {
+socket.on('disconnect',()=>{
     console.log('disconnect');
+    const state = store.getState();
+    store.dispatch(addMessage({
+        content: '掉线重连中...',
+        room: state.userState.curRoom,
+        type: 'systemMessage'
+    }));
 })
 injectTapEventPlugin();
 render(
