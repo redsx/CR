@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react'
 import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../actions/ajax.js'
 import { sendMessage, sendPrivateMessage } from '../actions'
 
-import QueueAnim from 'rc-queue-anim';
+import QueueAnim from 'rc-queue-anim'
 
 const styles = {
     imageContent: {
@@ -86,6 +86,7 @@ class ImageExpressions extends React.Component{
             show = this.refs.show,
             formdata = new FormData(),
             user = this.props.user,
+            addMessage = this.props.addMessage,
             addPrivateMessage = this.props.addPrivateMessage;
         if(!imgFile || !isImgReg.test(imgFile.type)){
             console.log('imgFile is not image');
@@ -100,7 +101,7 @@ class ImageExpressions extends React.Component{
             formdata.append('smfile',imgFile);
             ajaxHandle.request('post',UPLOAD_URL,formdata,(event)=>{
                 if(event.lengthComputable){
-                    let persent = Math.floor(event.loaded/event.total);
+                    let persent = Math.floor((event.loaded/event.total)*100);
                     this.setState({
                         progress:{
                             type: 'progress',
@@ -139,22 +140,35 @@ class ImageExpressions extends React.Component{
                 if(user.isPrivate){
                     return addPrivateMessage(resault);
                 }
+                addMessage(resault);
             }).catch((err)=>{
                 console.log(err);
+                this.setState({
+                    progress:{
+                        type: 'text',
+                        text: '上传失败'
+                    }
+                });
             })
             let fileReader = new FileReader();
             fileReader.readAsDataURL(imgFile);
             fileReader.onload = (event) => {
                 let imgDataUrl = event.target.result;
-                this.setState({preview:imgDataUrl});
+                this.setState({
+                    preview:imgDataUrl,
+                    progress:{
+                        type: 'progress',
+                        persent: 0
+                    }
+                });
             }
             fileReader.onerror = (err) => { 
                 this.setState({
-                        progress:{
-                            type: 'text',
-                            text: '上传失败'
-                        }
-                    });
+                    progress:{
+                        type: 'text',
+                        text: '读取失败'
+                    }
+                });
                 console.log(err);
             }
         }
@@ -174,6 +188,7 @@ class ImageExpressions extends React.Component{
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
         let user = this.props.user,
+            addMessage = this.props.addMessage,
             addPrivateMessage = this.props.addPrivateMessage,
             deleteStorageExpression = this.props.deleteStorageExpression;
         if(e.shiftKey){
@@ -185,7 +200,7 @@ class ImageExpressions extends React.Component{
             type: 'imageMessage',
             nickname: user.nickname
         }
-        !user.isPrivate ? sendMessage(message)
+        !user.isPrivate ? sendMessage(message).then((resault) => addMessage(resault))
         :sendPrivateMessage(message).then((resault) => addPrivateMessage(resault))
     }
     handleStopPro(e){
@@ -247,14 +262,14 @@ class ImageExpressions extends React.Component{
     }
     componentDidMount(){
         let setImageExpState = this.props.setImageExpState;
-        document.addEventListener('dragleave',(e)=>e.preventDefault());
-        document.addEventListener('dragenter',(e)=>e.preventDefault());
-        document.addEventListener('dragover',(e)=>e.preventDefault());
-        document.addEventListener('drop',(e)=>{
-            e.preventDefault();
-            let files = e.dataTransfer.files || [];
-            this.uploadImage(files);
-        });
+        // document.addEventListener('dragleave',(e)=>e.preventDefault());
+        // document.addEventListener('dragenter',(e)=>e.preventDefault());
+        // document.addEventListener('dragover',(e)=>e.preventDefault());
+        // document.addEventListener('drop',(e)=>{
+        //     e.preventDefault();
+        //     let files = e.dataTransfer.files || [];
+        //     this.uploadImage(files);
+        // });
         document.addEventListener('click',(e)=>{
             setImageExpState(false);
         },false)

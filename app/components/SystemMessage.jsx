@@ -19,7 +19,7 @@ class SystemMessage extends React.Component{
                         textAlign: 'center'
                     }}
                 >
-                    MDZZ has joined the Group
+                    {this.props.content}
                 </span>
             </div>
         );

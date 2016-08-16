@@ -6,26 +6,25 @@ class Drag extends React.Component{
         this.state = {
             x:this.props.x,
             y:this.props.y,
-            isDown: false
         }
     }
-    handleDown(e){
-        this.setState({
-            offsetX: e.nativeEvent.offsetX,
-            offsetY: e.nativeEvent.offsetY,
-            isDown: true
-        });
-    }
-    handleMove(e){
-        if(this.state.isDown){
-            let pageX = e.pageX,
-                pageY = e.pageY;
-            this.setState({
-                x: pageX - this.state.offsetX,
-                y: pageY - this.state.offsetY
-            })
-        }
-    }
+    // handleDown(e){
+    //     this.setState({
+    //         offsetX: e.nativeEvent.offsetX,
+    //         offsetY: e.nativeEvent.offsetY,
+    //         isDown: true
+    //     });
+    // }
+    // handleMove(e){
+    //     if(this.state.isDown){
+    //         let pageX = e.pageX,
+    //             pageY = e.pageY;
+    //         this.setState({
+    //             x: pageX - this.state.offsetX,
+    //             y: pageY - this.state.offsetY
+    //         })
+    //     }
+    // }
     // handleTouchStart(e){
     //     let pageX = e.nativeEvent.touches[0].pageX,
     //         pageY = e.nativeEvent.touches[0].pageY,
@@ -47,25 +46,28 @@ class Drag extends React.Component{
     //         })
     //     }
     // }
-    componentDidMount(){
-        document.addEventListener('mouseup',()=>{
-            if(this.state.isDown){
-                this.setState({
-                    isDown: false
-                });
-            }
-        })
-        document.addEventListener('touchend',()=>{
-            if(this.state.isDown){
-                this.setState({
-                    isDown: false
-                });
-            }
-        })
+    handleDragStart(e){
+        e.target.style.opacity = 0;
+        this.setState({
+            offsetX: e.nativeEvent.offsetX,
+            offsetY: e.nativeEvent.offsetY,
+        });
+    }
+    handleDrag(e){
+        e.target.style.opacity = 1;
+        let pageX = e.pageX,
+            pageY = e.pageY;
+        if(pageX !== 0 && pageY !== 0){
+            this.setState({
+                x: pageX - this.state.offsetX,
+                y: pageY - this.state.offsetY
+            })
+        }
     }
     render(){
         return (
             <span 
+                draggable = {true}
                 style = {{
                     position: 'fixed',
                     cursor: 'move',
@@ -73,8 +75,8 @@ class Drag extends React.Component{
                     top: this.state.y,
                     left: this.state.x
                 }}
-                onMouseDown = {(e)=>{this.handleDown(e)}}
-                onMouseMove = {(e)=>{this.handleMove(e)}}
+                onDragStart = {(e)=>{this.handleDragStart(e)}}
+                onDrag = {(e)=>{this.handleDrag(e)}}
             >
                 {this.props.component}
             </span>
@@ -86,6 +88,3 @@ Drag.defaultProps = {
     y:0
 }
 export default Drag;
-
-// onTouchStart = {(e)=>{this.handleTouchStart(e)}}
-// onTouchMove = {(e)=>{this.handleTouchMove(e)}}

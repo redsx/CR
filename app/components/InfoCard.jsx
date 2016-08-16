@@ -4,6 +4,8 @@ import IconButton from 'material-ui/IconButton'
 import ContentClear from 'material-ui/svg-icons/content/clear';
 
 import { changeAvatar } from '../actions'
+import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../actions/ajax.js'
+
 import Avatar from '../containers/Avatar.js'
 import Setting from '../containers/Setting.js'
 import SpecialSetting from '../containers/SpecialSetting.js'
@@ -21,6 +23,11 @@ const styles = {
         margin: '10px',
         boxShadow: '0px 0px 10px #777',
         borderRadius: '5px'
+    },
+    header: {
+        width: '100%',
+        height:'145px',
+        background: 'url(http://oajmk96un.bkt.clouddn.com/bg1000'+ Math.floor((Math.random()*1024)%5)+'.jpg) no-repeat center'
     },
     container:{
         width: '100%',
@@ -76,6 +83,7 @@ class InfoCard extends React.Component{
     handleChange(e){
         let fileBtn = e.target;
         let imgFile = fileBtn.files[0],
+            formdata = new FormData(),
             user = this.props.user,
             setUserInfo = this.props.setUserInfo,
             hiddenInfoCard = this.props.hiddenInfoCard,
@@ -83,24 +91,53 @@ class InfoCard extends React.Component{
         if(!imgFile || !isImgReg.test(imgFile.type)){
             console.log('imgFile is not image');
         } else{
-            let fileReader = new FileReader();
-            fileReader.readAsDataURL(imgFile);
-            fileReader.onload = function (event) {
-                var imgDataUrl = event.target.result;
-                changeAvatar({
-                    nickname: user.nickname,
-                    imageData: imgDataUrl,
-                    filename: imgFile.name
+            if(imgFile.size > 3*1024*1024){
+                alert('文件过大');
+            } else{
+                formdata.append('smfile',imgFile);
+                ajaxHandle.request('post',UPLOAD_URL,formdata,null)
+                .then((resault)=>{
+                    if(resault.code === 'success'){
+                        let url = resault.data.url;
+                        console.log('change avatar:',url);
+                        return changeAvatar({
+                            nickname: user.nickname,
+                            avatar: url
+                        })
+                    } else{
+                        throw new Error('uplode error');
+                    }
                 }).then((resault)=>{
                     return setUserInfo(resault);
                 }).then(()=>{
                     hiddenInfoCard();
+                }).catch((err)=>{
+                    alert('图片上传失败，请重试');
+                    hiddenInfoCard();
                 })
             }
-            fileReader.onerror =function (err) {
-                console.log(err);
-            }
         }
+        // if(!imgFile || !isImgReg.test(imgFile.type)){
+        //     console.log('imgFile is not image');
+        // } else{
+        //     let fileReader = new FileReader();
+        //     fileReader.readAsDataURL(imgFile);
+        //     fileReader.onload = function (event) {
+        //         var imgDataUrl = event.target.result;
+        //         changeAvatar({
+        //             nickname: user.nickname,
+        //             imageData: imgDataUrl,
+        //             filename: imgFile.name
+        //         }).then((resault)=>{
+        //             return setUserInfo(resault);
+        //         }).then(()=>{
+        //             hiddenInfoCard();
+        //         })
+        //     }
+        //     fileReader.onerror =function (err) {
+        //         console.log(err);
+        //     }
+        // }
     }
     renderInfoCard(){
         let { nickname, avatar, time, isShow } = this.props.infoCardState;
@@ -123,11 +160,7 @@ class InfoCard extends React.Component{
                     <div
                         data-flex = 'main:center cross:center'
                         data-flex-box = '0'
-                        style = {{
-                            width: '100%',
-                            height:'145px',
-                            background: 'url(http://oajmk96un.bkt.clouddn.com/bg1000'+ Math.floor((Math.random()*1024)%5)+'.jpg) no-repeat center'
-                        }}
+                        style = {styles.header}
                     >
                         <div
                             data-flex = 'main:top cross:top dir:top'

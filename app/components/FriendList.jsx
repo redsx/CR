@@ -7,6 +7,9 @@ import ListItem from 'material-ui/List/ListItem'
 import Subheader from 'material-ui/Subheader'
 import Divider from 'material-ui/Divider'
 
+import QueueAnim from 'rc-queue-anim'
+
+
 const styles = {
     ul:{
         display: 'block',
@@ -163,10 +166,13 @@ class FriendList extends React.Component{
                     style = {{
                         height:'90%',
                         overflowY:'scroll',
+                        overflowX:'hidden'
                     }}
                 >
                     <ul style = {styles.ul}>
+                        <QueueAnim>
                         {list}
+                        </QueueAnim>
                     </ul>
                 </div>
             </div>

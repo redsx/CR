@@ -54,7 +54,7 @@ class Expressions extends React.Component{
         super(props);
     }
     handleClick(expression){
-        this.props.addExpression('#('+expression+')');
+        this.props.addExpression('#('+expression+') ');
         this.props.setExpressionHidden();
     }
     renderExpressions(){

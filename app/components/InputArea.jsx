@@ -57,6 +57,7 @@ class InputArea extends React.Component{
         let input = this.refs.input;
         let user = this.props.user,
             addPrivateMessage = this.props.addPrivateMessage,
+            addMessage = this.props.addMessage,
             content = (input.value.trim()).slice(0,150);
         if(content !== ''){
             input.value = '';
@@ -71,12 +72,15 @@ class InputArea extends React.Component{
             user.isPrivate?sendPrivateMessage(message).then((resault)=>{
                 return addPrivateMessage(resault);
             })
-            :sendMessage(message);
+            :sendMessage(message).then((resault)=>{
+                return addMessage(resault);
+            });
         }
     }
     handlePaste(e){
         let items = e.clipboardData.items,
             user = this.props.user,
+            addMessage = this.props.addMessage,
             addPrivateMessage = this.props.addPrivateMessage;
         if (e.clipboardData.types.indexOf('Files') !== -1) {
             for (let i = 0; i < items.length; i++) {
@@ -108,6 +112,7 @@ class InputArea extends React.Component{
                             if(user.isPrivate){
                                 return addPrivateMessage(resault);
                             }
+                            addMessage(resault);
                         }).catch((err)=>{
                             console.log(err);
                         })
@@ -169,6 +174,7 @@ InputArea.propTypes = {
     isShowImageExp: PropTypes.bool,
     setExpressionShow: PropTypes.func,
     setExpressionHidden: PropTypes.func,
+    addMessage: PropTypes.func,
     addPrivateMessage: PropTypes.func,
     setImageExpState: PropTypes.func,
     expression: PropTypes.object,

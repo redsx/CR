@@ -20,8 +20,6 @@ class SpecialSetting extends React.Component{
         super(props);
     }
     handleShieldToggle(e,value){
-        console.log('set shield audio:',value);
-        console.log(this.props)
         this.props.setShieldUser({
             user: this.props.nickname,
             isAdd: value
@@ -29,7 +27,6 @@ class SpecialSetting extends React.Component{
         this.props.storageSetting();
     }
     handleSpecialToggle(e,value){
-        console.log('set special audio:',value);
         this.props.setSpecialUser({
             user: this.props.nickname,
             isAdd: value

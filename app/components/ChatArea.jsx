@@ -137,16 +137,22 @@ class ChatArea extends React.Component {
                             switch (item.type) {
                                 case 'imageMessage':
                                 case 'textMessage': {
-                                    let message = {
-                                        nickname: onlineUsers[item.nickname].nickname,
-                                        avatar: onlineUsers[item.nickname].avatar,
-                                        timestamp: item.timestamp,
-                                        content: item.content,
-                                        type: item.type,
-                                        index: index
+                                    if(onlineUsers[item.nickname]){
+                                        let message = {
+                                            nickname: onlineUsers[item.nickname].nickname,
+                                            avatar: onlineUsers[item.nickname].avatar,
+                                            timestamp: item.timestamp,
+                                            content: item.content,
+                                            type: item.type,
+                                            index: index
+                                        }
+                                        let dir = user.nickname === item.nickname ? 'right' : 'left';
+                                        return <Message message = {message} dir = {dir} key = {index} />
                                     }
-                                    let dir = user.nickname === item.nickname ? 'right' : 'left';
-                                    return <Message message = {message} dir = {dir} key = {index} />
+                                    return null;
+                                }
+                                case 'systemMessage': {
+                                    return <SystemMessage content = {item.content || ''} key = {index}/>
                                 }
                                 default:
                                     break;
