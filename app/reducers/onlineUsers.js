@@ -22,7 +22,9 @@ export default function onlineUsers(state={},action) {
         }
         case ADD_HISTORY_USER_INFO: {
             let users = R.clone(action.users);
-            return Object.assign({},users,deepCopy);
+            // 暂定解决方案
+            // return Object.assign({},users,deepCopy);
+            return Object.assign({},users);
         }
         case CHANGE_USER_INFO: {
             (deepCopy[action.user.nickname]).avatar = action.user.avatar;
