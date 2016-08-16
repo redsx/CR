@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import InputArea from '../components/InputArea.jsx'
-import { setExpressionShow, setExpressionHidden, addPrivateMessage, setImageExpState } from '../actions'
+import { setExpressionShow, setExpressionHidden, addPrivateMessage, addMessage, setImageExpState } from '../actions'
 function mapStateToProps(state) {
     return {
         isShowExpressions: state.pageState.expressionState.isShow,
@@ -11,6 +11,6 @@ function mapStateToProps(state) {
     }
 }
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ setExpressionShow, setExpressionHidden, addPrivateMessage, setImageExpState },dispatch);
+    return bindActionCreators({ setExpressionShow, setExpressionHidden, addPrivateMessage, addMessage, setImageExpState },dispatch);
 }
 export default connect(mapStateToProps,mapDispatchToProps)(InputArea);
