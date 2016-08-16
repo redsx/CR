@@ -1,10 +1,10 @@
-const socketIOClient = require('socket.io-client');
-const sailsIOClient = require('sails.io.js');
+import io from 'socket.io-client'
+
 const R = require('ramda');
 
-export const io = sailsIOClient(socketIOClient);
-// io.sails.url = 'http://jishuzhai.site:1338';
-io.sails.url = 'http://localhost:1338';
+// export const socket = io('http://mdzzapp.com:3000');
+export const socket = io('http://localhost:3000');
+
 
 // page UI state
 export const SET_MENU_STATE = 'SET_MENU_STATE';
@@ -81,16 +81,18 @@ export const setUserInfo = (user) => {
 export const getInitUserInfo = (token) => {
     return (dispatch,getState) => {
         return new Promise((resolve)=>{
-            io.socket.get('/ws',{token:token}, (body,res) => {
-                if(body.isNotLogin){
-                    return window.location = '/login';
+            socket.emit('getInfo',token, (body) => {
+                console.log('getInfo:',body);
+                if(body.isError){
+                    alert(body.isError);
+                    window.location = '/login'
+                } else{
+                    body.isPrivate = false; 
+                    dispatch(setUserInfo(body));
+                    resolve(body);
                 }
-                body.isPrivate = false; 
-                dispatch(setUserInfo(body));
-                resolve(body);
             })
         })
-        
     }
 }
 export const setInitOnlineUser = (onlineUsers) => {
@@ -102,8 +104,14 @@ export const setInitOnlineUser = (onlineUsers) => {
 export const getInitOnlineUser = () => {
     return (dispatch) => {
         return new Promise((resolve)=>{
-            io.socket.get('/onlineUsers', (body,res) => {
-                dispatch(setInitOnlineUser(body));
+            socket.emit('getOnlineUsers',(body) => {
+                console.log('get online users:',body);
+                if(body.isError){
+                    alert(body.isError);
+                    window.location = '/login'
+                } else{
+                    dispatch(setInitOnlineUser(body));
+                }
                 resolve();
             })
         })
@@ -163,8 +171,10 @@ export const addMessage = (message) => {
 }
 export const sendMessage = (message) => {
     return new Promise((resolve)=>{
-        io.socket.get('/sendMsg',message, (body,res) => {
-            resolve();
+        socket.emit('message',message, (body) => {
+            console.log('send some messages:',body);
+            // dispatch(addMessage(body));
+            resolve(body);
         })
     })
 }
@@ -179,23 +189,30 @@ export const addHistoryMessage = (room,messages) => {
 export const getHistoryMessage = (room) => {
     return (dispatch,getState) => {
         return new Promise((resolve)=>{
-            io.socket.get('/history',{room:room}, (body,res) => {
-                dispatch(addHistoryUser(body.users))
-                dispatch(addHistoryMessage(room,body.messages))
-                resolve('get history');
+            socket.emit('history',room, (body,res) => {
+                console.log('history message:',body)
+                if(body.isError){
+                    alert(body.isError);
+                    window.location = '/login'
+                } else{
+                    dispatch(addHistoryUser(body.users))
+                    dispatch(addHistoryMessage(room,body.messages))
+                    resolve('get history');
+                }
+                
             })
         })
     }
 }
-export const sendImage = (message) => {
-    return new Promise((resolve)=>{
-        io.socket.get('/sendImg',{message:message}, (body,res) => {
-            if(body){
-                resolve(body);
-            }
-        })
-    })
-}
+// export const sendImage = (message) => {
+//     return new Promise((resolve)=>{
+//         io.socket.get('/sendImg',{message:message}, (body,res) => {
+//             if(body){
+//                 resolve(body);
+//             }
+//         })
+//     })
+// }
 export const addPrivateMessage = (message) => {
     return {
         type:ADD__PRIVATE_MESSAGE,
@@ -203,20 +220,10 @@ export const addPrivateMessage = (message) => {
     }
 }
 export const sendPrivateMessage = (message) => {
-        return new Promise((resolve)=>{
-            io.socket.get('/sendPriMsg',message, (body,res) => {
-                if(!body.isNotOnline){
-                    resolve(body);
-                } else{
-                    alert('玩家不在线，离线消息即将上线，敬请期待');
-                }
-            })
-        })
-}
-export const sendPrivateImage = (message) => {
     return new Promise((resolve)=>{
-        io.socket.get('/sendPriImg',{message:message}, (body,res) => {
-            if(!body.isNotOnline){
+        socket.emit('privateMessage',message, (body) => {
+            if(!body.isNotOnline && !body.isError){
+                console.log('privateMessage:',body);
                 resolve(body);
             } else{
                 alert('玩家不在线，离线消息即将上线，敬请期待');
@@ -224,6 +231,17 @@ export const sendPrivateImage = (message) => {
         })
     })
 }
+// export const sendPrivateImage = (message) => {
+//     return new Promise((resolve)=>{
+//         io.socket.get('/sendPriImg',{message:message}, (body,res) => {
+//             if(!body.isNotOnline){
+//                 resolve(body);
+//             } else{
+//                 alert('玩家不在线，离线消息即将上线，敬请期待');
+//             }
+//         })
+//     })
+// }
 
 // info card
 export const SET_INFOCARD_STATE = 'SET_INFOCARD_STATE';
@@ -233,10 +251,15 @@ export const GET_USER_INFO = 'GET_USER_INFO';
 export const getUserInfo = (nickname) => {
     return (dispatch,getState) => {
         return new Promise((resolve)=>{
-            io.socket.get('/userInfo',{nickname:nickname}, (body,res) => {
-                body.isShow = true;
-                dispatch(showInfoCard(body));
-                resolve();
+            socket.emit('getUserInfo',nickname, (body) => {
+                if(body.isError){
+                    alert(body.isError);
+                } else{
+                    body.isShow = true;
+                    console.log('get user info',body);
+                    dispatch(showInfoCard(body));
+                    resolve();
+                }
             })
         })
     }
@@ -258,9 +281,10 @@ export const hiddenInfoCard = () => {
         }
     }
 }
-export const changeAvatar = (data) => {
+export const changeAvatar = (info) => {
     return new Promise((resolve)=>{
-        io.socket.get('/changeAvatar', {data:data}, (body,res)=>{
+        socket.emit('changeAvatar', info, (body)=>{
+            console.log('changeAvatar:',body);
             resolve(body);
         })
     })
