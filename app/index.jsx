@@ -89,20 +89,20 @@ socket.on('changeInfo', (info)=>{
 })
 socket.on('user joined', (user) => {
     console.log('user joined:',user.nickname);
-    store.dispatch(addMessage({
-        content: user.nickname+'加入了',
-        room: 'MDZZ',
-        type: 'systemMessage'
-    }));
+    // store.dispatch(addMessage({
+    //     content: user.nickname+'加入了',
+    //     room: 'MDZZ',
+    //     type: 'systemMessage'
+    // }));
     store.dispatch(addOnlineUser(user));
 })
 socket.on('user leaved', (user) => {
     console.log('user leaved:',user.nickname);
-    store.dispatch(addMessage({
-        content: user.nickname+'离开了',
-        room: 'MDZZ',
-        type: 'systemMessage'
-    }));
+    // store.dispatch(addMessage({
+    //     content: user.nickname+'离开了',
+    //     room: 'MDZZ',
+    //     type: 'systemMessage'
+    // }));
     store.dispatch(deleteLogoutUser(user.nickname));
 })
 socket.on('connect', () => {
@@ -147,6 +147,24 @@ socket.on('disconnect',()=>{
         type: 'systemMessage'
     }));
 })
+let reconnect = 0;
+socket.on('reconnect_failed',()=>{
+    console.log('重连失败');
+})
+
+socket.on('reconnect',()=>{
+    console.log('断线重连成功');
+    const token = localStorage.getItem('token');
+    if(!token){
+        window.location = '/login';
+    }
+    socket.emit('reconnect_success',token);
+})
+socket.on('reconnecting',()=>{
+    reconnect++;
+    console.log('重新连接#('+reconnect+')');
+})
+
 injectTapEventPlugin();
 render(
     <Provider store={store}>
