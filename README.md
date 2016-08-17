@@ -84,7 +84,7 @@ title提醒
 3. npm client-start 打包前端
 4. npm start 开启server，访问 http://localost:3000
 
-** tips:
+** tips: **
 
 1. 在安装使用之前先修改数据库信息 mongodb：`server/config/mongo-config.js`，mysql暂不支持
 2. 如果遇到bcrypt无法install可用bcrypt-nodejs代替
