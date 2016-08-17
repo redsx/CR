@@ -4,26 +4,15 @@
 
 ### 最新内容
 
-- 图片查看
-
- ![x3](./images/news-1.png)
-
-- 图片表情包
-
- ![x3](./images/news-2.png)
-
-- title提醒
-
- ![x3](./images/news-0.png)
-
-
-- @功能
-- 滚动条优化
-- 拖拽功能
+- 上传新版koa后端代码
+- 前端改用socket.io
+- 优化拖拽组件
+- 解决移动端声音无法播放问题
 
 ### 下版内容预告
-- 后台将改用koa
-- 前端改用socket.io
+- 使用immutable.js
+- 增加设置界面
+- login与signup整合到react中
 
 ### 功能列表
 
@@ -57,27 +46,44 @@
 
 机器人：
 
-![x1](./images/x1.jpg)
+![x1](./app/images/x1.jpg)
 
 登录&注册界面：
 
-![x2](./images/x2.png)
+![x2](./app/images/x2.png)
 
 菜单栏：
 
-![x3](./images/x3.png)
+![x3](./app/images/x3.png)
 
 好友设置：
 
-![x4](./images/x4.png)
+![x4](./app/images/x4.png)
 
 个人设置：
 
-![x5](./images/x5.png)
+![x5](./app/images/x5.png)
+
+图片查看
+
+![x6](./app/images/news-1.png)
+
+图片表情包
+
+ ![x7](./app/images/news-2.png)
+
+title提醒
+
+ ![x8](./app/images/news-0.png)
+
 
 ### 安装
 
-1. git clone this project
-2. cd into the folder
-3. run npm install
-4. run webpack
+1. cd CR
+2. npm install
+3. npm client-start 打包前端
+4. npm start 开启server，访问 http://localost:3000
+
+** 在安装使用之前先修改数据库信息 mongodb：`server/config/mongo-config.js`，mysql暂不支持 **
+
+
