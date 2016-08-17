@@ -84,8 +84,12 @@ export const getInitUserInfo = (token) => {
             socket.emit('getInfo',token, (body) => {
                 console.log('getInfo:',body);
                 if(body.isError){
-                    alert(body.isError);
-                    window.location = '/login'
+                    dispatch(addMessage({
+                        content: body.content,
+                        room: 'MDZZ',
+                        type: 'systemMessage'
+                    }));
+                    // window.location = '/login'
                 } else{
                     body.isPrivate = false; 
                     dispatch(setUserInfo(body));
