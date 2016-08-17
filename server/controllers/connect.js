@@ -42,7 +42,16 @@ module.exports = {
     },
     leave: function *(socket,io) {
         let online = yield Online.findOneOnline({socket:socket.id});
-        yield Online.removeOnline({socket:socket.id});
-        io.emit('user leaved',{nickname:online.nickname});
+        if(online){
+            console.log(online.nickname,'离线');
+            io.emit('user leaved',{nickname:online.nickname});
+        }
+        let res = yield Online.removeOnline({socket:socket.id});
+    },
+    reconnect: function *(token) {
+        let decode = jwt.verify(token,'nsmdzz');
+        if(decode){
+            yield Online.removeOnline({nickname:decode.user});
+        }
     }
 }
