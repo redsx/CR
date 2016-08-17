@@ -52,5 +52,12 @@ module.exports = function (io) {
                 console.log(err);
             });
         })
+        socket.on('reconnect_success',(token)=>{
+            console.log('断线重连');
+            co(connect.reconnect(token)).catch((err) =>{
+                cb({isError:'服务器开了个小差'});
+                console.log(err);
+            });
+        })
     })
 }
