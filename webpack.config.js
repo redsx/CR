@@ -4,10 +4,9 @@ module.exports = {
     // entry:{
     //     bundle:'./index.jsx',
     // },
-    entry:['babel-polyfill', './index.jsx'],
+    entry:['babel-polyfill', './app/index.jsx'],
     output:{
-        path: __dirname + '/bundle',
-        // path:'/Users/condy/nodejs/sails/CR/assets/bundle/',
+        path: __dirname + '/server/public/bundle',
         filename: 'bundle.js',
     },
     watch:true,
@@ -32,16 +31,16 @@ module.exports = {
             }
         ]
     },
-    plugins: [
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false
-            }
-        }),
-        //new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.OccurenceOrderPlugin(),
-        new webpack.DefinePlugin({
-            'process.env.NODE_ENV': JSON.stringify('production')
-        })
-  ]
+//     plugins: [
+//         new webpack.optimize.UglifyJsPlugin({
+//             compress: {
+//                 warnings: false
+//             }
+//         }),
+//         //new webpack.optimize.DedupePlugin(),
+//         new webpack.optimize.OccurenceOrderPlugin(),
+//         new webpack.DefinePlugin({
+//             'process.env.NODE_ENV': JSON.stringify('production')
+//         })
+//   ]
 }
