@@ -25,6 +25,7 @@ module.exports = {
                     let userInfo = {
                         nickname: user.nickname,
                         id: socket.id,
+                        isOnline:1,
                         avatar: user.avatar,
                         curRoom: 'MDZZ'
                     };
