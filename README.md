@@ -4,25 +4,13 @@
 
 ### 最新内容
 
-- 上传新版koa后端代码
-- 前端改用socket.io
-- 优化拖拽组件
-- 解决移动端声音无法播放问题
+- 使用immutable.js优化了react的render
+- 使用less
+- 增加设置界面，修改资料卡片
+- 使用react-router将login与signup整合到react中
 
 ### 下版内容预告
-- 使用immutable.js
-- 增加设置界面
-- login与signup整合到react中
-
-### 功能列表
-
-- 实现群聊私聊
-- 实现图片表情包
-- 实现机器人陪聊
-- 实现桌面提醒，音效提醒
-- 实现特别关注
-- 实现屏蔽功能
-- 实现图片黏贴发送功能
+- 增加markdown编辑器
 
 ### 技术栈
 - react
@@ -42,11 +30,7 @@
 |--imageSlide //存放图片信息，查看图片使用
 |--storageExpressions //存放表情包
 ```
-### 移动端效果展示
-
-机器人：
-
-![x1](./app/images/x1.jpg)
+### 效果展示
 
 登录&注册界面：
 
@@ -54,23 +38,27 @@
 
 菜单栏：
 
-![x3](./app/images/x3.png)
+![x3](./app/images/show-0.png)
 
-好友设置：
+个人面板：
 
-![x4](./app/images/x4.png)
+![x4](./app/images/show-4.png)
 
-个人设置：
+好友面板：
 
-![x5](./app/images/x5.png)
+![x4](./app/images/show-5.png)
+
+系统设置：
+
+![x5](./app/images/show-1.png)
 
 图片查看
 
-![x6](./app/images/news-1.png)
+![x6](./app/images/show-6.png)
 
 图片表情包
 
- ![x7](./app/images/news-2.png)
+ ![x7](./app/images/show-7.png)
 
 title提醒
 
