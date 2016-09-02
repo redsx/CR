@@ -44,21 +44,20 @@ app.use(function *(next){
   var start = new Date;
   yield next;
   var ms = new Date - start;
-  // console.log('%s %s - %s', this.method, this.url, ms);
+  console.log('%s %s - %s', this.method, this.url, ms);
 });
 
 app.use(require('koa-static')(__dirname + '/public'));
 
 // routes definition
 koa.use('/', index.routes(), index.allowedMethods());
-koa.use('/users', users.routes(), users.allowedMethods());
 // mount root routes  
-login(app,koa);
+// login(app,koa);
 app.use(koa.routes());
 onerror(app);
 app.on('error', function(err, ctx){
   console.log('err message:',err.message);
-  logger.error('server error', err, ctx);
+  // logger.error('server error', err, ctx);
 });
 
 module.exports = app;
