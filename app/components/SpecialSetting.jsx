@@ -3,80 +3,110 @@ import React, {PropTypes} from 'react'
 import Toggle from 'material-ui/Toggle'
 import Divider from 'material-ui/Divider'
 
-const styles = {
-    title: {
-        padding:'5px 0px 0px 20px'
-    },
-    divider: {
-        padding:'5px 20px'
-    },
-    item: {
-        paddingBottom:'6px'
-    }
-}
-
 class SpecialSetting extends React.Component{
     constructor(props){
         super(props);
+        this.state = {
+            codyMode: false
+        }
     }
-    handleShieldToggle(e,value){
+    handleSend(){
+        this.props.setUserCurRoom({
+            isPrivate: true,
+            curRoom: this.props.userInfo.get('nickname')
+        });
+    }
+    handleShield(){
+        let nickname = this.props.userInfo.get('nickname');
         this.props.setShieldUser({
-            user: this.props.nickname,
-            isAdd: value
+            isAdd: !this.props.shield.includes(nickname),
+            user: nickname
         });
         this.props.storageSetting();
     }
-    handleSpecialToggle(e,value){
+    handleSpecial(){
+        let nickname = this.props.userInfo.get('nickname');
         this.props.setSpecialUser({
-            user: this.props.nickname,
-            isAdd: value
+            isAdd: !this.props.special.includes(nickname),
+            user: nickname
         });
         this.props.storageSetting();
     }
     render(){
-        let { special, shield, nickname } = this.props;
-        let isNotSpecial = special.indexOf(nickname) === -1,
-            isNotShied = shield.indexOf(nickname) === -1;
+        let userInfo = this.props.userInfo.toJS();
+        let { special, shield } = this.props;
         return (
-            <div  data-flex = 'main:center dir:top'>
-                <div data-flex = 'main:left cross:left' style = {styles.title}>
-                    <span>提醒设置</span>
-                </div>
-                <div style = {styles.divider}>
-                    <Divider />                                                        
-                </div>
-                <div  data-flex = 'main:center'>
-                    <div data-flex = 'dir:top' data-flex-box = '0' style = {{paddingLeft:'20px'}}>
-                        <span data-flex = 'main:right' data-flex-box = '0' style = {styles.item}>屏蔽他的消息:</span>
-                        <span data-flex = 'main:right' data-flex-box = '0' style = {styles.item}>开启特别关注:</span>
+            <div className = 'info-card-setting'>
+                <div className = 'info-card-container'>
+                    <div  data-flex = 'main:center dir:top'>
+                        <dl data-flex = 'main:left cross:center'>
+                            <dt data-flex-box = '0'>昵称</dt>
+                            <dd data-flex-box = '1'>{userInfo.nickname}</dd>
+                        </dl>
+                        <dl data-flex = 'main:left cross:center'>
+                            <dt data-flex-box = '0'>性别</dt>
+                            <dd data-flex-box = '1'>{userInfo.sex}</dd>
+                        </dl>
+                        <dl data-flex = 'main:left cross:center'>
+                            <dt data-flex-box = '0'>邮箱</dt>
+                            <dd data-flex-box = '1' 
+                                onDoubleClick = {() => this.setState({codyMode: true})}
+                            >
+                                {
+                                    !this.state.codyMode?userInfo.email
+                                    : <input 
+                                        className = 'info-card-input'
+                                        defaultValue = {userInfo.email}
+                                        autoFocus = {true}
+                                        onBlur = {() => this.setState({codyMode: false})}
+                                    />
+                                }
+                            </dd>
+                        </dl>
+                        <dl data-flex = 'main:left cross:center'>
+                            <dt data-flex-box = '0'>签名</dt>
+                            <dd data-flex-box = '1'>{userInfo.info}</dd>
+                        </dl>
                     </div>
-                    <div data-flex = 'dir:top' data-flex-box = '1' style = {{paddingLeft:'15px'}}>
-                        <span data-flex = 'main:left' data-flex-box = '0' style = {styles.item}>
-                            <Toggle 
-                                defaultToggled = {!isNotShied}
-                                onToggle = {(e,v)=>{this.handleShieldToggle(e,v)}}
-                            />
+                </div>
+                <div className = 'info-card-footer'>
+                    <div data-flex = 'dir:left main:center cross:center box:mean' className = 'info-card-footer-ul'>
+                        <span 
+                            data-flex = 'main:center cross:center'
+                            data-flex-box='1' 
+                            className = 'info-card-footer-li'
+                            onClick = {() => this.handleSend()}
+                        >
+                           <span><i className = 'info-card-icon'>&#xe67f;</i>发消息</span>
                         </span>
-                        <span data-flex = 'main:left' data-flex-box = '0' style = {styles.item}>
-                            <Toggle 
-                                defaultToggled = {!isNotSpecial}
-                                onToggle = {(e,v)=>{this.handleSpecialToggle(e,v)}}
-                            />
+                        <span 
+                            data-flex = 'main:center cross:center'
+                            data-flex-box='1' 
+                            className = 'info-card-footer-li'
+                            onClick = {() => this.handleSpecial()}
+                        >
+                           <span>
+                                <i className = 'info-card-icon'>&#xe684;</i>
+                                {
+                                    special.includes(userInfo.nickname)?'取消关注':'特别关注'
+                                }
+                           </span>
+                        </span>
+                        <span 
+                            data-flex = 'main:center cross:center'
+                            data-flex-box='1' 
+                            className = 'info-card-footer-li'
+                            style = {{border: 0}}
+                            onClick = {() => this.handleShield()}
+                        >
+                           <span>
+                                <i className = 'info-card-icon'>&#xe686;</i>
+                                {
+                                    shield.includes(userInfo.nickname)?'取消屏蔽':'屏蔽TA'
+                                }
+                            </span>
                         </span>
                     </div>
-                </div>
-                <div data-flex = 'main:left cross:left' style = {styles.title} >
-                    <span>其他</span>
-                </div>
-                <div style = {styles.divider}>
-                    <Divider />                                                        
-                </div>
-                <div style = {{paddingLeft:'20px'}}>
-                    <span>
-                        1. 以上设置均为本地设置 <br/>
-                        2. shift+点击头像可@ <br/>
-                        3. shift+点击表情可删除表情
-                    </span>
                 </div>
             </div>
         )
@@ -84,9 +114,9 @@ class SpecialSetting extends React.Component{
 }
 
 SpecialSetting.propTypes = {
-    shield: PropTypes.array,
+    // shield: PropTypes.array,
     nickname: PropTypes.string,
-    special: PropTypes.array,
+    // special: PropTypes.array,
     setSpecialUser: PropTypes.func,
     setShieldUser: PropTypes.func,
     storageSetting: PropTypes.func

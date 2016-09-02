@@ -1,33 +1,17 @@
 import React, {PropTypes} from 'react'
-
+import pureMixin from '../mixin/pureMixin.js'
+import Immutable from 'immutable'
 import Avatar from '../containers/Avatar.js'
 
-const styles = {
-    messageContainer: {
-        width: '80%',
-        maxWidth: '980px',
-        padding: '10px 6px 0px 12px'
-    },
-    message:{
-        display: 'inline-block',
-        wordBreak: 'break-all',
-        textAlign: 'left',
-        padding: '2px 6px 2px 6px',
-        border: '1px solid #ccc',
-        borderRadius: '9px',
-        backgroud: 'white',
-        boxShadow: '0 0 0 2px #eee'
-    },
-    img: {
-        maxWidth: '100%'
-    }
-}
+import '../less/message.less'
+
 class Message extends React.Component{
     constructor(props){
         super(props);
+        this.shouldComponentUpdate = pureMixin.bind(this);
     }
     handleDbclick(){
-        let index = this.props.message.index,
+        let index = this.props.message.toJS().index,
             setSlideState = this.props.setSlideState,
             findSlideArr = this.props.findSlideArr;
             findSlideArr(index);
@@ -48,45 +32,47 @@ class Message extends React.Component{
         let regExp = /#\([\u4e00-\u9fa5a-z]+\)/g;
         text = text.replace(regExp, r => `<img src="images/expressions/${r.match(/[^#()]+/)[0]}.png" onerror="this.style.display=\'none\'"/>` );
         text = text.replace(regLink, r => `<a href="${r}" target="_blank">${r}</a>`);
-        // text = text.replace()
         return text
     }
+    // shouldComponentUpdate(nextProps){
+    //     if(!Immutable.is(this.props.message,nextProps.message)){
+    //         return true;
+    //     }
+    //     return false;
+    // }
     render(){
-        let { avatar, timestamp, content, nickname, type } = this.props.message;
+        let { avatar, timestamp, content, nickname, type } = this.props.message.toJS();
         let time = this.dealTimestamp(timestamp),
             text = type === 'textMessage' ? this.dealContent(content):'',
             dir = this.props.dir || 'left';
         return (
             <div data-flex={'dir:'+dir}>
-                <div data-flex={'dir:'+dir} data-flex-box = '0' style = {styles.messageContainer}>
-                    <div data-flex-box = '0' data-flex = 'main:top cross:top'>
+                <div data-flex={'dir:'+dir} data-flex-box = '0' className = 'message-container'>
+                    <div data-flex-box = '0' data-flex = 'main:top cross:top' className = 'avatar-container'>
                         <Avatar
                             src = {avatar}
                             size = {39}
                             nickname = {nickname}
+                            mode = {dir === 'left' ? 'menu':'profile'}
                         />
                     </div>
                     <div style = {{
-                        padding:'0 10px 10px 5px',
+                        padding:'0 10px',
                         textAlign:dir
                     }}>
-                        <span
-                            style = {{
-                                fontSize:'0.85rem',
-                                color:'#555'
-                            }}
-                        >
-                            {nickname+' '+time}
+                        <span className = 'nickname'>
+                            {nickname + ' '+time}
                         </span>
-                        <div>
+                        <div className = 'message'>
                              {
                                  type === 'textMessage' ?
-                                 <span style = {styles.message} dangerouslySetInnerHTML={ {__html: text}}></span>
-                                 :<span style = {styles.message}> 
+                                 <span  dangerouslySetInnerHTML={ {__html: text}}></span>
+                                 :<span>
                                     <img src ={content} onClick = {()=>{this.handleDbclick()}} className = 'imageMessage'/>
                                   </span>
                              }
-                             
+                             <div className = {dir === 'left' ? 'triangle-left-outer' : 'triangle-right-outer'}></div>
+                             <div className = {dir === 'left' ? 'triangle-left-inner' : 'triangle-right-inner'}></div>
                         </div>
                     </div>
                 </div>
@@ -96,7 +82,7 @@ class Message extends React.Component{
 }
 
 Message.propType = {
-    message: PropTypes.object,
+    // message: PropTypes.object,
     dir: PropTypes.string,
     setSlideState: PropTypes.func,
     findSlideArr: PropTypes.func

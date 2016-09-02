@@ -11,71 +11,8 @@ import Setting from '../containers/Setting.js'
 import SpecialSetting from '../containers/SpecialSetting.js'
 import Drag from './Drag.jsx'
 
-const styles = {
-    box: {
-        position:'relative',
-        // top:'50%',
-        // left:'50%',
-        // marginTop:'-175px',
-        // marginLeft:'-145px',
-        width: '290px',
-        height:'350px',
-        margin: '10px',
-        boxShadow: '0px 0px 10px #777',
-        borderRadius: '5px'
-    },
-    header: {
-        width: '100%',
-        height:'145px',
-        background: 'url(http://oajmk96un.bkt.clouddn.com/bg1000'+ Math.floor((Math.random()*1024)%5)+'.jpg) no-repeat center'
-    },
-    container:{
-        width: '100%',
-        background: 'white',
-        paddingTop: '5px',
-        height: '205px',
-        overflow: 'visible',
-        overflowX: 'scroll',
-        color: '#666'
-    },
-    headLeft: {
-        height: '100%',
-        color: 'white',
-        textAlign: 'center',
-        paddingLeft: '35px',
-        paddingTop: '35px'
-    },
-    headRight: {
-        paddingTop: '20px', 
-        position: 'relative',       
-        height: '100%',
-    },
-    containLeft:{
-        paddingLeft: '15px'
-    },
-    closeBtn: {
-        position: 'absolute',
-        left: '-10px',
-        top: '-10px'
-    },
-    smallIcon: {
-        width: 16,
-        height: 16,
-        background: 'rgba(119, 119, 119, 0.35)',
-        borderRadius:'50%'
-    },
-    avatar: {
-        border: '1px solid #ddd'
-    },
-    inputFile: {
-        position: 'absolute',
-        width: '63px',
-        height: '63px',
-        borderRadius: '50%',
-        opacity: '0',
-        left: '5px'
-    }
-}
+import '../less/infocard.less'
+
 class InfoCard extends React.Component{
     constructor(props){
         super(props);
@@ -86,6 +23,7 @@ class InfoCard extends React.Component{
             formdata = new FormData(),
             user = this.props.user,
             setUserInfo = this.props.setUserInfo,
+            getUserInfo = this.props.getUserInfo,
             hiddenInfoCard = this.props.hiddenInfoCard,
             isImgReg = /image\/\w+/;
         if(!imgFile || !isImgReg.test(imgFile.type)){
@@ -99,9 +37,8 @@ class InfoCard extends React.Component{
                 .then((resault)=>{
                     if(resault.code === 'success'){
                         let url = resault.data.url;
-                        console.log('change avatar:',url);
                         return changeAvatar({
-                            nickname: user.nickname,
+                            nickname: user,
                             avatar: url
                         })
                     } else{
@@ -110,62 +47,35 @@ class InfoCard extends React.Component{
                 }).then((resault)=>{
                     return setUserInfo(resault);
                 }).then(()=>{
-                    hiddenInfoCard();
+                    getUserInfo(user);
                 }).catch((err)=>{
                     alert('图片上传失败，请重试');
                     hiddenInfoCard();
                 })
             }
         }
-        // if(!imgFile || !isImgReg.test(imgFile.type)){
-        //     console.log('imgFile is not image');
-        // } else{
-        //     let fileReader = new FileReader();
-        //     fileReader.readAsDataURL(imgFile);
-        //     fileReader.onload = function (event) {
-        //         var imgDataUrl = event.target.result;
-        //         changeAvatar({
-        //             nickname: user.nickname,
-        //             imageData: imgDataUrl,
-        //             filename: imgFile.name
-        //         }).then((resault)=>{
-        //             return setUserInfo(resault);
-        //         }).then(()=>{
-        //             hiddenInfoCard();
-        //         })
-        //     }
-        //     fileReader.onerror =function (err) {
-        //         console.log(err);
-        //     }
-        // }
+        
     }
     renderInfoCard(){
-        let { nickname, avatar, time, isShow } = this.props.infoCardState;
-        let canChangeInfo = this.props.user.nickname === nickname;
+        let { nickname, avatar, time, isShow } = this.props.infoCardState.toJS();
+        let canChangeInfo = this.props.user === nickname;
         return !isShow?null:(
                 <div
-                    style = {styles.box}
+                    className = 'info-card-box'
                     data-flex = 'main:center cross:center dir:top'
                 >
-                    <div style = {styles.closeBtn}>
-                        <IconButton 
-                            iconStyle = {styles.smallIcon}
-                            onClick = {()=>{
-                                this.props.hiddenInfoCard()
-                            }}
-                        >
-                            <ContentClear color = '#ddd'/>
-                        </IconButton>
+                    <div className = 'info-card-close-btn' onClick = {()=>this.props.hiddenInfoCard()}>
+                        <i className = 'info-card-close-icon'>&#xe672;</i>
                     </div>
                     <div
                         data-flex = 'main:center cross:center'
                         data-flex-box = '0'
-                        style = {styles.header}
+                        className = 'info-card-header'
                     >
                         <div
                             data-flex = 'main:top cross:top dir:top'
                             data-flex-box = '2'
-                            style = {styles.headLeft}
+                            className = 'info-card-head-left'
                         >
                             
                             <h2>{nickname}</h2>
@@ -174,31 +84,30 @@ class InfoCard extends React.Component{
                         <div
                             data-flex = 'main:center cross:top'
                             data-flex-box = '1'
-                            style = {styles.headRight}
+                            className = 'info-card-head-right'
                         >
                             <Avatar 
-                                src={avatar} 
+                                src = {avatar} 
                                 size = {65}
                                 nickname = {nickname}
-                                style = {styles.avatar}
+                                mode = ''
+                                className = 'info-card-avatar'
                             />
                             {
-                                canChangeInfo?<input style={styles.inputFile} type='file' onChange = {(e)=>{this.handleChange(e)}}/> : null
+                                canChangeInfo?<input className = 'info-card-input-file' type='file' onChange = {(e)=>{this.handleChange(e)}}/> : null
                             }
                         </div>
                     </div>
-                    <div
-                        style = {styles.container}
-                    >
-                        { canChangeInfo ? <Setting/> : <SpecialSetting nickname = {nickname}/> }
-                    </div>
+                    {
+                        canChangeInfo? <Setting userInfo = {this.props.infoCardState}/> : <SpecialSetting userInfo = {this.props.infoCardState}/>
+                    }
                 </div>
             )
     }
     render(){
-        let isShow = this.props.infoCardState.isShow,
-            y = Math.round(window.innerHeight/2) - 185,
-            x = Math.round(window.innerWidth/2) - 155;
+        let isShow = this.props.infoCardState.toJS().isShow,
+            y = Math.round(window.innerHeight/2) - 200,
+            x = Math.round(window.innerWidth/2) - 165;
         return !isShow?null:(
                 <Drag
                     x = {x}
@@ -212,10 +121,10 @@ class InfoCard extends React.Component{
 }
 
 InfoCard.propTypes = {
-    infoCardState: PropTypes.object,
+    // infoCardState: PropTypes.object,
     hiddenInfoCard: PropTypes.func,
     setUserInfo: PropTypes.func,
-    user: PropTypes.object
+    // user: PropTypes.object
 }
 
 export default InfoCard;

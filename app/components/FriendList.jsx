@@ -9,55 +9,29 @@ import Divider from 'material-ui/Divider'
 
 import QueueAnim from 'rc-queue-anim'
 
+import '../less/friendlist.less'
 
-const styles = {
-    ul:{
-        display: 'block',
-        paddingLeft: '10px',
-        margin: '0px'
-    },
-    li:{
-        listStyle: 'none',
-        marginTop: '9px',
-        paddingBottom: '5px',
-        borderBottom: 'solid 1px #E8E1E1'
-    },
-    span:{
-        paddingLeft: '10px',
-        color: '#666',
-        cursor: 'pointer',
-        whiteSpace: 'nowrap',
-        textOverflow: 'ellipsis'
-    },
-    hr: {
-        lineHeight: '38px',
-        paddingTop: '10px',
-        fontSize: '15px'
-    },
-    notification:{
-        textAlign: 'center',
-        marginRight: '5px',
-        width: '21px',
-        height: '21px',
-        background: 'rgba(255, 80, 71, 0.98)',
-        borderRadius: '50%',
-        color: 'white',
-    }
-}
 
 class FriendList extends React.Component{
     constructor(props){
         super(props);
     }
+    closeMenu(){
+        if(window.innerWidth < 768){
+            this.props.setMenuState(true);
+        }
+    }
     renderOnlineList(){
-        let { onlineUsers, setUserCurRoom, clearCount, badgeCount, nickname, setScrollState } = this.props;
+        let { setUserCurRoom, clearCount , nickname, setScrollState } = this.props;
+        let onlineUsers = this.props.onlineUsers.toJS(),
+            badgeCount = this.props.badgeCount.toJS();
         let list = [];
         for(let item in onlineUsers){
             let user = onlineUsers[item];
             if(user.isOnline > 0 && user.nickname !== nickname){
                 list.push(
                     <li
-                        style = {styles.li}
+                        className = 'li'
                         key = {item}
                         data-flex = 'main:center box:first'
                     >
@@ -65,6 +39,7 @@ class FriendList extends React.Component{
                             src = {user.avatar}
                             size = {39}
                             nickname = {user.nickname}
+                            mode = 'profile'
                         />
                         <div
                             data-flex = 'main:left cross:center box:last'
@@ -75,10 +50,11 @@ class FriendList extends React.Component{
                                     });
                                     clearCount(user.nickname);
                                     setScrollState(true);
+                                    this.closeMenu();
                                 }}
                         >
                             <span
-                                style = {styles.span}
+                                className = 'span'
                                 data-flex-box = '2'
                             >
                                 {user.nickname}
@@ -86,7 +62,7 @@ class FriendList extends React.Component{
                             {
                                 badgeCount[user.nickname] ?
                                 <span
-                                    style = {styles.notification}
+                                    className = 'fl-notification'
                                 >
                                     {badgeCount[user.nickname]}                                    
                                 </span>
@@ -101,20 +77,23 @@ class FriendList extends React.Component{
     }
     renderRoomList(){
         let list = this.renderOnlineList();
-        let { setUserCurRoom, clearCount, badgeCount, setScrollState } = this.props;
+        let { setUserCurRoom, clearCount, setScrollState } = this.props;
+        let badgeCount = this.props.badgeCount.toJS();
+        
         let  room = {};
         room.avatar = 'http://oajmk96un.bkt.clouddn.com/hdImg_6e40281f541d24709f2840adc72631a61469706694782.jpg';
         room.name = 'MDZZ'
         list.unshift(
             <li
                 key = {room.name}
-                style = {styles.li}
+                className = 'li'
                 data-flex = 'main:center box:first'
             >
                 <Avatar 
                     src = {room.avatar}
                     size = {39}
                     nickname = ''
+                    mode = ''
                 />
                 <div
                     data-flex = 'main:left cross:center box:last'
@@ -125,10 +104,11 @@ class FriendList extends React.Component{
                             });
                             clearCount(room.name);
                             setScrollState(true);
+                            this.closeMenu()
                         }}
                 >
                     <span 
-                        style = {styles.span}
+                        className = 'span'
                         data-flex-box = '2'
                     >
                         {room.name}
@@ -136,7 +116,7 @@ class FriendList extends React.Component{
                     {
                         badgeCount[room.name] ?
                         <span
-                            style = {styles.notification}
+                            className = 'fl-notification'
                         >
                             {badgeCount[room.name]}                                    
                         </span>
@@ -151,25 +131,13 @@ class FriendList extends React.Component{
         let isShowRoom = this.props.isShowRoom;
         let list = isShowRoom ? this.renderRoomList() : this.renderOnlineList();
         return (
-            <div
-                style = {{
-                    height:'100%',
-                }}
-            >
-                <Subheader
-                    style = {styles.hr}
-                >
-                    {isShowRoom?'真正搅基...':'在线玩家'}
+            <div style = {{ height:'100%'}}>
+                <Subheader className = 'hr'>
+                    {isShowRoom?'活跃用户':'在线用户'}
                 </Subheader>
                 <Divider />
-                <div
-                    style = {{
-                        height:'90%',
-                        overflowY:'scroll',
-                        overflowX:'hidden'
-                    }}
-                >
-                    <ul style = {styles.ul}>
+                <div className = 'list-box'>
+                    <ul className = 'ul'>
                         <QueueAnim>
                         {list}
                         </QueueAnim>
@@ -180,11 +148,11 @@ class FriendList extends React.Component{
     }
 }
 FriendList.propTypes = {
-    onlineUsers: PropTypes.object,
+    // onlineUsers: PropTypes.object,
     setUserCurRoom: PropTypes.func,
     clearCount: PropTypes.func,
     setScrollState: PropTypes.func,
-    badgeCount: PropTypes.object,
+    // badgeCount: PropTypes.object,
     nickname: PropTypes.string,
     isShowRoom: PropTypes.bool
 }

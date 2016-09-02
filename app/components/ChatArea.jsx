@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react'
+import Immutable from 'immutable'
 
 import HeadBar from '../containers/HeadBar.js'
 import InputArea from '../containers/InputArea.js'
@@ -37,27 +38,33 @@ class ChatArea extends React.Component {
         })
     }
     componentWillReceiveProps(nextProps){
-        if(this.props.onlineUsers != nextProps.onlineUsers){
+        if(!Immutable.is(this.props.onlineUsers,nextProps.onlineUsers)){
             this.setState({needScroll:false});
         } else{
             this.setState({needScroll:true});
         }
     }
     shouldComponentUpdate(nextProps,nextState){
-        if(this.props != nextProps){
+        let user = this.props.user.toJS(),
+            isChange = user.isPrivate ?
+            !Immutable.is(this.props.privateMessages.get(user.curRoom),nextProps.privateMessages.get(user.curRoom)) 
+            : !Immutable.is(this.props.messages.get(user.curRoom),nextProps.messages.get(user.curRoom));
+        if(!Immutable.is(this.props.user,nextProps.user) || !Immutable.is(this.props.onlineUsers,nextProps.onlineUsers) || isChange){
             return true;
         }
         return false;
     }
-    componentDidUpdate(){ 
-        let { user, isNeedScroll, setScrollState } = this.props;
+    componentDidUpdate(){
+        let user = this.props.user.toJS(),
+            isNeedScroll = this.props.isNeedScroll,
+            setScrollState = this.props.setScrollState;
         let lastMessage,
             imglist,
             lastChild,
             childHeight,
             willScroll = true,
             preScroll = this.state.preScroll,
-            messages = user.isPrivate?this.props.privateMessages:this.props.messages,
+            messages = user.isPrivate ? this.props.privateMessages.toJS() : this.props.messages.toJS(),
             messageArea = this.refs.messageArea,
             gif = this.refs.gif,
             needScroll = this.state.needScroll;
@@ -99,8 +106,9 @@ class ChatArea extends React.Component {
         }
     }
     render(){
-        let { user, onlineUsers } = this.props;
-        let messages = user.isPrivate?this.props.privateMessages:this.props.messages;
+        let user = this.props.user.toJS(),
+            onlineUsers = this.props.onlineUsers.toJS();
+        let messages = user.isPrivate ? this.props.privateMessages.toJS() : this.props.messages.toJS();
         messages = messages[user.curRoom] || [];
         return (
             <div data-flex = 'dir:top '>
@@ -110,7 +118,8 @@ class ChatArea extends React.Component {
                     <HeadBar />
                 </div>
                 <div data-flex-box = '8' ref = 'messageArea' style = {{
-                    overflowY:'scroll'
+                    overflowY: 'scroll',
+                    paddingBottom: '20px'
                 }}>
                     <div ref = 'gif' style = {styles.tooltipBox} >
                         <Drag 
@@ -138,14 +147,14 @@ class ChatArea extends React.Component {
                                 case 'imageMessage':
                                 case 'textMessage': {
                                     if(onlineUsers[item.nickname]){
-                                        let message = {
+                                        let message = Immutable.fromJS({
                                             nickname: onlineUsers[item.nickname].nickname,
                                             avatar: onlineUsers[item.nickname].avatar,
                                             timestamp: item.timestamp,
                                             content: item.content,
                                             type: item.type,
                                             index: index
-                                        }
+                                        })
                                         let dir = user.nickname === item.nickname ? 'right' : 'left';
                                         return <Message message = {message} dir = {dir} key = {index} />
                                     }
@@ -174,10 +183,10 @@ class ChatArea extends React.Component {
 }
 ChatArea.propTypes = {
     setScrollState: PropTypes.func,
-    messages: PropTypes.object,
-    privateMessages: PropTypes.object,
-    user: PropTypes.object,
-    onlineUsers: PropTypes.object,
+    // messages: PropTypes.object,
+    // privateMessages: PropTypes.object,
+    // user: PropTypes.object,
+    // onlineUsers: PropTypes.object,
     isNeedScroll: PropTypes.bool
 }
 export default ChatArea;

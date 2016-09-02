@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import { Link } from 'react-router'
 
 import IconButton from 'material-ui/IconButton'
 import FontIcon from 'material-ui/FontIcon'
@@ -12,25 +13,8 @@ import Person from 'material-ui/svg-icons/social/person.js'
 
 import Avatar from '../containers/Avatar.js'
 
-
-
-const styles = {
-    container:{
-        width:'60px',
-    },
-    iocnUl: {
-        dispaly:'block',
-        padding: '0px',
-        paddingBottom:'50px'
-    },
-    iconList: {
-        dispaly:'block',
-        listStyle: 'none',
-    },
-    avatar: {
-        marginTop:'20px'
-    },
-}
+import { logout } from '../actions'
+import '../less/selfinfo.less'
 
 class SelfInfo extends React.Component{
     constructor(props){
@@ -39,71 +23,53 @@ class SelfInfo extends React.Component{
     handleClick(value){
         this.props.setListShow(value);
     }
-    handleLogout(){
-        delete localStorage.token;
-        window.location = '/login';
+    handleSettingClick(){
+        this.props.setSystemSettingState(true);
+        if(window.innerWidth < 768){
+            this.props.setMenuState(true);
+        }
     }
     render(){
-        let { avatar, nickname } = this.props.user;
+        let { avatar, nickname } = this.props.user.toJS();
         return (
             <div
                 data-flex = 'main:center cross:center dir:top '
-                style = {styles.container}
+                className = 'selfinfo-container'
             >
-                <div data-flex-box = '1' style = {styles.avatar}>        
+                <div data-flex-box = '1' className = 'selfinfo-avatar'>        
                     <Avatar 
                         src={avatar}
                         size = {50}
                         nickname = {nickname}
+                        mode = 'profile'
                     />
                 </div>
-                <div style = {styles.iconBox} data-flex-box = '3'>
-                <ul style = {styles.iocnUl}>
-                    <li style = {styles.iconList}>
-                    <a>
-                        <IconButton
-                            onClick = {()=>{this.handleClick(false)}}
-                        >
-                        <Person color = {'white'} />
-                        </IconButton> 
-                    </a>
+                <div data-flex-box = '3'>
+                <ul className = 'selfinfo-icon-ul'>
+                    <li className = 'selfinfo-icon-list' onClick = {()=> this.handleClick(false)}>
+                        <i className = 'selfinfo-icon'>&#xe68c;</i>
                     </li>
-                <li style = {styles.iconList}>
-                    <a>
-                        <IconButton
-                            onClick = {()=>{this.handleClick(true)}}
-                        >
-                        <Textsms color = {'white'} />
-                        </IconButton> 
-                    </a>
+                    <li className = 'selfinfo-icon-list' onClick = {() => this.handleClick(true)}>
+                        <i className = 'selfinfo-icon'>&#xe67f;</i>
+                    </li>
+                    <li className = 'selfinfo-icon-list' onClick = {() => this.handleSettingClick()} >
+                        <i className = 'selfinfo-icon'>&#xe693;</i>
                     </li>
                 </ul>
                 </div>
-                <div style = {styles.iconBox} data-flex-box = '2' data-flex = 'dir:bottom'>
-                <ul style = {styles.iocnUl}>
-                    <li style = {styles.iconList}>
-                    <a onClick = {()=>{this.handleLogout()}}>
-                        <IconButton>
-                        <Logout color = {'white'} />
-                        </IconButton> 
-                    </a>
+                <div data-flex-box = '2' data-flex = 'dir:bottom'>
+                <ul className = 'selfinfo-icon-ul'>
+                    <li className = 'selfinfo-icon-list' onClick = {()=>logout()}>
+                        <i className = 'selfinfo-icon'>&#xe67b;</i>
                     </li>
-                    <li style = {styles.iconList}>
-                            <a href = 'http://blog.mdzzapp.com/#/article/纪录cr聊天室开发?_k=ey6sdw' target = '_blank'>
-                                <IconButton>
-                                <CommunicationEmail color = {'white'} />
-                                </IconButton> 
-                            </a>
+                    <li className = 'selfinfo-icon-list'>
+                        <a href = 'http://blog.mdzzapp.com/#/article/纪录cr聊天室开发?_k=ey6sdw' target = '_blank'>
+                            <i className = 'selfinfo-icon'>&#xe68e;</i>
+                        </a>
                     </li>
-                    <li style = {styles.iconList}>
+                    <li className = 'selfinfo-icon-list'>
                         <a href = 'https://github.com/redsx/CR' target = '_blank'>
-                            <IconButton
-                            >
-                            <FontIcon 
-                                    className = 'muidocs-icon-custom-github'
-                                    color = 'white'
-                                />
-                            </IconButton>
+                            <i className = 'selfinfo-icon' style = {{fontWeight: '900'}}>&#xe692;</i>
                         </a>
                     </li>
                 </ul>
@@ -115,7 +81,7 @@ class SelfInfo extends React.Component{
 
 
 SelfInfo.propType = {
-    user: PropTypes.object,
+    // user: PropTypes.object,
     setListShow: PropTypes.func
 }
 

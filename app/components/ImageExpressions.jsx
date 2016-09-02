@@ -85,7 +85,7 @@ class ImageExpressions extends React.Component{
             isImgReg = /image\/\w+/,
             show = this.refs.show,
             formdata = new FormData(),
-            user = this.props.user,
+            user = this.props.user.toJS(),
             addMessage = this.props.addMessage,
             addPrivateMessage = this.props.addPrivateMessage;
         if(!imgFile || !isImgReg.test(imgFile.type)){
@@ -187,7 +187,7 @@ class ImageExpressions extends React.Component{
     handleClick(e,src){
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
-        let user = this.props.user,
+        let user = this.props.user.toJS(),
             addMessage = this.props.addMessage,
             addPrivateMessage = this.props.addPrivateMessage,
             deleteStorageExpression = this.props.deleteStorageExpression;
@@ -208,7 +208,7 @@ class ImageExpressions extends React.Component{
         e.nativeEvent.stopImmediatePropagation();
     }
     renderExpressionList(){
-        let exps = this.props.storageExpressions,
+        let exps = this.props.storageExpressions.toJS(),
             expArr = [];
         for(let i = 0; i < exps.length; i++){
             expArr.push(
@@ -260,8 +260,17 @@ class ImageExpressions extends React.Component{
         }
         
     }
+    handleClose(){
+        let setImageExpState = this.props.setImageExpState,
+            isShowImageExp = this.props.isShowImageExp;
+        if(isShowImageExp){
+                setImageExpState(false);
+        }
+    }
     componentDidMount(){
-        let setImageExpState = this.props.setImageExpState;
+        let setImageExpState = this.props.setImageExpState,
+            isShowImageExp = this.props.isShowImageExp;
+        
         // document.addEventListener('dragleave',(e)=>e.preventDefault());
         // document.addEventListener('dragenter',(e)=>e.preventDefault());
         // document.addEventListener('dragover',(e)=>e.preventDefault());
@@ -270,12 +279,12 @@ class ImageExpressions extends React.Component{
         //     let files = e.dataTransfer.files || [];
         //     this.uploadImage(files);
         // });
-        document.addEventListener('click',(e)=>{
-            setImageExpState(false);
+        document.addEventListener('click',()=>{
+            this.handleClose();
         },false)
     }
     render(){
-        let { isShowImageExp } = this.props;
+        let isShowImageExp = this.props.isShowImageExp;
         return (
             <div 
                 ref = 'select' 
@@ -326,9 +335,9 @@ class ImageExpressions extends React.Component{
     }
 }
 ImageExpressions.propTypes = {
-    user: PropTypes.object,
+    // user: PropTypes.object,
     isShowImageExp: PropTypes.bool,
-    storageExpressions: PropTypes.array,
+    // storageExpressions: PropTypes.array,
     addPrivateMessage: PropTypes.func,
     deleteStorageExpression: PropTypes.func
 }

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
-
 import TweenOne from 'rc-tween-one'
+import '../less/expressions.less'
 
 const expressions = ['呵呵', '哈哈', '吐舌', '啊', '酷', '怒', '开心', '汗', '泪', '黑线',
                      '鄙视', '不高兴', '真棒', '钱', '疑问', '阴险', '吐', '咦', '委屈', '花心', 
@@ -26,14 +26,6 @@ const styles = {
         marginLeft: '1px',
         fontSize: '0px',
         lineHeight: '0px',
-    },
-    sc: {
-        width:'80px',
-        height:'80px',
-        padding:'5px',
-        borderCollapse:'collapse',
-        fontSize:'0px',
-        display:'inline-block'
     },
     expression: {
         width:'40px',
@@ -62,13 +54,12 @@ class Expressions extends React.Component{
             return (
                 <div
                     key = {index}
-                    style = {styles.expression}
+                    className = 'expressions'
                     onClick = {()=>{this.handleClick(item)}}
                 >
                     <div
+                        className = 'expression'
                         style = {{
-                            width:'30px',
-                            height:'30px',
                             background:'url("./images/expressions.png") 0px '+ (-index)*30 + 'px no-repeat'
                         }}
                     ></div>
@@ -77,17 +68,17 @@ class Expressions extends React.Component{
         })
     }
     render(){
+        let { paused, reverse, moment } = this.props.expressionState.toJS();
         return (
             <TweenOne
                 animation = {[{ scale: 1, duration: 10 },{ y: 50, opacity: 1, duration: 300 }]}
-                paused = {this.props.paused}
-                reverse = {this.props.reverse}
-                moment = {this.props.moment}
+                paused = {paused}
+                reverse = {reverse}
+                moment = {moment}
                 style = {styles.animationBox}
-                className = 'expression'
             >
             <div 
-                style = {styles.expressionsBox}
+                className = 'expressionsBox'
             >
                 {this.renderExpressions()}
             </div>

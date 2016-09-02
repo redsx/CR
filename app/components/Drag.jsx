@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react'
+import Immutable from 'immutable'
 
 class Drag extends React.Component{
     constructor(props){
@@ -8,44 +9,6 @@ class Drag extends React.Component{
             y:this.props.y,
         }
     }
-    // handleDown(e){
-    //     this.setState({
-    //         offsetX: e.nativeEvent.offsetX,
-    //         offsetY: e.nativeEvent.offsetY,
-    //         isDown: true
-    //     });
-    // }
-    // handleMove(e){
-    //     if(this.state.isDown){
-    //         let pageX = e.pageX,
-    //             pageY = e.pageY;
-    //         this.setState({
-    //             x: pageX - this.state.offsetX,
-    //             y: pageY - this.state.offsetY
-    //         })
-    //     }
-    // }
-    // handleTouchStart(e){
-    //     let pageX = e.nativeEvent.touches[0].pageX,
-    //         pageY = e.nativeEvent.touches[0].pageY,
-    //         x = this.props.x,
-    //         y = this.props.y;
-    //     this.setState({
-    //         offsetX: pageX - x,
-    //         offsetY: pageY - y,
-    //         isDown: true
-    //     });
-    // }
-    // handleTouchMove(e){
-    //     if(this.state.isDown){
-    //         let pageX = e.nativeEvent.touches[0].pageX,
-    //             pageY = e.nativeEvent.touches[0].pageY;
-    //         this.setState({
-    //             x: pageX - this.state.offsetX,
-    //             y: pageY - this.state.offsetY
-    //         })
-    //     }
-    // }
     handleDragStart(e){
         e.target.style.opacity = 0;
         this.setState({

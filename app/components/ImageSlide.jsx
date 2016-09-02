@@ -6,58 +6,9 @@ import FontIcon from 'material-ui/FontIcon'
 import ArrowBack from 'material-ui/svg-icons/content/font-download.js'
 import ArrowForward from 'material-ui/svg-icons/navigation/chevron-right.js'
 
-const styles = {
-    imageContent: {
-        position: 'fixed',
-        width: '100%',
-        height: '100%',
-        zIndex:'998',
-        overflow: 'scroll',
-        background: 'rgba(0,0,0,0.7)'
-    },
-    image: {
-        position: 'relative',
-        maxWidth: '100%',
-        margin: 'auto',
-        textAlign: 'center',
-        overflow: 'visible',
-    },
-    menu: {
-        position: 'fixed',
-        left: '50%',
-        bottom: '60px',
-        marginLeft: '-125px',
-        padding: '0 10px',
-        width: '260px',
-        height: '45px',
-        borderRadius: '20px',
-        background: 'rgba(8, 8, 8, 0.52)'
-    },
-    icon: {
-        fontFamily: 'iconfont',
-        color: '#BDBDBD',
-        fontSize: '1.5rem',
-        width: '40px',
-        height: '45px',
-        textAlign: 'center',
-        lineHeight: '45px',
-        cursor: 'pointer'
-    },
-    arrowBack: {
-        position: 'absolute',
-        top: '50%',
-        marginTop: '-64px',
-        left: '-6rem',
-        zIndex: '1'
-    },
-    arrowForward: {
-        position: 'absolute',
-        top: '50%',
-        marginTop: '-64px',
-        right: '-6rem',
-        zIndex: '1'
-    }
-}
+import '../less/imageslide.less'
+
+
 class ImageSlide extends React.Component{
     constructor(props){
         super(props);
@@ -80,23 +31,28 @@ class ImageSlide extends React.Component{
         this.setState({zoom:100});
     }
     handleStorage(){
-        let { imageSlide, addStorageExpression, storageSetting, deleteStorageExpression, expressions } = this.props;
+        let { addStorageExpression, storageSetting, deleteStorageExpression } = this.props;
+        let imageSlide = this.props.imageSlide.toJS(),
+            expressions = this.props.expressions.toJS();
         expressions.indexOf(imageSlide.slideArr[1].image) === -1 ? 
         addStorageExpression(imageSlide.slideArr[1].image)
         :deleteStorageExpression(imageSlide.slideArr[1].image);
         storageSetting();
     }
     render(){
-        let { isShowSlide, slideArr } = this.props.imageSlide,
-            expressions = this.props.expressions;
+        let { isShowSlide, slideArr } = this.props.imageSlide.toJS(),
+            expressions = this.props.expressions.toJS();
         return !isShowSlide? null : (
             <div 
                 ref = 'content' 
-                style = {styles.imageContent} 
+                className = 'imageContent'
                 onClick = {(e)=>{this.handleClick(e)}} 
                 data-flex = 'main:center cross:center'
             >
-                <div style = {styles.image} >   
+                <div className = 'image-slide-close-btn' onClick = {(e)=>this.props.setSlideState(false)}>
+                    <i className = 'image-slide-close-icon'>&#xe674;</i>
+                </div>
+                <div className = 'image'>   
                     <img src = {slideArr[1].image} style = {{
                         overflow:'visible',
                         display: 'block',
@@ -107,56 +63,61 @@ class ImageSlide extends React.Component{
                 </div>
                 <div
                     data-flex = 'center:main box:mean'
-                    style = {styles.menu}
+                    className = 'menu'
                 >
-                    <div data-flex = 'main:center cross center' data-flex-box = '1' style = {styles.icon}>
-                        <span 
+                    <div data-flex = 'main:center cross center' data-flex-box = '1' className = 'image-slide-icon'>
+                        <i 
                             onClick = {slideArr[0] === -1 ? null : ()=>this.handleSwitch('pre')}
+                            className = 'image-slide-icon'
                             style = {{
                                 color: slideArr[0] === -1 ? '#666' : '#BDBDBD'
                             }}
                         >
                             &#xe618;
-                        </span>
+                        </i>
                     </div>
-                    <div data-flex = 'main:center cross center' data-flex-box = '1' style = {styles.icon}>
-                        <span
+                    <div data-flex = 'main:center cross center' data-flex-box = '1' className = 'image-slide-icon'>
+                        <i
+                            className = 'image-slide-icon'
                             onClick = {()=>this.setState({zoom:this.state.zoom+10})}
                         >
                             &#xe623;
-                        </span>
+                        </i>
                     </div>
-                    <div data-flex = 'main:center cross center' data-flex-box = '1' style = {styles.icon}>
-                        <span
+                    <div data-flex = 'main:center cross center' data-flex-box = '1' className = 'image-slide-icon'>
+                        <i
+                            className = 'image-slide-icon'
                             onClick = {()=>this.setState({zoom:this.state.zoom-10})}
                         >
                             &#xe622;
-                        </span>
+                        </i>
                     </div>
-                    <div data-flex = 'main:center cross center' data-flex-box = '1' style = {styles.icon}>
-                        <span
+                    <div data-flex = 'main:center cross center' data-flex-box = '1' className = 'image-slide-icon'>
+                        <i
                             onClick = {()=>this.handleStorage()}
+                            className = 'image-slide-icon'
                             style = {{
-                                color: expressions.indexOf(slideArr[1].image) === -1?'#BDBDBD':'#FFC809'
+                                color: expressions.indexOf(slideArr[1].image) === -1?'#BDBDBD':'rgb(245, 182, 30)'
                             }}
                         >
                             &#xe62e;
-                        </span>
+                        </i>
                     </div>
-                    <div data-flex = 'main:center cross center' data-flex-box = '1' style = {styles.icon}>
+                    <div data-flex = 'main:center cross center' data-flex-box = '1' className = 'image-slide-icon'>
                         <a href = {slideArr[1].image} target = '_blank'>
-                            <span style = {styles.icon}>&#xe636;</span>
+                            <i className = 'image-slide-icon' >&#xe636;</i>
                         </a>
                     </div>
-                    <div data-flex = 'main:center cross center' data-flex-box = '1' style = {styles.icon}>
-                        <span
+                    <div data-flex = 'main:center cross center' data-flex-box = '1' className = 'image-slide-icon'>
+                        <i
                             onClick = {slideArr[2] === -1 ? null : ()=>this.handleSwitch('next')}
+                            className = 'image-slide-icon'
                             style = {{
                                 color: slideArr[2] === -1 ? '#666' : '#BDBDBD'
                             }}
                         >
                             &#xe617;
-                        </span>
+                        </i>
                     </div>
                 </div>
             </div>
@@ -164,12 +125,12 @@ class ImageSlide extends React.Component{
     }
 }
 ImageSlide.propTypes = {
-    imageSlide: PropTypes.object,
+    // imageSlide: PropTypes.object,
     switchImage: PropTypes.func,
     setSlideState: PropTypes.func,
     storageSetting: PropTypes.func,
     addStorageExpression: PropTypes.func,
     deleteStorageExpression: PropTypes.func,
-    expressions: PropTypes.array
+    // expressions: PropTypes.array
 }
 export default ImageSlide;

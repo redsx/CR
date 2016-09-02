@@ -1,7 +1,8 @@
 import React, {PropTypes} from 'react'
 import Immutable from 'immutable'
+import marked from 'marked'
 
-import '../less/inputarea.less'
+import '../less/inputareaM.less'
 
 import { sendMessage, sendPrivateMessage, sendImage } from '../actions'
 import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../actions/ajax.js'
@@ -10,6 +11,10 @@ import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../actions/ajax.js'
 class InputArea extends React.Component{
     constructor(props){
         super(props);
+        this.state = {
+            isPreView: false,
+            inputValue: ''
+        }
     }
     componentWillReceiveProps(nextProps){
         let input = this.refs.input;
@@ -18,16 +23,40 @@ class InputArea extends React.Component{
             this.refs.input.focus();
         }
     }
+    shouldComponentUpdate(nextProps,nextState){
+        if(this.state.isPreView !== nextState.isPreView){
+            return true;
+        }
+        return false;
+    }
     componentDidMount(){
         this.refs.input.focus();
-        document.addEventListener('keydown', (e) => {
-            if(e.keyCode === 13){
-                this.handleClick();
+         marked.setOptions({
+            highlight: function (code) {
+                return require('highlight.js').highlightAuto(code).value;
+            }
+        });
+        // document.addEventListener('keydown', (e) => {
+        //     if(e.keyCode === 13){
+        //         this.handleClick();
+        //     }
+        // })
+        document.addEventListener('keydown', (e)=>{
+            if(e.keyCode === 9){
+                e.preventDefault();
             }
         })
         document.addEventListener('click', (e) => {
             e.target != this.refs.expressionBtn && this.props.isShowExpressions ? this.props.setExpressionHidden():null;
         })
+    }
+    handlePreView(){
+        this.setState({isPreView:!this.state.isPreView});
+    }
+    handleChange(e){
+        this.setState({
+            inputValue:e.target.value
+        });
     }
     handleClick(){
         let input = this.refs.input;
@@ -38,13 +67,15 @@ class InputArea extends React.Component{
         if(content !== ''){
             input.value = '';
             input.focus();
+            this.setState({
+                inputValue: ''
+            });
             let message = {
                 nickname:user.nickname,
                 room: user.curRoom,
                 content:content,
                 type:'textMessage'
             }
-
             user.isPrivate?sendPrivateMessage(message).then((resault)=>{
                 return addPrivateMessage(resault);
             })
@@ -100,47 +131,44 @@ class InputArea extends React.Component{
     render(){
         let { expState, setExpressionShow, setExpressionHidden, isShowImageExp, setImageExpState } = this.props;
         return (
-            <div data-flex = 'main:center cross:top' className = 'inputarea'>
-                <div data-flex-box='0'>
-                    <div 
-                        className = 'click-div'
-                        onClick = {()=>{
-                            this.props.isShowExpressions ? setExpressionHidden() : setExpressionShow();
-                        }} 
-                        ref = 'expressionBtn'
-                    ></div>
+            <div data-flex = 'main:left cross:top dir:top' className = 'textarea-container'>
+                <div data-flex-box='0' data-flex = 'main: left cross: center' className = 'btn-box'>
+
                     <div className = 'icon-box'>
-                        <i className = 'icon'>&#xe64a;</i>
+                        <i className = 'icon'>&#xe650;</i>
                     </div>
-                </div>
-                <div data-flex-box = '0'>
-                    <div 
-                        className = 'click-div'
-                        onClick = {(e) => {
-                            e.stopPropagation();
-                            e.nativeEvent.stopImmediatePropagation();
-                            setImageExpState(!isShowImageExp);
-                        }}
-                    ></div>
                     <div className = 'icon-box'>
                         <i className = 'icon'>&#xe63d;</i>
                     </div>
-                </div>
-                <div data-flex = 'main:center box:mean' data-flex-box = '1' data-flex = 'main:center' className = 'input-box' >
-                    <input 
-                        data-flex-box = '1' 
-                        className = 'input'
-                        ref = 'input'
-                        onPaste = {(e)=>{this.handlePaste(e)}}
-                    />
-                </div>
-                <div data-flex-box='0'>
+                    <div className = 'icon-box'>
+                        <i className = 'icon'>&#xe667;</i>
+                    </div>
+                    <div 
+                        className = 'icon-box'
+                        onClick = {()=>this.handlePreView()}
+                    >
+                        <i className = 'icon'>&#xe664;</i>
+                    </div>
                     <div 
                         className = 'icon-box'
                         onClick = {()=>{this.handleClick()}}
                     >
                         <i className = 'icon'> &#xe649; </i>
                     </div>
+                </div>
+                <div data-flex = 'main:center box:mean' data-flex-box = '1' data-flex = 'main:left' className = 'textarea-box' >
+                    {
+                        this.state.isPreView ? <div className = 'preView' dangerouslySetInnerHTML={{__html: marked(this.state.inputValue)}}></div>
+                        :<textarea 
+                            data-flex-box = '1' 
+                            className = 'textarea'
+                            ref = 'input'
+                            defaultValue = {this.state.inputValue}
+                            placeholder = 'Click here to type a chat message. Supports GitHub flavoured markdown. ⌘/ctrl+Enter to send....'
+                            onPaste = {(e)=>{this.handlePaste(e)}}
+                            onChange = {(e)=>{this.handleChange(e)}}
+                        />
+                    }
                 </div>
             </div>
         );
@@ -154,10 +182,6 @@ InputArea.propTypes = {
     addMessage: PropTypes.func,
     addPrivateMessage: PropTypes.func,
     setImageExpState: PropTypes.func,
-    // expression: PropTypes.object,
-    // user: PropTypes.object
 }
 export default InputArea;
 
-// markdown 输入框暂定，MDZZ我需要一个ui啊啊啊啊啊
-//  <i className = 'change-btn'>&#xe65b;</i>

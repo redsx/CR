@@ -1,72 +1,43 @@
 import React, {PropTypes} from 'react'
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 
-import Menu from './Menu.jsx'
-import ChatArea from '../containers/ChatArea.js'
 import AudioGroup from '../containers/AudioGroup.js'
 import ImageSlide from '../containers/ImageSlide.js'
+import Snackbar from '../containers/Snackbar.js'
+import SystemSetting from '../containers/SystemSetting.js'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 
-const styles = {
-    container: {
-        width: '100%',
-        height: '100%',
-        overflow:'hidden',
-        position:'relative'
-    },
-    block2: {
-        height: '100%',
-    }
-}
+import '../less/app.less'
+
 class App extends React.Component{
     constructor(props){
         super(props);
     }
-    componentDidMount() {
-        let handle = null;
-        let rightBox = this.refs.rightBox;
-        window.addEventListener('resize',function(event){
-            if(window.innerWidth>980){
-                handle && clearTimeout(handle);
-                handle = setTimeout(function () {
-                    rightBox.style.width = window.innerWidth - 275 + 'px'
-                },200)
-            }
-        });
-    }
     render(){
         return (
             <MuiThemeProvider muiTheme={getMuiTheme()}>
-                <div style = {styles.container}>
+                <div className = 'container'>
+                        <ReactCSSTransitionGroup
+                            component = 'div'
+                            transitionName = 'page'
+                            transitionEnterTimeout = {500}
+                            transitionLeaveTimeout = {500}
+                        >
+                            {React.cloneElement(this.props.children, {
+                                key: this.props.location.pathname
+                            })}
+                        </ReactCSSTransitionGroup>
+                    <SystemSetting />
                     <ImageSlide />
-                    <div 
-                        className = {this.props.menuState?'left-box':'left-box-show'}
-                    >
-                        <Menu />
-                    </div>
-                    <div 
-                        className = {this.props.menuState?'right-box':'right-box-show'}
-                        ref = 'rightBox'
-                        style = {{
-                            width: window.innerWidth - 275 + 'px'
-                        }}
-                    >
-                        <div data-flex = 'main:center box:mean' style = {styles.block2}>
-                            <ChatArea />
-                        </div>
-                    </div>
                     <AudioGroup />
+                    <Snackbar />
                 </div>
             </MuiThemeProvider>
         );
     }
 }
 
-App.propTypes = {
-    menuState: PropTypes.bool,
-}
 
 export default App;
-
-// {this.props.children}
