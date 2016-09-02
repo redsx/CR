@@ -14,7 +14,10 @@ module.exports = {
             cb(onlineUsers);
         } else{
             console.log('获取在线玩家列表错误');
-            cb({isError:'获取在线玩家列表错误'});
+            cb({
+                isError: true,
+                errMsg:'获取在线玩家列表错误'
+            });
         }
     }
 }

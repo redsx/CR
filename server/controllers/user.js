@@ -16,42 +16,65 @@ module.exports = {
             login: false
         })
     },
-    createUser: function *() {
-        let body = this.request.body;
+    createUser: function *(nickname,password,cb) {
         let salt = yield bluebird.promisify(bcrypt.genSalt)(10);
-        body.password = yield bluebird.promisify(bcrypt.hash)(body.password,salt);
-        let user = yield User.findOneUser({nickname:body.nickname});
-        if(user) return this.body = {isNicknameErr:true}
-        let resault  = yield User.create(body);
+        password = yield bluebird.promisify(bcrypt.hash)(password,salt);
+        let user = yield User.findOneUser({nickname: nickname});
+        if(user) {
+            return cb({
+                isError: true,
+                isNicErr: true,
+                errMsg: '用户已存在'
+            });
+        }
+        let resault  = yield User.create({
+            nickname: nickname,
+            password: password
+        });
         if(resault){ 
             let verify = jwt.sign({
-                    user:body.nickname,
+                    user: nickname,
                     exp:Math.floor((new Date().getTime())/1000) + 60 * 60 * 24 * 30
                 },'nsmdzz');
-            return this.body = {jwt:verify};
+            return cb({jwt:verify});
         }
-        return this.body = {isNicknameErr:true};
+        return cb({
+            isError: true,
+            errMsg: '服务器开了个小差'
+        });
     },
-    verifyUser: function *() {
-        let body = this.request.body;
-        let user = yield User.findOneUser({nickname:body.nickname});
-        if(!user) return this.body = {isNicknameErr:true};
-        let resault = yield bluebird.promisify(bcrypt.compare)(body.password,user.password);
+    verifyUser: function *(nickname,password,cb) {
+        let user = yield User.findOneUser({nickname: nickname});
+        if(!user) {
+            return cb({
+                isError: true,
+                isNicErr: true,
+                errMsg: '用户不存在'
+            });
+        }
+        let resault = yield bluebird.promisify(bcrypt.compare)(password,user.password);
         if(resault){ 
             let verify = jwt.sign({
-                    user:body.nickname,
+                    user: nickname,
                     exp:Math.floor((new Date().getTime())/1000) + 60 * 60 * 24 * 30
                 },'nsmdzz');
-            return this.body = {jwt:verify};
+            return cb({jwt:verify});
         }
-        return this.body = {isPasswordErr:true};
+        return cb({
+            isError: true,
+            isPwdErr: true,
+            errMsg: '密码错误'
+        });
     },
     getUserInfo: function *(nickname,cb) {
         if(nickname === config.ROBOT_NAME){
             cb({
                 nickname: config.ROBOT_NAME,
                 avatar: config.ROBOT_AVATAR,
-                time: '传说中的zz机器人'
+                email: '10086@mdzz.com',
+                time: '传说中的zz机器人',
+                info: '传说中的zz机器人',
+                sex: '男'
             })
         } else{
             let user = yield User.findOneUser({nickname:nickname});
@@ -59,15 +82,33 @@ module.exports = {
                 cb({
                     nickname: user.nickname,
                     avatar: user.avatar,
-                    time: moment(user.createdAt).format('lll')
+                    time: moment(user.createdAt).format('lll'),
+                    email: user.email || '未知',
+                    info: user.info || '...',
+                    sex: user.sex || '未知'
                 })
             } else{
                 console.log('查找的玩家不存在');
-                cb({isError:'查找的玩家不存在'});
+                cb({
+                    isError:true,
+                    errMsg: '查找的玩家不存在'
+                });
             }
         }
     },
-    changeUserInfo: function *(info,io,cb) {
+    updateUserInfo: function *(userInfo,cb){
+        let resault = yield User.updateInfo(userInfo);
+        if(resault.ok){
+            cb({ok:1});
+        } else{
+            console.log('更改信息出错！');
+            cb({
+                isError:true,
+                errMsg: '更改信息出错！'
+            });
+        }
+    },
+    updateUserAvatar: function *(info,io,cb) {
         let resault = yield User.updateAvatar(info);
         if(resault.ok){
             yield Online.updateAvatar(info);
@@ -75,7 +116,10 @@ module.exports = {
             cb(info);
         } else{
             console.log('更改信息出错！');
-            cb({isError:'更改信息出错！'});
+            cb({
+                isError:true,
+                errMsg: '更改信息出错！'
+            });
         }
     }
 }

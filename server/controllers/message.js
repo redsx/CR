@@ -23,7 +23,10 @@ module.exports = {
             cb(message);
         } else{
             console.log('玩家不存在！');
-            cb({isError:'玩家不存在！'});
+            cb({
+                isError: true,
+                errMsg:'玩家不存在！'
+            });
         }
     },
     getPrivateMessage: function *(message,socket,cb) {
