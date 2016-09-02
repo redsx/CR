@@ -7,7 +7,7 @@ const notification = {
         if(this.isNotificationSupported){
             Notification.requestPermission(function (status) {
                 if(status === 'granted'){
-                    return console.log('允许桌面推送');
+                    // return console.log('允许桌面推送');
                 }
             });
         }
