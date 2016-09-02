@@ -1,21 +1,22 @@
-import R from 'ramda'
+import Immutable from 'immutable'
 
 import { ADD_MESSAGE, ADD_HISTORY_MESSAGE } from '../actions'
-export default function messages(state={},action) {
-    let deepCopy = R.clone(state);
+
+let defaultState = Immutable.fromJS({});
+
+export default function messages(state = defaultState,action) {
     switch (action.type) {
         case ADD_MESSAGE: {
-            let roomMessage = deepCopy[action.message.room] || [];
-            if(roomMessage.length > 200){
-                roomMessage = roomMessage.slice(roomMessage.length-100);
+            let roomMessage = state.get(action.message.room) || Immutable.fromJS([]);
+            if(roomMessage.size > 200){
+                roomMessage = roomMessage.setSize(100);
             }
-            roomMessage.push(action.message);
-            deepCopy[action.message.room] = roomMessage;
-            return deepCopy;
+            roomMessage = roomMessage.push(Immutable.fromJS(action.message));
+            return state.set(action.message.room,roomMessage);
         }
         case ADD_HISTORY_MESSAGE: {
-            deepCopy[action.room] = action.messages;
-            return deepCopy;
+            let messages = Immutable.fromJS(action.messages);
+            return state.set(action.room,messages);
         }
         default: {
             return state;

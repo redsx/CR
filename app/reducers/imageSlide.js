@@ -1,21 +1,20 @@
-import R from 'ramda'
+import Immutable from 'immutable'
 
 import { SET_SLIDE_STATE, SET_SLIDE_ARR } from '../actions'
-const defaultState = {
+
+let defaultState = {
     isShowSlide: false,
     slideArr: []
 }
+defaultState = Immutable.fromJS(defaultState);
 
-export default function imageSlide(state=defaultState,action) {
-    let deepCopy = R.clone(state);
+export default function imageSlide(state = defaultState,action) {
     switch (action.type) {
         case SET_SLIDE_STATE: {
-            deepCopy.isShowSlide = action.isShow;
-            return deepCopy;
+            return state.set('isShowSlide',action.isShow);
         }
         case SET_SLIDE_ARR: {
-            deepCopy.slideArr = action.slideArr;
-            return deepCopy;
+            return state.set('slideArr',Immutable.fromJS(action.slideArr));
         }
         default: {
             return state;

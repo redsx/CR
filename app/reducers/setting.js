@@ -1,47 +1,50 @@
-import R from 'ramda'
+import Immutable from 'immutable'
 
-import { SET_AUDIO_SRC, SET_NOTIFICATION_STATE, SET_AUDIO_STATE, SET_SHIELD_USER, SET_SPECIAL_USER } from '../actions'
-const defaultState = {
+import { SET_NOTIFICATION_STATE, SET_AUDIO_STATE, SET_SHIELD_USER, SET_SPECIAL_USER } from '../actions'
+
+let defaultState = {
     h5Notification: true,
-    audio: {
-        src:{},
-        isClose: true
-    },
+    audioNotification: false,
     special: [],
     shield: []
 }
-export default function pageState(state = defaultState,action) {
-    let deepCopy = R.clone(state);
+defaultState = Immutable.fromJS(defaultState);
+
+export default function setting(state = defaultState,action) {
     switch(action.type){
-        case SET_AUDIO_SRC: {
-            deepCopy.audio.src = Object.assign({},deepCopy.audio.src,action.src);
-            return deepCopy;
-        }
         case SET_AUDIO_STATE: {
-            deepCopy.audio.isClose = action.state;
-            return deepCopy;
+            return state.set('audioNotification',action.state);
         }
         case SET_NOTIFICATION_STATE: {
-            deepCopy.h5Notification = action.state;
-            return deepCopy;
+            return state.set('h5Notification',action.state);
         }
         case SET_SHIELD_USER: {
+            let setting = Immutable.fromJS(action.setting.user),
+                shield = state.get('shield');
             if(action.setting.isAdd){
-                deepCopy.shield =  deepCopy.shield.concat(action.setting.user);
-                return deepCopy
+                shield = shield.concat(setting);
+            } else{
+                shield = shield.filter((val)=>{
+                if(!Immutable.is(val,setting)){
+                        return val;
+                    }
+                });
             }
-            let index = deepCopy.shield.indexOf(action.setting.user)
-            index === -1 ? null : deepCopy.shield.splice(index,1);
-            return deepCopy;
+            return state.set('shield',shield);
         }
         case SET_SPECIAL_USER: {
+            let setting = Immutable.fromJS(action.setting.user),
+                special = state.get('special');
             if(action.setting.isAdd){
-                deepCopy.special = deepCopy.special.concat(action.setting.user);
-                return deepCopy
+                special = special.concat(setting);
+            } else{
+                special = special.filter((val)=>{
+                if(!Immutable.is(val,setting)){
+                        return val;
+                    }
+                });
             }
-            let index = deepCopy.special.indexOf(action.setting.user)
-            index === -1 ? null : deepCopy.special.splice(index,1);
-            return deepCopy;
+            return state.set('special',special);
         }
         default: {
             return state;

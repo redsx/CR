@@ -1,26 +1,31 @@
-import R from 'ramda'
+import Immutable from 'immutable'
 
 import { ADD_STORAGE_EXPRESSION, DELETE_STORAGE_EXPRESSION, INIT_STORAGE_EXPRESSION } from '../actions'
 
-const defaultExp = 'http://oajmk96un.bkt.clouddn.com/1470361254005warn.gif';
+let defaultExp = 'http://oajmk96un.bkt.clouddn.com/1470361254005warn.gif';
+let defaultState = Immutable.fromJS([defaultExp]);
 
-export default function imageSlide(state = [defaultExp],action) {
-    let deepCopy = R.clone(state);
+export default function storageExpressions(state = defaultState,action) {
     switch (action.type) {
         case INIT_STORAGE_EXPRESSION: {
-            deepCopy =  deepCopy.concat(action.expressions);
-            return R.uniq(deepCopy);
+            let expressions = Immutable.fromJS(action.expressions);
+            if(expressions.includes(defaultExp)){
+                return expressions;
+            }
+            return expressions.unshift(defaultExp);
         }
         case ADD_STORAGE_EXPRESSION: {
-            if(deepCopy.indexOf(action.expression) === -1){
-                deepCopy =  deepCopy.concat(action.expression);
+            if(state.includes(action.expression)){
+                return state;
             }
-            return deepCopy;
+            return state.concat(action.expression);
         }
         case DELETE_STORAGE_EXPRESSION: {
-            let index = deepCopy.indexOf(action.expression);
-            index != -1 ? deepCopy.splice(index,1) : null;
-            return deepCopy;
+            return state.filter((val)=>{
+                if(val != action.expression){
+                    return val;
+                }
+            });
         }
         default: {
             return state;

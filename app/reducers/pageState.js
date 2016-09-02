@@ -1,4 +1,4 @@
-import R from 'ramda'
+import Immutable from 'immutable'
 
 import {
     SET_MENU_STATE,
@@ -11,13 +11,16 @@ import {
     CLEAR_BADGE_COUNT, 
     SET_LIST_STATE,
     SET_IMAGEEXP_STATE,
-    SET_SCROLL_STATE
+    SET_SCROLL_STATE,
+    SET_SNACKBAR_STATE,
+    SET_SYS_SETTING_STATE
 } from '../actions'
-const defaultState = {
+let defaultState = {
     isShowMenu:true,
     isShowRoom:true,
     isShowImageExp: false,
     isNeedScroll: false,
+    isShowSysSetting: false,
     expressionState: {
         moment:null,
         paused: true,
@@ -27,62 +30,62 @@ const defaultState = {
     infoCardState: {
         nickname: 'loading...',
         avatar: 'loading...',
-        info: 'loading...',
+        info: '...',
         isShow:false
     },
     expression: {
         timestamp: null,
         emoji:''
     },
-    badgeCount: {}
+    badgeCount: {},
+    snackbar:{
+        open: false,
+        autoHideDuration: 3000
+    }
 }
+defaultState = Immutable.fromJS(defaultState);
 export default function pageState(state = defaultState,action) {
-    let deepCopy = R.clone(state);
     switch(action.type){
         case SET_MENU_STATE: {
-            return Object.assign({},deepCopy,{
-                isShowMenu:action.menuState
-            })
+            return state.set('isShowMenu',action.menuState);
         }
         case SET_EXPRESSION_STATE: {
-            return Object.assign({},deepCopy,{
-                expressionState:action.expressionState
-            })
+            let expressionState = Immutable.fromJS({expressionState:action.expressionState});
+            return state.merge(expressionState);
         }
         case ADD_EXPRESSION: {
-            return Object.assign({},deepCopy,{
-                expression: action.expression
-            })
+            let expression = Immutable.fromJS({expression: action.expression});
+            return state.merge(expression);
         }
         case SHOW_INFO_CARD: {
-            return Object.assign({},deepCopy,{
-                infoCardState:action.user
-            })
+            let infoCardState = Immutable.fromJS({infoCardState:action.user});
+            return state.mergeDeep(infoCardState);
         }
         case HIDDEN_INFO_CARD: {
-            return Object.assign({},deepCopy,{
-                infoCardState:action.user
-            })
+            return state.setIn(['infoCardState','isShow'],false);
         }
         case ADD_BADGE_COUNT: {
-            deepCopy.badgeCount[action.room]? deepCopy.badgeCount[action.room]++ : deepCopy.badgeCount[action.room] = 1
-            return deepCopy;
+            let badgeCount = state.getIn(['badgeCount',action.room]) || 0;
+            return state.setIn(['badgeCount',action.room],badgeCount+1);
         }
         case CLEAR_BADGE_COUNT: {
-            deepCopy.badgeCount[action.room] = 0;
-            return deepCopy;
+            return state.setIn(['badgeCount',action.room],0);
         }
         case SET_LIST_STATE: {
-            deepCopy.isShowRoom = action.isShow;
-            return deepCopy;
+            return state.set('isShowRoom',action.isShow);
         }
         case SET_IMAGEEXP_STATE: {
-            deepCopy.isShowImageExp = action.isShow;
-            return deepCopy;
+            return state.set('isShowImageExp',action.isShow);
         }
         case SET_SCROLL_STATE: {
-            deepCopy.isNeedScroll = action.isNeedScroll;
-            return deepCopy;
+            return state.set('isNeedScroll',action.isNeedScroll);
+        }
+        case SET_SNACKBAR_STATE: {
+            let snackbar = Immutable.fromJS({snackbar:action.state});
+            return state.mergeDeep(snackbar);
+        }
+        case SET_SYS_SETTING_STATE: {
+            return state.set('isShowSysSetting',action.state);
         }
         default: {
             return state;

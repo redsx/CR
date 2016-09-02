@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux'
+import { combineReducers } from 'redux-immutable'
 import pageState from './pageState.js'
 import userState from './userState.js'
 import onlineUsers from './onlineUsers.js'

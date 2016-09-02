@@ -1,14 +1,18 @@
-import R from 'ramda'
+import Immutable from 'immutable'
 
 import { ADD__PRIVATE_MESSAGE } from '../actions'
-export default function privateMessages(state={},action) {
-    let deepCopy = R.clone(state);
+
+let defaultState = Immutable.fromJS({});
+
+
+export default function privateMessages(state = defaultState,action) {
+
     switch (action.type) {
         case ADD__PRIVATE_MESSAGE: {
-            let roomMessage = deepCopy[action.message.room] || [];
-            roomMessage.push(action.message);
-            deepCopy[action.message.room] = roomMessage;
-            return deepCopy;
+            let message = state.get(action.message.room);
+            message ? null : message = Immutable.fromJS([]);
+            message = message.push(action.message);
+            return state.set(action.message.room,message);
         }
         default: {
             return state;

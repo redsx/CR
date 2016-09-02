@@ -1,34 +1,33 @@
-import R from 'ramda'
+import Immutable from 'immutable'
 
 import { SET_INITONLINEUSER_INFO, ADD_ONLINEUSER_INFO, SET_LOGOUTUSER_INFO, ADD_HISTORY_USER_INFO, CHANGE_USER_INFO } from '../actions'
-export default function onlineUsers(state={},action) {
-    let deepCopy = R.clone(state);    
+
+let defaultState = Immutable.fromJS({});
+
+export default function onlineUsers(state = defaultState,action) {
     switch (action.type) {
         case SET_INITONLINEUSER_INFO: {
-            return Object.assign({},deepCopy,action.onlineUsers);
+            let onlineUsers = Immutable.fromJS(action.onlineUsers);
+            return state.merge(onlineUsers);
         }
         case ADD_ONLINEUSER_INFO: {
-            let obj = {};
-            if(deepCopy[action.user.nickname]){
-                deepCopy[action.user.nickname].isOnline = deepCopy[action.user.nickname].isOnline + 1; 
+            let user = state.get(action.user.nickname);
+            if(user){
+                return state.setIn([user.get('nickname'),'isOnline'],1);
             } else{
-                deepCopy[action.user.nickname] = action.user;
+                let newUser = Immutable.fromJS(Object.assign({},action.user,{isOnline:1}));
+                return state.set(action.user.nickname,newUser);
             }
-            return deepCopy;
         }
         case SET_LOGOUTUSER_INFO: {
-            deepCopy[action.user].isOnline = deepCopy[action.user].isOnline - 1;
-            return deepCopy;
+            return state.setIn([action.user,'isOnline'],0);
         }
         case ADD_HISTORY_USER_INFO: {
-            let users = R.clone(action.users);
             // 暂定解决方案
-            // return Object.assign({},users,deepCopy);
-            return Object.assign({},users);
+            return Immutable.fromJS(action.users);
         }
         case CHANGE_USER_INFO: {
-            (deepCopy[action.user.nickname]).avatar = action.user.avatar;
-            return deepCopy;
+            return state.setIn([action.user.nickname,'avatar'],action.user.avatar);
         }
         default: {
             return state;

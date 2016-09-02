@@ -1,14 +1,19 @@
-import R from 'ramda'
+import Immutable from 'immutable'
+
 
 import { SET_USER_INFO, SET_USER_CURROOM } from '../actions'
-export default function userState(state={},action) {
-    let deepCopy = R.clone(state);
+
+let defaultState = Immutable.fromJS({});
+
+export default function userState(state = defaultState,action) {
     switch (action.type) {
         case SET_USER_INFO: {
-            return Object.assign({},deepCopy,action.user);
+            let userInfo = Immutable.fromJS(action.user);
+            return state.merge(userInfo);
         }
         case SET_USER_CURROOM: {
-            return Object.assign({},deepCopy,action.roomInfo);
+            let roomInfo = Immutable.fromJS(action.roomInfo);
+            return state.merge(roomInfo);
         }
         default: {
             return state;
