@@ -4,8 +4,8 @@ import HeadBar from '../components/HeadBar.jsx'
 import { setMenuState } from '../actions'
 function mapStateToProps(state) {
     return {
-        menuState:state.pageState.isShowMenu,
-        curRoom: state.userState.curRoom
+        menuState:state.getIn(['pageState','isShowMenu']),
+        curRoom: state.getIn(['userState','curRoom'])
     }
 }
 function mapDispatchToProps(dispatch) {

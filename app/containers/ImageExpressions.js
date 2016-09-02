@@ -4,9 +4,9 @@ import ImageExpressions from '../components/ImageExpressions.jsx'
 import { addPrivateMessage, addMessage, deleteStorageExpression, setImageExpState } from '../actions'
 function mapStateToProps(state) {
     return {
-        isShowImageExp: state.pageState.isShowImageExp,
-        user: state.userState,
-        storageExpressions: state.storageExpressions
+        isShowImageExp: state.getIn(['pageState','isShowImageExp']),
+        user: state.get('userState'),
+        storageExpressions: state.get('storageExpressions')
     }
 }
 function mapDispatchToProps(dispatch) {

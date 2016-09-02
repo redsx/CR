@@ -1,13 +1,13 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import Setting from '../components/Setting.jsx'
-import { setAudioSrc, setAudioState, setNotificationState, storageSetting } from '../actions'
+import { getUserInfo } from '../actions'
 function mapStateToProps(state) {
     return {
-        setting:state.setting
+        setting:state.get('setting')
     }
 }
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ setAudioSrc, setAudioState, setNotificationState, storageSetting },dispatch);
+    return bindActionCreators({ getUserInfo },dispatch);
 }
 export default connect(mapStateToProps,mapDispatchToProps)(Setting);

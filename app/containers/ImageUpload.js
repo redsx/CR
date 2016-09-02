@@ -7,7 +7,7 @@ import { addPrivateMessage } from '../actions'
 
 function mapStateToProps(state) {
     return {
-        user: state.userState
+        user: state.get('userState')
     }
 }
 function mapDispatchToProps(dispatch) {

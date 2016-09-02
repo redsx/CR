@@ -7,8 +7,8 @@ import { setSlideState, switchImage, addStorageExpression, storageSetting, delet
 
 function mapStateToProps(state) {
     return {
-        imageSlide: state.imageSlide,
-        expressions: state.storageExpressions
+        imageSlide: state.get('imageSlide'),
+        expressions: state.get('storageExpressions')
     }
 }
 function mapDispatchToProps(dispatch) {
