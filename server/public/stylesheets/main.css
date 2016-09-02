@@ -1,18 +1,17 @@
 /* custom font icons */
 @import "./font-icons/style.css";
 
-/* hightlight.js for syntax highlighting */
-@import "./github.css";
-
+/*@import "./iconfont.css";*/
 @font-face {
   font-family: 'iconfont';
-  src: url('http://at.alicdn.com/t/font_1470350680_9720519.eot'); /* IE9*/
-  src: url('http://at.alicdn.com/t/font_1470350680_9720519.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url('http://at.alicdn.com/t/font_1470350680_9720519.woff') format('woff'), /* chrome、firefox */
-  url('http://at.alicdn.com/t/font_1470350680_9720519.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
-  url('http://at.alicdn.com/t/font_1470350680_9720519.svg#iconfont') format('svg'); /* iOS 4.1- */
+  src: url('http://at.alicdn.com/t/font_1472716009_7473683.eot'); /* IE9*/
+  src: url('http://at.alicdn.com/t/font_1472716009_7473683.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('http://at.alicdn.com/t/font_1472716009_7473683.woff') format('woff'), /* chrome、firefox */
+  url('http://at.alicdn.com/t/font_1472716009_7473683.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+  url('http://at.alicdn.com/t/font_1472716009_7473683.svg#iconfont') format('svg'); /* iOS 4.1- */
 }
-                    
+                                 
+                                    
 a {
   color: rgba(34, 131, 201, 0.83);
   text-decoration: none;
@@ -39,6 +38,9 @@ body {
   background: #f5f6f9;
   height: 100%;
   width: 100%;
+}
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,p,blockquote,th,td {
+	font-family: 'Roboto', "Helvetica Neue",Helvetica,"Segoe UI",Arial,"Microsoft YaHei",FreeSans,Arimo,"Droid Sans","wenquanyi micro hei",sans-serif !important;
 }
 
 body, h1, h2, h3, h4, h5, h6 {
