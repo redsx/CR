@@ -1,0 +1,43 @@
+.icon-font(@size,@color) {
+    font-family: iconfont;
+    font-style: normal;
+    font-weight: 600;
+    font-size: @size;
+    color: @color;
+    cursor: pointer;
+}
+.icon{
+    .icon-font(21px,#555);
+}
+.icon-box {
+    width: 40px;
+    height: 48px;
+    text-align: center;
+    line-height: 48px
+}
+.inputarea {
+    margin: 0 8px;
+}
+.input-box {
+    position: relative;
+    padding: 6px;
+}
+.click-div {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    z-index: 999;
+    opacity: 0;
+}
+.input {
+    font-size: 1rem;
+    height: 2.2rem;
+    margin-top: 2px;
+    padding-right: 29px;
+}
+.change-btn{
+    .icon-font(21px,#ddd);
+    position: absolute;
+    right: 11px;
+    top: 14px;
+}

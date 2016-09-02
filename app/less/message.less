@@ -1,0 +1,62 @@
+.rotate(@deg){
+    -webkit-transform: rotate(@deg);
+    -moz-transform: rotate(@deg);
+    -o-transform: rotate(@deg);
+    transform: rotate(@deg);
+}
+.triangle(left,@top,@right,@color){
+    left: @right;
+    border-right: 10px solid @color;
+    .rotate(20deg);
+}
+.triangle(right,@top,@right,@color){
+    right: @right;
+    border-left: 10px solid @color;
+    .rotate(-20deg);
+}
+.triangle(@_,@top,@right,@color){
+    position: absolute;
+    top: @top;
+    border-top: 2px solid transparent;
+    border-bottom: 7px solid transparent; 
+}
+.message-container{
+    width: 80%;
+    max-width: 980px;
+    padding: 10px 6px 0px 12px;
+}
+.message{
+    position: relative;
+    display: inline-block;
+    word-break: break-all;
+    background: white;
+    text-align: left;
+    padding: 6px 12px;
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 8px;
+}
+.avatar-container{
+    margin-top: 5px;
+}
+.nickname{
+    padding: 0px 2px;
+    display: block;
+    font-size: 0.85rem;
+    color: #555;
+}
+.triangle-left-inner{
+    content: "";
+    .triangle(left,6px,-7px,white);
+}
+.triangle-left-outer{
+    content: "";
+    .triangle(left,5px,-9px,#ccc);
+}
+.triangle-right-inner{
+    content: "";
+    .triangle(right,6px,-7px,white);
+}
+.triangle-right-outer{
+    content: "";
+    .triangle(right,5px,-9px,#ccc);
+}

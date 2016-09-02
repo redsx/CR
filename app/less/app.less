@@ -1,0 +1,25 @@
+
+.page-enter {
+    transform: translateX(-100%);
+}
+
+.page-enter.page-enter-active {
+    transition: all 0.5s;
+    transform: translateX(0%);
+}
+
+.page-leave {
+    transform: translate(0,-100%);
+}
+
+.page-leave.page-leave-active {
+    transition: all 0.5s;
+    transform: translate(100%,-100%);
+}
+.container {
+    width:  100%;
+    height:  100%;
+    overflow: hidden;
+    position: relative;
+    background: #eeeeee; 
+}

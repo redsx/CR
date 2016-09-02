@@ -1,0 +1,68 @@
+.icon-font(@size,@color) {
+    font-family: iconfont;
+    font-style: normal;
+    font-weight: 600;
+    font-size: @size;
+    color: @color;
+    cursor: pointer;
+}
+.icon{
+    .icon-font(18px,#555);
+}
+.textarea-container{
+    border-top: 1px solid #ccc;
+}
+.btn-box{
+    padding: 5px 0px 0px 5px;
+}
+.icon-box {
+    width: 40px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px
+}
+.textarea-box {
+    width: 100%;
+    position: relative;
+    padding: 6px;
+}
+.textarea {
+    padding: 0px 5px;
+    border: none;
+    resize: none;
+    background: #fbfbfb;
+    font-size: 1rem;
+    height: 7rem;
+    overflow-y: scroll;
+}
+.preView {
+    max-height: 20rem;
+    padding: 15px;
+    width: 100%;
+    overflow-y: scroll;
+}
+pre{
+    background: white;
+    padding: 10px;
+    overflow: scroll;
+    max-height: 6rem;
+}
+.click-div {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    z-index: 999;
+    opacity: 0;
+}
+.input {
+    font-size: 1rem;
+    height: 2.2rem;
+    margin-top: 2px;
+    padding-right: 29px;
+}
+.change-btn{
+    .icon-font(21px,#ddd);
+    position: absolute;
+    right: 11px;
+    top: 14px;
+}

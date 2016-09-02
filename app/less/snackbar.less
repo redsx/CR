@@ -1,0 +1,49 @@
+.border_radius(@R){
+    -webkit-border-radius: @R @R 0 0;
+    -moz-border-radius: @R @R 0 0;
+    border-radius: @R @R 0 0;
+}
+.transition(@time){
+    -webkit-transition: all @time;
+    -webkit-transition: all @time;
+    transition: all @time;
+}
+.snackbar-enter {
+    transform: translateY(48px);
+}
+
+.snackbar-enter.snackbar-enter-active {
+    .transition(0.5s);
+    transform: translateY(0px);
+}
+
+.snackbar-leave {
+    transform: translate(0,0px);
+}
+
+.snackbar-leave.snackbar-leave-active {
+    .transition(0.5s);
+    transform: translate(0,48px);
+}
+.snackbar{
+    position: fixed;
+    z-index: 999;
+    left: 50%;
+    bottom: 0px;
+    margin-left: -165px;
+    background: rgba(0, 0, 0, 0.780588);
+    width: 330px;
+    height: 48px;
+    color: white;
+    text-align: left;
+    text-indent: 15px;
+    line-height: 38px;
+    padding: 5px;
+    .border_radius(4px);
+}
+.close-btn{
+    cursor: pointer;
+    float: right;
+    margin-right: 20px;
+    color: #e23570;
+}

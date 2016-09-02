@@ -1,0 +1,153 @@
+.login-container{
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    background: #eee;
+}
+.login{
+    max-width: 400px;
+    height: 227px;
+    width: 90%;
+    position: relative;
+    overflow: visible;
+}
+.wx-login-form{
+    overflow: visible;
+}
+.login-owl{
+    width: 211px;
+    height: 108px;
+    top:-100px;
+    left:50%;
+    margin-left: -111px; 
+    position: absolute;
+    background: url('/images/owl-login.png') no-repeat;
+}
+.login-hand,.login-hand-r,.login-hand-focus,.login-hand-r-focus{
+    width: 34px;
+    height: 34px;
+    background: #472d20;
+    border-radius: 40px;
+    -webkit-transform: scaleY(0.6);
+    transform: scaleY(0.6);
+    position: absolute;
+    -webkit-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+}
+.login-hand{
+    left: 14px;
+    bottom: -8px;
+}
+.login-hand-r{
+    left: 170px;
+    bottom: -8px;
+}
+.password>.login-hand-focus{
+    -webkit-transform: translateY(-20px) translateX(50px) scale(0.7);
+    transform: translateY(-20px) translateX(50px) scale(0.7);
+    left: 14px;
+    bottom: -8px;
+}
+.password>.login-hand-r-focus{
+    -webkit-transform: translateY(-20px) translateX(-50px) scale(0.7);
+    transform: translateY(-20px) translateX(-50px) scale(0.7);
+    left: 170px;
+    bottom: -8px;
+}
+.login-arms{
+    position: absolute;
+    width: 100%;
+    top: 58px;
+    height: 41px;
+    overflow: hidden;
+}
+.login-arm,.login-arm-r,.login-arm-r-focus,.login-arm-focus{
+    width: 40px;
+    height: 65px;
+    position: absolute;
+    background: url('/images/owl-login-arm.png');
+    -webkit-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+}
+.login-arm{
+    -webkit-transform: rotate(-20deg);
+    transform: rotate(-20deg);
+    left: 20px;
+    top: 40px;
+}
+.login-arm-r{
+    -webkit-transform: rotate(20deg) scaleX(-1);
+    transform: rotate(20deg) scaleX(-1);
+    left: 158px;
+    top: 40px;
+}
+.password>.login-arms>.login-arm-focus{
+    -webkit-transform: translateY(-40px) translateX(40px);
+    transform: translateY(-40px) translateX(40px);
+    left: 20px;
+    top: 40px;
+}
+.password>.login-arms>.login-arm-r-focus{
+    -webkit-transform: translateY(-40px) translateX(-40px) scaleX(-1);
+    transform: translateY(-40px) translateX(-40px) scaleX(-1);
+    left: 158px;
+    top: 40px;
+}
+.login-pad{
+    padding: 30px;
+    background: white;
+}
+.login-controls{
+    margin-bottom: 10px;
+    position: relative;
+}
+.login-control-label{
+    position: absolute;
+    left: 13px;
+    top: 10px;
+    color: #777;
+    font-family:"iconfont";
+    font-size:16px;
+    font-style:normal;
+}
+.login input{
+    padding: 9px 6px 9px 40px;
+    height: auto;
+    color: #444;
+}
+.login-form-control{
+    display: block;
+    width: 100%;
+    font-size: 1.1rem;
+    background-color: white;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+}
+.login-actions{
+    border-top: 1px solid #e4e4e4;
+    background: #f7f7f7;
+    padding: 15px 30px;
+    text-align: right;
+}
+.login-actions a{
+    color: #777;
+}
+.login-actions a:hover{
+    color: #2283c9;
+}
+.login-btn{
+    background: #2283c9;
+    color: #fff;
+    padding: 6px 12px;
+    border: 1px solid transparent;
+    display: inline-block;
+    font-size: 1.1rem;
+    border-radius: 4px;
+}
+.login-btn-disabled{
+    background: #999 !important;
+}
+.login-error-input{
+    border: 1px solid rgba(255, 0, 0, 0.6) !important;
+    box-shadow: 0 0 5px 1px rgba(255, 0, 0, 0.6);
+}
