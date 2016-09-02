@@ -4,6 +4,8 @@ const user = new Schema({
     nickname: String,
     password: String,
     info: String,
+    email: String,
+    sex: String,
     historys: [{type:Schema.Types.ObjectId,ref:'history'}],
     avatar: {
         type: String, 
@@ -42,6 +44,14 @@ user.statics.createUser = function (user) {
 user.statics.updateAvatar = function (info) {
     return new Promise((resolve,reject) => {
         this.update({nickname:info.nickname},{avatar:info.avatar}, (err,resault)=>{
+            if(err) reject(err);
+            resolve(resault);
+        })
+    })
+}
+user.statics.updateInfo = function (info) {
+    return new Promise((resolve,reject) => {
+        this.update({nickname:info.nickname},info, (err,resault)=>{
             if(err) reject(err);
             resolve(resault);
         })
