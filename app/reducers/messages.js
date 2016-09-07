@@ -9,7 +9,7 @@ export default function messages(state = defaultState,action) {
         case ADD_MESSAGE: {
             let roomMessage = state.get(action.message.room) || Immutable.fromJS([]);
             if(roomMessage.size > 200){
-                roomMessage = roomMessage.setSize(100);
+                roomMessage = roomMessage.slice(100);
             }
             roomMessage = roomMessage.push(Immutable.fromJS(action.message));
             return state.set(action.message.room,roomMessage);
