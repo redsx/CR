@@ -22,9 +22,7 @@ export default function storageExpressions(state = defaultState,action) {
         }
         case DELETE_STORAGE_EXPRESSION: {
             return state.filter((val)=>{
-                if(val != action.expression){
-                    return val;
-                }
+                return (val != action.expression)
             });
         }
         default: {

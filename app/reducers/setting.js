@@ -25,9 +25,7 @@ export default function setting(state = defaultState,action) {
                 shield = shield.concat(setting);
             } else{
                 shield = shield.filter((val)=>{
-                if(!Immutable.is(val,setting)){
-                        return val;
-                    }
+                    return !Immutable.is(val,setting)
                 });
             }
             return state.set('shield',shield);
@@ -39,9 +37,7 @@ export default function setting(state = defaultState,action) {
                 special = special.concat(setting);
             } else{
                 special = special.filter((val)=>{
-                if(!Immutable.is(val,setting)){
-                        return val;
-                    }
+                    return !Immutable.is(val,setting)
                 });
             }
             return state.set('special',special);
