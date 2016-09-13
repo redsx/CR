@@ -69,7 +69,7 @@ title提醒
 
 1. cd CR
 2. npm install
-3. npm client-start 打包前端
+3. npm run-script client-start 打包前端
 4. npm start 开启server，访问 http://localost:3000
 
 #### tips:
