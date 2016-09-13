@@ -32,38 +32,9 @@
 ```
 ### 效果展示
 
-登录&注册界面：
-
-![x2](./app/images/x2.png)
-
 菜单栏：
 
 ![x3](./app/images/show-0.png)
-
-个人面板：
-
-![x4](./app/images/show-4.png)
-
-好友面板：
-
-![x4](./app/images/show-5.png)
-
-系统设置：
-
-![x5](./app/images/show-1.png)
-
-图片查看
-
-![x6](./app/images/show-6.png)
-
-图片表情包
-
- ![x7](./app/images/show-7.png)
-
-title提醒
-
- ![x8](./app/images/news-0.png)
-
 
 ### 安装
 
