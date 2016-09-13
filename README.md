@@ -47,5 +47,5 @@
 
 1. 在安装使用之前先修改数据库信息 mongodb：`server/config/mongo-config.js`，mysql暂不支持
 2. 如果遇到bcrypt无法install可用bcrypt-nodejs代替，**注意替换后函数参数会有略微不同请查看文档**
-
+3. 使用了es6语法，请将node版本升至6.0以上
 
