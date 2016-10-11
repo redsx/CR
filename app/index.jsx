@@ -10,6 +10,7 @@ import App from './components/App.jsx'
 import Login from './pages/login/Login.jsx'
 import SignUp from './pages/signup/SignUp.jsx'
 import Index from './pages/index/'
+// import Edit from './pages/edit/index.jsx'
 
 import store from './store'
 
@@ -20,7 +21,7 @@ import {
     addOnlineUser, 
     deleteLogoutUser, 
     addMessage, 
-    getHistoryMessage, 
+    getRoomHistory, 
     changeUserInfo, 
     addPrivateMessage, 
     addCount, 
@@ -29,23 +30,32 @@ import {
     setNotificationState, 
     setShieldUser, 
     setSpecialUser, 
-    initStorageExpression
+    initStorageExpression,
+    getActiveList,
+    getRoomList,
+    setListShow,
+    searchRoom,
+    changeRoom,
+    addActiveItem,
+    setBgImage,
+    getRoomActiveInfo,
+    searchUser
 } from './actions'
 
-import notification from './actions/notification.js'
-import favico from './actions/favicoNotification.js'
+import notification from './util/notification.js'
+import favico from './util/favicoNotification.js'
+import browser from './util/browser.js'
 
-//test Immutable
 import Immutable from 'immutable'
 
 favico.resetWhenDocVisibility();
 notification.requestPermission();
 
-const handleInit = (token) => {
-    getHistoryMessage('MDZZ')(store.dispatch).then((resault)=>{
-        return getInitOnlineUser()(store.dispatch)
-    }).then((resault)=>{
-        return getInitUserInfo(token)(store.dispatch);
+const handleInit = (info) => {
+    getActiveList(info.token)(store.dispatch).then((res)=>{
+        return getRoomList(info.token)(store.dispatch);
+    }).then(() => {
+        return getInitUserInfo(info)(store.dispatch);
     }).then((resault)=>{
         let storage = localStorage.getItem(resault.nickname);
         storage = storage ? JSON.parse(storage) : {};
@@ -57,6 +67,7 @@ const handleInit = (token) => {
                 user: setting.shield,
                 isAdd: true
             }));
+            store.dispatch(setBgImage(setting.bgImage));
             store.dispatch(setSpecialUser({
                 user: setting.special,
                 isAdd: true
@@ -65,18 +76,24 @@ const handleInit = (token) => {
         if(storage.expressions){
             store.dispatch(initStorageExpression(storage.expressions));
         }
+        return changeRoom({curRoom: resault.curRoom,isPrivate: false})(store.dispatch,store.getState);
+    }).catch((err) => {
+        console.log(err);
+        browserHistory.push('/login');
     })
 }
 const handleEnter = (nextState,replace) => {
     const token = localStorage.getItem('token');
+    const device = browser.versions.mobile ? 'mobile' : 'PC';
     if(token){
-        return handleInit(token);
+        return handleInit({token,device});
     } else{
         replace({pathname: '/login'});
     }
 }
 const handleLeave = () => {
-    const token = localStorage.getItem('token');
+    const state = store.getState().toJS();
+    const token = state.userState.token;
     if(token){
         socket.emit('reconnect success',token);
     }
@@ -86,10 +103,20 @@ socket.on('privateMessage', (message) => {
     if(state.setting.shield.indexOf(message.nickname) === -1){
         const audio = document.getElementById('audio1'),
               audioSpecial = document.getElementById('audio3'),
-              avatar = state.onlineUsers[message.nickname].avatar;
+              avatar = message.avatar;
         message.room = message.nickname;
+        if(state.pageState.listState !== 'activeList'){
+            store.dispatch(setListShow('activeList'));
+        }
         store.dispatch(addPrivateMessage(message));
         state.userState.curRoom === message.room ? null : store.dispatch(addCount(message.room));
+        if(!state['activeList'][message.room]){
+            store.dispatch(addActiveItem({
+                roomName: message.room,
+                avatar: message.avatar,
+                isPrivate: true
+            }))
+        }
         if(document.hidden){
             favico.addBage();        
             if(state.setting.audioNotification){
@@ -97,7 +124,7 @@ socket.on('privateMessage', (message) => {
             }    
             state.setting.h5Notification ? notification.showNotification(message.nickname,{
                 body: message.content,
-                icon: state.onlineUsers[message.nickname].avatar,
+                icon: message.avatar,
             }) : null;
         } else if(state.setting.audioNotification && state.userState.curRoom !== message.room){
             state.setting.special.indexOf(message.nickname) === -1 ? audio.play() : audioSpecial.play();
@@ -109,10 +136,17 @@ socket.on('newMessage', (message) => {
     if(state.setting.shield.indexOf(message.nickname) === -1){
         const audio = document.getElementById('audio1'),
               audioSpecial = document.getElementById('audio3'),
-              avatar = state.onlineUsers[message.nickname].avatar,
-              reg = eval('/'+'@'+state.userState.nickname+'/g');
+              avatar = message.avatar,
+              reg = new RegExp('@'+state.userState.nickname,'g');
         store.dispatch(addMessage(message));
         state.userState.curRoom === message.room ? null : store.dispatch(addCount(message.room));
+        if(!state['activeList'][message.room]){
+            store.dispatch(addActiveItem({
+                roomName: message.room,
+                avatar: state['roomList'][message.room]['avatar'],
+                isPrivate: false
+            }))
+        }
         if(document.hidden){
             favico.addBage();
             if(state.setting.audioNotification){
@@ -120,7 +154,7 @@ socket.on('newMessage', (message) => {
             }
             state.setting.h5Notification && !(message.nickname === state.userState.nickname) ? notification.showNotification(message.nickname,{
                 body: message.content,
-                icon: state.onlineUsers[message.nickname].avatar,
+                icon: message.avatar,
             }) : null;
         } else if(!(message.nickname === state.userState.nickname) && state.setting.audioNotification && state.userState.curRoom !== message.room){
             state.setting.special.indexOf(message.nickname) !== -1 || reg.test(message.content) ? audioSpecial.play() : audio.play();
@@ -128,25 +162,6 @@ socket.on('newMessage', (message) => {
     }
 });
 
-socket.on('changeInfo', (info)=>{
-    store.dispatch(changeUserInfo(info));
-})
-socket.on('user joined', (user) => {
-    const state = store.getState().toJS();
-    const audio = document.getElementById('audio2');
-    store.dispatch(addOnlineUser(user));
-    if(document.hidden){
-        if(state.setting.audioNotification){
-            audio.play() ;
-        }
-    } 
-})
-socket.on('user leaved', (user) => {
-    store.dispatch(deleteLogoutUser(user.nickname));
-})
-socket.on('connect', () => {
-    
-})
 socket.on('disconnect',()=>{
     console.log('disconnect');
     const state = store.getState().toJS();
@@ -157,18 +172,29 @@ socket.on('disconnect',()=>{
     }));
 })
 let reconnect = 0;
+socket.on('connect', () => {
+    if(reconnect > 0){
+        const state = store.getState().toJS();
+        const token = state.userState.token;
+        if(!token){
+            return browserHistory.push('/login')
+        }
+        handleInit({token});
+    }
+})
+
 socket.on('reconnect_failed',()=>{
     console.log('重连失败');
 })
 
 socket.on('reconnect',()=>{
     console.log('断线重连成功');
-    const token = localStorage.getItem('token');
+    const state = store.getState().toJS();
+    const token = state.userState.token;  
     if(!token){
         return browserHistory.push('/login')
     }
     socket.emit('reconnect success',token);
-    handleInit(token);
 })
 socket.on('reconnecting',()=>{
     reconnect++;
@@ -191,3 +217,7 @@ render(
     ,
     document.getElementById('App')
 )
+
+
+
+// 加入房间逻辑，以及信息发送逻辑，历史记录查询未按照加入房间名
