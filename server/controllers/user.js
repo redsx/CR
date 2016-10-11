@@ -1,26 +1,21 @@
 const User = require('../models/user-mongo')
     , Online = require('../models/online-mongo')
+    , Room = require('../models/room-mongo')
     , bcrypt = require('bcrypt')
     , bluebird = require('bluebird')
     , moment = require('moment')
     , jwt = require('jsonwebtoken')
-    , config = require('../config/cr-config');
+    , config = require('../config/cr-config')
+    , JWT_KEY = require('../config/cr-config').JWT_KEY;
 module.exports = {
-    renderLongin: function *() {
-        yield this.render('login',{
-            login: true
-        })
-    },
-    renderSignUp: function *(next) {
-        yield this.render('login',{
-            login: false
-        })
-    },
     createUser: function *(nickname,password,cb) {
         let salt = yield bluebird.promisify(bcrypt.genSalt)(10);
         password = yield bluebird.promisify(bcrypt.hash)(password,salt);
+        //  bcrypt-nodejs 写法
+        // password = yield bluebird.promisify(bcrypt.hash)(password,salt,null); 
         let user = yield User.findOneUser({nickname: nickname});
-        if(user) {
+        let room = yield Room.findOne({name: config.INIT_ROOM});
+        if(user && room) {
             return cb({
                 isError: true,
                 isNicErr: true,
@@ -29,13 +24,14 @@ module.exports = {
         }
         let resault  = yield User.create({
             nickname: nickname,
-            password: password
+            password: password,
+            rooms: [room._id]
         });
         if(resault){ 
             let verify = jwt.sign({
                     user: nickname,
                     exp:Math.floor((new Date().getTime())/1000) + 60 * 60 * 24 * 30
-                },'nsmdzz');
+                },JWT_KEY);
             return cb({jwt:verify});
         }
         return cb({
@@ -57,7 +53,7 @@ module.exports = {
             let verify = jwt.sign({
                     user: nickname,
                     exp:Math.floor((new Date().getTime())/1000) + 60 * 60 * 24 * 30
-                },'nsmdzz');
+                },JWT_KEY);
             return cb({jwt:verify});
         }
         return cb({
@@ -111,8 +107,6 @@ module.exports = {
     updateUserAvatar: function *(info,io,cb) {
         let resault = yield User.updateAvatar(info);
         if(resault.ok){
-            yield Online.updateAvatar(info);
-            io.emit('changeInfo',info);
             cb(info);
         } else{
             console.log('更改信息出错！');
@@ -120,6 +114,24 @@ module.exports = {
                 isError:true,
                 errMsg: '更改信息出错！'
             });
+        }
+    },
+    searchUser: function *(info,cb) {
+        let user = yield User.find({nickname: new RegExp(info.user,'i')},null,{limit: 20});
+        let list = {};
+        if(user){
+            for(let i = 0; i<user.length; i++){
+                list[user[i]['nickname']] = {
+                    nickname: user[i]['nickname'],
+                    avatar: user[i]['avatar']
+                }
+            }
+            cb(list);
+        } else{
+            cb({
+                isError: true,
+                errMsg: '未找到用户'
+            })
         }
     }
 }

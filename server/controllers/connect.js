@@ -1,40 +1,46 @@
 const jwt = require('jsonwebtoken')
+    , moment = require('moment')
     , User = require('../models/user-mongo')
+    , crConfig = require('../config/cr-config')
     , Online = require('../models/online-mongo')
-    , bluebird = require('bluebird');
+    , Room = require('../models/room-mongo')
+    , History = require('../models/history-mongo')
+    , Private = require('../models/private-mongo')
+    , bluebird = require('bluebird')
+    , listUtil = require('../util/list.js')
+    , JWT_KEY = require('../config/cr-config').JWT_KEY;
 
 module.exports = {
-    init: function *(token,socket,io,cb) {
-        let decode = jwt.verify(token,'nsmdzz');
+    init: function *(info,socket,io,cb) {
+        let decode = jwt.verify(info.token,JWT_KEY);
         if(decode){
-            let online = yield Online.findOneOnline({nickname:decode.user});
-            if(online){
+            let user = yield User.findOne({nickname: decode.user}).populate('online').populate('rooms');
+            // v2.2 修改上线方式
+            if(user.online){
                 console.log('玩家已经在线');
                 cb({
                     isError: true,
                     errMsg:'玩家已经在线'
                 });
             } else{
-                let user = yield User.findOneUser({nickname:decode.user});
-                if(user){
-                    let resault = yield Online.createOnline({
-                        nickname: user.nickname,
-                        avatar: user.avatar,
-                        socket: socket.id
-                    });
-                    console.log('创建在线用户：',user.nickname);
+                let roomList = listUtil.getRoomNameArr(user.rooms);
+                let onliner = new Online({socket: socket.id,user: user._id});
+                user.device = info.device;
+                user.online = onliner._id;
+                let saveOnline = yield onliner.save();
+                let saveUser = yield user.save();
+                if(saveOnline && saveUser){
                     socket.join(socket.id);
-                    socket.join('MDZZ');
+                    listUtil.joinRooms(socket,roomList);
                     let userInfo = {
                         nickname: user.nickname,
                         id: socket.id,
                         avatar: user.avatar,
                         isOnline: 1,
-                        curRoom: 'MDZZ'
+                        curRoom: crConfig.INIT_ROOM
                     };
-                    io.emit('user joined',userInfo);
                     cb(userInfo);
-                } else{
+                } else {
                     console.log('不存在的玩家');
                     cb({
                         isError: true,
@@ -46,23 +52,71 @@ module.exports = {
             console.log('解析错误');
             cb({
                 isError: true,
-                errMsg:'解析错误'
+                errMsg:'token解析错误'
             });
         }
     },
+    getActive: function *(token,cb){
+        let decode = jwt.verify(token,JWT_KEY);
+        if(decode){
+            let user = yield User.findOne({nickname:decode.user});
+            if(user){
+                let lastOnlineTime = user.lastOnlineTime;
+                let userList = yield Private.find({timestamp: {$gt: lastOnlineTime},to: user.nickname},null,{sort:'-timestamp'}).populate('from');
+                let roomList = yield User.findOne({nickname: user.nickname}).populate({path: 'rooms',match: {lastMessage: {$gt: lastOnlineTime}}});
+                roomList = roomList.rooms;
+                let roomNameArr = listUtil.getRoomNameArr(roomList);
+                let histories = yield History.find({timestamp: {$gt: lastOnlineTime}, room: {$in: roomNameArr}},null,{sort:'-timestamp',limit:20}).populate('owner');
+                let activeRoom  = listUtil.getRoomList(roomList);
+                let activeUser = listUtil.getUserList(userList);
+                let activeList = Object.assign({},activeRoom,activeUser);
+                let roomHistories = listUtil.getHistoryList(histories,'owner','room');
+                let privateHistories = listUtil.getPrivateList(userList,'from','from');
+                cb({
+                    activeList: activeList || {},
+                    roomHistories: roomHistories || {},
+                    privateHistories: privateHistories || {}
+                });
+            } else{
+                cb({
+                    isError: true,
+                    errMsg: '用户不存在'
+                });
+            }
+        } else{
+            console.log('token解析错误');
+            cb({
+                isError: true,
+                errMsg:'token解析错误'
+            });
+        }
+        
+    },
     leave: function *(socket,io) {
-        let online = yield Online.findOneOnline({socket:socket.id});
+        let online = yield Online.findOne({socket:socket.id}).populate('user','nickname');
         if(online){
-            console.log(online.nickname,'离线');
-            io.emit('user leaved',{nickname:online.nickname});
+            console.log(online.user.nickname,'离线');
+            User.updateInfo({
+                nickname: online.user.nickname,
+                onlineState: 'offline',
+                lastOnlineTime: new Date().getTime()
+            });
+            io.emit('user leaved',{nickname:online.user.nickname});
         }
         let res = yield Online.removeOnline({socket:socket.id});
     },
     reconnect: function *(token,io) {
-        let decode = jwt.verify(token,'nsmdzz');
+        let decode = jwt.verify(token,JWT_KEY);
         if(decode){
-            yield Online.removeOnline({nickname:decode.user});
-            io.emit('user leaved',{nickname:decode.user});
-        }
+            let user = yield User.findOne({nickname: decode.user}).populate('online');
+            if(user.online){
+                yield user.online.remove()
+                user.onlineState = 'offline';
+                user.lastOnlineTime = new Date().getTime();
+            }
+                let userSave =  yield user.save();
+                console.log('[reconnect]user leave:',user.nickname);
+                io.emit('user leaved',{nickname: decode.user});
+            }
     }
 }

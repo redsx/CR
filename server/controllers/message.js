@@ -3,24 +3,39 @@ const request = require('request')
     , User = require('../models/user-mongo')
     , Online = require('../models/online-mongo')
     , History = require('../models/history-mongo')
+    , Private = require('../models/private-mongo')
+    , Room = require('../models/room-mongo')
     , config = require('../config/cr-config');
 module.exports = {
-    getMessage: function *(message,socket,cb) {
+    saveMessage: function *(message,socket,cb) {
         let history = {
-            room:message.room,
-            content:message.content,
-            type:message.type
+            room: message.room,
+            content: message.content.slice(0,150),
+            type: message.type
         };
         history.timestamp = new Date().getTime();
         message.timestamp = history.timestamp;
         let user = yield User.findOneUser({nickname:message.nickname});
         if(user){
+            message.avatar = user.avatar;
             history.owner = user._id;
             let newHistory = new History(history);
-            newHistory.save();
-            socket.broadcast.to(message.room).emit('newMessage',message);
-            console.log('成功存入消息');
-            cb(message);
+            let room = yield Room.findOne({name: message.room});
+            if(room){
+                room.histories.push(newHistory._id);
+                room.lastMessage = history.timestamp;
+                yield newHistory.save();
+                yield room.save();
+                socket.broadcast.to(message.room).emit('newMessage',message);
+                console.log('成功存入消息');
+                cb(message);
+            } else{
+                console.log('房间不存在！');
+                cb({
+                    isError: true,
+                    errMsg:'房间不存在！'
+                });
+            }
         } else{
             console.log('玩家不存在！');
             cb({
@@ -29,7 +44,8 @@ module.exports = {
             });
         }
     },
-    getPrivateMessage: function *(message,socket,cb) {
+    savePrivateMessage: function *(message,socket,cb) {
+        console.log('message.js message 48:',message);
         let send = {
             nickname: message.nickname,
             content: message.content,
@@ -38,34 +54,46 @@ module.exports = {
             type: message.type
         }
         if(message.room === config.ROBOT_NAME){
-            cb(send);
-            let post = JSON.stringify({
-                key: config.ROBOT_KEY,
-                info:message.content,
-                userid:message.nickname
-            });
-            let reply = yield bluebird.promisify(request)({
-                url: config.ROBOT_URL,
-                method: 'post',
-                body: post
-            });
-            reply = JSON.parse(reply.body);
-            socket.emit('privateMessage',{
-                nickname: config.ROBOT_NAME,
-                content: reply.text,
-                timestamp: new Date().getTime(),
-                type: message.type
-            });
+            this.robotMessage(send,cb);
         } else{
-            let online = yield Online.findOneOnline({nickname:message.room});
-            if(online){
-                cb(send);
-                socket.broadcast.to(online.socket).emit('privateMessage',send);
-            } else{
-                cb({isNotOnline:true});
+            let toUser = yield User.findOne({nickname: message.room}).populate('online');
+            let fromUser = yield User.findOne({nickname: message.nickname});
+            send.avatar = fromUser.avatar;
+            if(toUser.online){
+                console.log('message.js toUser 63:',toUser);
+                socket.broadcast.to(toUser.online.socket).emit('privateMessage',send);
             }
-            
+            let privateMessage = new Private({
+                content: message.content,
+                from: fromUser._id,
+                to: send.room,    
+                timestamp: send.timestamp,
+                type: send.type
+            });
+            yield privateMessage.save();
+            cb(send);
         }
+    },
+    robotMessage: function *(send,cb){
+        cb(send);
+        let post = JSON.stringify({
+            key: config.ROBOT_KEY,
+            info:message.content,
+            userid:message.nickname
+        });
+        let reply = yield bluebird.promisify(request)({
+            url: config.ROBOT_URL,
+            method: 'post',
+            body: post
+        });
+        reply = JSON.parse(reply.body);
+        socket.emit('privateMessage',{
+            nickname: config.ROBOT_NAME,
+            avatar: config.ROBOT_AVATAR,
+            content: reply.text,
+            timestamp: new Date().getTime(),
+            type: message.type
+        });
     },
     getHistoryMessage: function *(room,cb){
         let histories = yield History.findByRoom({room:room},{sort:'-timestamp',limit:20});
@@ -82,6 +110,7 @@ module.exports = {
                 }
                 messages.unshift({
                     content: histories[i].content,
+                    avatar: histories[i].owner.avatar,
                     nickname: histories[i].owner.nickname,
                     room: histories[i].room,
                     timestamp: histories[i].timestamp,
