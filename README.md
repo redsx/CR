@@ -33,7 +33,7 @@
 ```
 ### 效果展示
 
-![x3](http://ooo.0o0.ooo/2016/10/11/57fcd70be9dcc.jpg)
+![x3](./app/images/show.jpeg)
 
 ### 安装
 
