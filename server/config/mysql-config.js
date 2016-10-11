@@ -1,7 +1,7 @@
 module.exports = {
-    host : 'jishuzhai.site',
+    host : 'host',
     port : 3306 ,
-    database : 'test',
-    user: 'root',
-    password : 'king19950705'
+    database : 'database',
+    user: 'user',
+    password : 'password'
 };
