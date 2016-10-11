@@ -4,7 +4,8 @@ import Setting from '../components/Setting.jsx'
 import { getUserInfo } from '../actions'
 function mapStateToProps(state) {
     return {
-        setting:state.get('setting')
+        setting:state.get('setting'),
+        userInfo: state.get('userCard')
     }
 }
 function mapDispatchToProps(dispatch) {
