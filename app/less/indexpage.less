@@ -1,0 +1,64 @@
+.transition(@trans:all,@time:0.5s,@func:ease-in,@delay:0ms){
+    -webkit-transition: @trans @time @func @delay ;
+    -moz-transition: @trans @time @func @delay ;
+    transition: @trans @time @func @delay ;
+}
+.right-box,.left-box,.left-box-show,.right-box-show{
+  position: absolute;
+  height: 100%;
+  .transition(all,450ms,cubic-bezier(0.23, 1, 0.32, 1),0ms);
+}
+.right-box,.right-box-show{
+  background:  rgba(255,255,255,0.01);
+}
+.imageMessage{
+    max-height: 50%;
+}
+@media screen and (max-width: 767px) {
+    .imageMessage{
+        max-width: 100%;
+    }
+}
+@media screen and (min-width: 768px) and (max-width: 980px) {
+    .imageMessage{
+        max-width: 250px;
+    }
+}
+@media screen and (max-width: 980px) {
+    .right-box {
+        width: 100% !important;
+        left: 0;
+    }
+    .left-box {
+        width: 275px;
+        left: -275px;
+    }
+    .right-box-show {
+        width: 100% !important;
+        left: 275px;
+    }
+    .left-box-show {
+      width: 275px;
+      left: 0;
+    }
+}
+@media screen and (min-width: 981px) {
+    .right-box {
+        left: 275px;
+    }
+    .left-box {
+        width: 275px;
+        left: 0;
+    }
+    .right-box-show {
+        width: 100% !important;
+        left: 0;
+    }
+    .left-box-show {
+      width: 275px;
+      left: -275px;
+    }
+    .imageMessage{
+        max-width: 260px;
+    }
+}

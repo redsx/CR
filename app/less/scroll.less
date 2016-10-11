@@ -1,0 +1,29 @@
+.transition(@trans:all,@time:0.5s,@func:ease-in,@delay:0ms){
+    -webkit-transition: @trans @time @func @delay ;
+    -moz-transition: @trans @time @func @delay ;
+    transition: @trans @time @func @delay ;
+}
+.scroll-show::-webkit-scrollbar{
+  width: 5px;
+  height: 5px;
+  .transition();
+}
+.scroll-show::-webkit-scrollbar-thumb
+{
+    border-radius: 9px;
+    -webkit-box-shadow: inset 0 0 3px #888;
+    box-shadow: inset 0 0 3px #888;
+    background-color: #999;
+}
+.scroll-hidden::-webkit-scrollbar{
+    width: 5px;
+    height: 5px;
+    .transition();
+}
+.scroll-hidden::-webkit-scrollbar-thumb
+{
+    border-radius: 9px;
+    -webkit-box-shadow: 0 0 3px rgba(255, 255, 255, 0);
+    box-shadow: inset 0 0 3px rgba(255, 255, 255, 0);
+    background-color: rgba(255, 255, 255, 0);
+}

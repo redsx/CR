@@ -1,3 +1,31 @@
+.transition(@time){
+    -webkit-transition: all @time;
+    -webkit-transition: all @time;
+    transition: all @time;
+}
+//进出场动画
+.system-setting-box-enter {
+    transform: scale(0.5);
+    opacity: 0.5;
+}
+
+.system-setting-box-enter.system-setting-box-enter-active {
+    .transition(0.2s);
+    transform: scale(1);
+    opacity: 1;
+}
+
+.system-setting-box-leave {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.system-setting-box-leave.system-setting-box-leave-active {
+    .transition(0.2s);
+    transform: scale(0.5);
+    opacity: 1;
+}
+//样式
 .system-setting-container {
     position: fixed;
     width: 100%;
@@ -33,4 +61,10 @@
     border: none;
     font-size: 0.9rem;
     padding: 6px 45px;
+}
+.system-setting-input{
+    padding-left: 15px;
+}
+.system-setting-input input{
+    width: 170px;
 }

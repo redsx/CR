@@ -1,0 +1,93 @@
+@time: 0.3s;
+.transition(@time){
+    -webkit-transition: all @time;
+    -webkit-transition: all @time;
+    transition: all @time;
+}
+//进出场动画
+.createroom-enter {
+    transform: scale(0.5);
+    transform: translateY(-300px);
+    opacity: 0.5;
+}
+
+.createroom-enter.createroom-enter-active {
+    .transition(@time);
+    transform: translateX(0px);
+    opacity: 1;
+}
+
+.createroom-leave {
+    transform: translateY(0px);
+    opacity: 1;
+}
+
+.createroom-leave.createroom-leave-active {
+    .transition(@time);
+    transform: translateY(-300px);
+    opacity: 0.5;
+}
+
+.createroom {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+}
+.createroom-header {
+    height: 45px;
+    line-height: 45px;
+    letter-spacing: 2px;
+    text-align: center;
+    background: white;
+}
+.createroom-container {
+    width: 80%;
+    min-width: 280px;
+    max-width: 500px;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0px 0px 6px 0px #ccc;
+    margin: auto;
+    margin-top: 20%;
+}
+.createroom-form {
+    background: rgb(250,250,250);
+    padding: 25px 20px;
+}
+.createroom-input-group{
+    display: inline-block;
+    width: 80%;
+    padding-right: 10px;
+}
+.createroom-input{
+    width: 100%;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 3px;
+    padding: 5px 0px;
+    outline: none;
+}
+.createroom-btn{
+    display: inline-block;
+    background: #46b2fe;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-size: 0.9rem;
+    padding: 5px;
+    letter-spacing: 3px;
+}
+.createroom-close{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    background: transparent;
+}

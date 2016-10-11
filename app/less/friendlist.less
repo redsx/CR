@@ -1,40 +1,37 @@
-.ul {
+.friendlist-ul {
     display: block;
-    padding-left: 10px;
+    padding: 0px;
     margin: 0px;
 }
-.li {
-    list-style: none;
-    margin-top: 9px;
-    padding-bottom: 5px;
-    border-bottom: solid 1px #E8E1E1;
-    transition: all 0.3s;
-}
-.li:hover{
-    transform: translateX(10px) !important;
-}
-.span {
-    padding-left: 10px;
-    color: #666;
-    cursor: pointer;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-.hr {
+.friendlist-hr {
     line-height: 38px;
     font-size: 15px
 }
-.list-box {
+.friendlist-header{
+    padding: 10px;
+    background: rgba(0,0,0,0.02);
+    position: relative;
+}
+.friendlist-header input{
+    display: block;
+    border: none;
+    height: 30px;
+    border-radius: 4px;
+    width: 165px;
+    padding-right: 25px;
+    font-size: 1rem;
+}
+.friendlist-search-btn{
+    border: none;
+    background: transparent;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    right: 25px;
+    top: 11px;
+}
+.friendlist-list-box {
     height: 90%;
     overflow-x: hidden;
     overflow-y: scroll;
-}
-.fl-notification {
-    text-align: center;
-    margin-right: 5px;
-    width: 21px !important;
-    height: 21px;
-    background: rgba(255, 80, 71, 0.98);
-    border-radius: 50%;
-    color: white;
 }

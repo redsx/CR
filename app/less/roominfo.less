@@ -1,0 +1,76 @@
+.transition(@trans:all,@time:0.5s,@func:ease-in,@delay:0ms){
+    -webkit-transition: @trans @time @func @delay ;
+    -moz-transition: @trans @time @func @delay ;
+    transition: @trans @time @func @delay ;
+}
+.roominfo-enter {
+    transform: translateX(270px);
+}
+
+.roominfo-enter.roominfo-enter-active {
+    .transition(all,450ms,cubic-bezier(0.23, 1, 0.32, 1),0ms);
+    transform: translateX(0px);
+}
+
+.roominfo-leave {
+    transform: translate(0,0px);
+}
+
+.roominfo-leave.roominfo-leave-active {
+    .transition(all,450ms,cubic-bezier(0.23, 1, 0.32, 1),0ms);
+    transform: translate(270px,0);
+}
+.roominfo {
+    width: 230px;
+    height: 100%;
+    padding: 9px;
+    background: rgba(255,255,255,0.3);
+}
+.roominfo-bulletin {
+    font-size: small;
+    color: #333;
+    padding: 0 10px;
+    height: 130px;
+    overflow-y: scroll;
+}
+.roominfo-title {
+    display: inline-block;
+    color: #444;
+    padding-right: 15px;
+}
+.roominfo-icon {
+    font-size: 12px;
+    line-height: 24px;
+}
+.hr {
+    height: 1px;
+    width: 188px;
+    margin: auto;
+    background: #eee;
+}
+.roominfo-list {
+    padding: 3px;
+    padding-top: 6px;
+    border-collapse: collapse;
+}
+.roominfo-ul{
+    padding-top: 3px;
+    height: 100%;
+    overflow-y: scroll
+}
+.roominfo-li{
+    padding: 5px 48px 5px 0px;
+}
+.roominfo-li-nickname{
+    line-height: 30px;
+    color: #555;
+    padding-left: 5px;    
+    color: #666;
+    cursor: pointer;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.roominfo-li-icon{
+    font-size: 14px;
+    line-height: 30px;
+}
