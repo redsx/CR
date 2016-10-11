@@ -5,7 +5,7 @@ import marked from 'marked'
 import '../less/inputareaM.less'
 
 import { sendMessage, sendPrivateMessage, sendImage } from '../actions'
-import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../actions/ajax.js'
+import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../util/ajax.js'
 
 
 class InputArea extends React.Component{

@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react'
-import Immutable from 'immutable'
 
 class Drag extends React.Component{
     constructor(props){

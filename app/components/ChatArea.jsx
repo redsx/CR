@@ -9,47 +9,93 @@ import InfoCard from '../containers/InfoCard.js'
 import Message from '../containers/Message.js'
 import SystemMessage from './SystemMessage.jsx'
 import Drag from './Drag.jsx'
-const styles = {
-    tooltipBox: {
-        display: 'none',
-    },
-    image: {
-        width: '70px'
-    }
-}
+import RoomInfo from '../containers/RoomInfo.js'
+import Loading from './Loading.jsx'
+
+import '../less/scroll.less'
+import '../less/chatarea.less'
+
 class ChatArea extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            preScroll: 0
+            preScroll: 0,
+            needScroll: true,
+            loadedAll: false,
+            showLoadBtn: false
         }
     }
     scrollToBottom(){
         let messageArea = this.refs.messageArea;
         messageArea.scrollTop = messageArea.scrollHeight;
     }
+    handleLoad(){
+        let user = this.props.user.toJS();
+        if(user.isPrivate){
+            this.props.getPrivateHistory().then((isLoadALL) => {
+                if(isLoadALL){
+                    this.setState({
+                        loadedAll: true
+                    })
+                }
+            });
+        } else{
+            this.props.getRoomHistory().then((isLoadALL) => {
+                if(isLoadALL){
+                    this.setState({
+                        loadedAll: true
+                    })
+                }
+            });
+        }
+    }
     componentDidMount(){
         let messageArea = this.refs.messageArea,
-            gif = this.refs.gif;
+            gif = this.refs.gif,
+            scrollHandle = null,
+            loadHistoryHandle = null,
+            user = this.props.user.toJS(),
+            messages = this.props.messages.toJS();
         messageArea.addEventListener('scroll',()=>{
-            if(messageArea.scrollTop === messageArea.scrollHeight-messageArea.offsetHeight && gif.style.display != 'none'){
+            if(messageArea.scrollTop < 20 && messageArea.scrollTop > 0){
+                if(this.state.showLoadBtn === false){
+                    this.setState({
+                        showLoadBtn: true,
+                        needScroll: false
+                    });
+                    setTimeout(() => {
+                        this.setState({
+                            showLoadBtn: false
+                        });
+                    },2000);
+                }
+            }
+            if(messageArea.scrollTop === messageArea.scrollHeight-messageArea.offsetHeight){
+                this.setState({needScroll: true});
                 gif.style.display = 'none';
+            }
+            if(messageArea.className = 'scroll-show'){
+                scrollHandle && clearTimeout(scrollHandle);
+                scrollHandle = setTimeout(()=>{
+                    messageArea.className = 'scroll-hidden';
+                },1000)
+            } else{
+                messageArea.className = 'scroll-show';
             }
         })
     }
     componentWillReceiveProps(nextProps){
-        if(!Immutable.is(this.props.onlineUsers,nextProps.onlineUsers)){
-            this.setState({needScroll:false});
-        } else{
-            this.setState({needScroll:true});
+        if(!Immutable.is(this.props.user,nextProps.user)){
+            if(this.state.loadedAll){
+                this.setState({
+                    loadedAll: false
+                });
+            }
         }
     }
     shouldComponentUpdate(nextProps,nextState){
-        let user = this.props.user.toJS(),
-            isChange = user.isPrivate ?
-            !Immutable.is(this.props.privateMessages.get(user.curRoom),nextProps.privateMessages.get(user.curRoom)) 
-            : !Immutable.is(this.props.messages.get(user.curRoom),nextProps.messages.get(user.curRoom));
-        if(!Immutable.is(this.props.user,nextProps.user) || !Immutable.is(this.props.onlineUsers,nextProps.onlineUsers) || isChange){
+        let isChange = this.state.showLoadBtn !== nextState.showLoadBtn;
+        if(isChange || !Immutable.is(this.props.user,nextProps.user)  || !Immutable.is(this.props.messages,nextProps.messages)){
             return true;
         }
         return false;
@@ -64,7 +110,7 @@ class ChatArea extends React.Component {
             childHeight,
             willScroll = true,
             preScroll = this.state.preScroll,
-            messages = user.isPrivate ? this.props.privateMessages.toJS() : this.props.messages.toJS(),
+            messages = this.props.messages.toJS(),
             messageArea = this.refs.messageArea,
             gif = this.refs.gif,
             needScroll = this.state.needScroll;
@@ -74,6 +120,9 @@ class ChatArea extends React.Component {
             imglist = messageArea.querySelectorAll('img');
             lastChild = messageArea.lastElementChild;
             childHeight = lastChild?lastChild.offsetHeight : 1;
+            if(lastMessage.nickname === user.nickname){
+                    willScroll = true;            
+            }
             if(needScroll){
                 // －30容错
                 if( messageArea.offsetHeight <= preScroll - messageArea.scrollTop -30){
@@ -82,9 +131,6 @@ class ChatArea extends React.Component {
                 if( messageArea.scrollHeight !== preScroll + childHeight){
                     willScroll = true;
                 }                
-                if(lastMessage.nickname === user.nickname){
-                    willScroll = true;            
-                }
                 if(isNeedScroll){
                     willScroll = true;
                     setScrollState(false);
@@ -106,10 +152,8 @@ class ChatArea extends React.Component {
         }
     }
     render(){
-        let user = this.props.user.toJS(),
-            onlineUsers = this.props.onlineUsers.toJS();
-        let messages = user.isPrivate ? this.props.privateMessages.toJS() : this.props.messages.toJS();
-        messages = messages[user.curRoom] || [];
+        let user = this.props.user.toJS();
+        let messages = this.props.messages.toJS();
         return (
             <div data-flex = 'dir:top '>
                 <InfoCard />
@@ -117,65 +161,63 @@ class ChatArea extends React.Component {
                 <div data-flex-box = '0'>
                     <HeadBar />
                 </div>
-                <div data-flex-box = '8' ref = 'messageArea' style = {{
-                    overflowY: 'scroll',
-                    paddingBottom: '20px'
-                }}>
-                    <div ref = 'gif' style = {styles.tooltipBox} >
-                        <Drag 
-                            x = {window.innerWidth - 70} 
-                            y = {70} 
-                            component = {
-                                <div>
-                                    <div style = {{position: 'relative'}}>
-                                            <img 
-                                                src= '/images/warn.gif'
-                                                alt= '消息提示' 
-                                                style = {styles.image} 
-                                                draggable= 'false'
-                                                onDoubleClick = {()=>{this.scrollToBottom()}}
-                                            />
-                                    </div>
-                                </div>
-                            }
-                        />
-                    </div>
-                    {
-                        messages.map((item,index) => {
-                            // avatar, timestamp, content, nickName
-                            switch (item.type) {
-                                case 'imageMessage':
-                                case 'textMessage': {
-                                    if(onlineUsers[item.nickname]){
-                                        let message = Immutable.fromJS({
-                                            nickname: onlineUsers[item.nickname].nickname,
-                                            avatar: onlineUsers[item.nickname].avatar,
-                                            timestamp: item.timestamp,
-                                            content: item.content,
-                                            type: item.type,
-                                            index: index
-                                        })
-                                        let dir = user.nickname === item.nickname ? 'right' : 'left';
-                                        return <Message message = {message} dir = {dir} key = {index} />
+                <div data-flex = 'main:center' data-flex-box = '1'>
+                    <div data-flex = 'dir:top' data-flex-box = '1' className = 'chatarea-messages'>
+                        <div className = 'chatarea-bottom ' onClick = {() => this.scrollToBottom()} ref = 'gif'>
+                            <span> <i className = 'icon chatarea-icon'>&#xe619;</i> 有新消息</span>
+                        </div>
+                        {
+                            this.state.showLoadBtn && !this.state.loadedAll ?
+                            <div className = 'chatarea-load' onClick = {() => this.handleLoad()}>
+                                <span> <i className = 'icon chatarea-icon'>&#xe616;</i> 加载更多</span>
+                            </div>
+                            : null
+                        }
+                        
+                        <div 
+                            data-flex-box = '8' 
+                            ref = 'messageArea' 
+                            style = {{
+                                overflowY: 'scroll',
+                                paddingBottom: '2px'
+                            }}
+                        >
+                            {
+                                messages.map((item,index) => {
+                                    switch (item.type) {
+                                        case 'imageMessage':
+                                        case 'textMessage': {
+                                            let message = Immutable.fromJS({
+                                                nickname: item.nickname,
+                                                avatar: item.avatar,
+                                                timestamp: item.timestamp,
+                                                content: item.content,
+                                                type: item.type,
+                                                index: index
+                                            })
+                                            let dir = user.nickname === item.nickname ? 'right' : 'left';
+                                            return <Message message = {message} dir = {dir} key = {index} />
+                                        }
+                                        case 'systemMessage': {
+                                            return <SystemMessage content = {item.content || ''} key = {index}/>
+                                        }
+                                        default:
+                                            break;
                                     }
-                                    return null;
-                                }
-                                case 'systemMessage': {
-                                    return <SystemMessage content = {item.content || ''} key = {index}/>
-                                }
-                                default:
-                                    break;
+                                    
+                                })
                             }
-                            
-                        })
-                    }
-                     
-                </div>
-                <div data-flex-box = '0'>
-                    <InputArea />
-                </div>
-                <div data-flex-box = '0'>
-                    <ImageExpressions />
+                        </div>
+                        <div data-flex-box = '0'>
+                            <InputArea />
+                        </div>
+                        <div data-flex-box = '0'>
+                            <ImageExpressions />
+                        </div>
+                    </div>
+                    <div data-flex-box = '0' className = 'chatarea-room-list'>
+                        { user.isPrivate ? null : <RoomInfo />}
+                    </div>
                 </div>
             </div>
         );
@@ -186,7 +228,6 @@ ChatArea.propTypes = {
     // messages: PropTypes.object,
     // privateMessages: PropTypes.object,
     // user: PropTypes.object,
-    // onlineUsers: PropTypes.object,
     isNeedScroll: PropTypes.bool
 }
 export default ChatArea;

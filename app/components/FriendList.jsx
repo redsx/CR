@@ -1,13 +1,11 @@
 import React, { PropTypes } from 'react'
 
-import Avatar from '../containers/Avatar.js'
-
-import List from 'material-ui/List/List'
-import ListItem from 'material-ui/List/ListItem'
 import Subheader from 'material-ui/Subheader'
 import Divider from 'material-ui/Divider'
-
+import Avatar from '../containers/Avatar.js'
+import ListItem from './ListItem.jsx'
 import QueueAnim from 'rc-queue-anim'
+import pureMixin from '../mixin/pureMixin.js'
 
 import '../less/friendlist.less'
 
@@ -15,131 +13,95 @@ import '../less/friendlist.less'
 class FriendList extends React.Component{
     constructor(props){
         super(props);
+        this.shouldComponentUpdate = pureMixin.bind(this);
     }
     closeMenu(){
-        if(window.innerWidth < 768){
+        if(window.innerWidth < 980){
             this.props.setMenuState(true);
         }
     }
-    renderOnlineList(){
-        let { setUserCurRoom, clearCount , nickname, setScrollState } = this.props;
-        let onlineUsers = this.props.onlineUsers.toJS(),
-            badgeCount = this.props.badgeCount.toJS();
-        let list = [];
-        for(let item in onlineUsers){
-            let user = onlineUsers[item];
-            if(user.isOnline > 0 && user.nickname !== nickname){
-                list.push(
-                    <li
-                        className = 'li'
-                        key = {item}
-                        data-flex = 'main:center box:first'
-                    >
-                        <Avatar 
-                            src = {user.avatar}
-                            size = {39}
-                            nickname = {user.nickname}
-                            mode = 'profile'
-                        />
-                        <div
-                            data-flex = 'main:left cross:center box:last'
-                            onClick = {()=>{
-                                    setUserCurRoom({
-                                        curRoom: user.nickname,
-                                        isPrivate: true
-                                    });
-                                    clearCount(user.nickname);
-                                    setScrollState(true);
-                                    this.closeMenu();
-                                }}
-                        >
-                            <span
-                                className = 'span'
-                                data-flex-box = '2'
-                            >
-                                {user.nickname}
-                            </span>
-                            {
-                                badgeCount[user.nickname] ?
-                                <span
-                                    className = 'fl-notification'
-                                >
-                                    {badgeCount[user.nickname]}                                    
-                                </span>
-                                : null
-                            }
-                        </div>
-                    </li>
+    handleClick(){
+        let value = this.refs.searchInput.value.trim();
+        this.props.searchRoom(value);
+    }
+    clickList(isPrivate,roomName){
+        return () => {
+            let { changeRoom, curRoom, clearCount , nickname, setScrollState } = this.props;
+            if(curRoom !== roomName){
+                changeRoom({
+                    curRoom: roomName,
+                    isPrivate: isPrivate
+                });
+                clearCount(roomName);
+            }
+            setScrollState(true);
+            this.closeMenu()
+        }
+    }
+    showRoomInfo(roomName){
+        return () => {
+            this.props.getRoomInfo(roomName);
+        }
+    }
+    renderList(){
+        let { changeRoom, clearCount , nickname, curRoom, setScrollState, listState } = this.props;
+        let badgeCount = this.props.badgeCount.toJS(),
+            list = this['props'][listState] ? this['props'][listState].toJS() : {};
+        let arr = [];
+        for(let item in list){
+            arr.push(
+                <ListItem
+                    key = {item}
+                    handleTextClick = { listState === 'searchList'? this.showRoomInfo(list[item]['roomName']) : this.clickList(list[item]['isPrivate'],list[item]['roomName']) }
+                    text = {list[item]['roomName']}
+                    badgeCount = {badgeCount[list[item]['roomName']]}
+                    avatar = {list[item]['avatar']}
+                    isSelect = {curRoom === list[item]['roomName']}
+                    needBtn = {listState === 'activeList'}
+                    handleBtnClick = {() => this.props.deleteActiveItem(list[item])}
+                />
+            )
+        }
+        return arr
+    }
+    renderHeader(listState){
+        switch(listState){
+            case 'activeList': {
+                return (
+                    <Subheader>
+                        <span>活跃列表</span>
+                        <Divider/>
+                    </Subheader>
+                )
+            }
+            case 'roomList': {
+                return (
+                    <Subheader>
+                        <span>已加入列表</span>
+                        <Divider/>
+                    </Subheader>
+                )
+            }
+            case 'searchList': {
+                return (
+                    <div className = 'friendlist-header' data-flex = 'main:center cross:center'>
+                        <input type = 'text' placeholder = '输入房间名' ref = 'searchInput'/>
+                        <button className = 'friendlist-search-btn' onClick = {()=>this.handleClick()}><i className = 'icon'>&#xe60f;</i></button>
+                    </div>
                 )
             }
         }
-        return list
-    }
-    renderRoomList(){
-        let list = this.renderOnlineList();
-        let { setUserCurRoom, clearCount, setScrollState } = this.props;
-        let badgeCount = this.props.badgeCount.toJS();
-        
-        let  room = {};
-        room.avatar = 'http://oajmk96un.bkt.clouddn.com/hdImg_6e40281f541d24709f2840adc72631a61469706694782.jpg';
-        room.name = 'MDZZ'
-        list.unshift(
-            <li
-                key = {room.name}
-                className = 'li'
-                data-flex = 'main:center box:first'
-            >
-                <Avatar 
-                    src = {room.avatar}
-                    size = {39}
-                    nickname = ''
-                    mode = ''
-                />
-                <div
-                    data-flex = 'main:left cross:center box:last'
-                    onClick = {()=>{
-                            setUserCurRoom({
-                                curRoom: room.name,
-                                isPrivate: false
-                            });
-                            clearCount(room.name);
-                            setScrollState(true);
-                            this.closeMenu()
-                        }}
-                >
-                    <span 
-                        className = 'span'
-                        data-flex-box = '2'
-                    >
-                        {room.name}
-                    </span>
-                    {
-                        badgeCount[room.name] ?
-                        <span
-                            className = 'fl-notification'
-                        >
-                            {badgeCount[room.name]}                                    
-                        </span>
-                        : null
-                    }
-                </div>
-            </li>
-        )
-        return list;
     }
     render(){
-        let isShowRoom = this.props.isShowRoom;
-        let list = isShowRoom ? this.renderRoomList() : this.renderOnlineList();
+        let listState = this.props.listState;
+        let list = this.renderList();
         return (
             <div style = {{ height:'100%'}}>
-                <Subheader className = 'hr'>
-                    {isShowRoom?'活跃用户':'在线用户'}
-                </Subheader>
-                <Divider />
-                <div className = 'list-box'>
-                    <ul className = 'ul'>
+                {this.renderHeader(listState)}
+                <div className = 'friendlist-list-box'>
+                    <ul className = 'friendlist-ul'>
                         <QueueAnim>
-                        {list}
+                            {list}
                         </QueueAnim>
                     </ul>
                 </div>
@@ -149,11 +111,11 @@ class FriendList extends React.Component{
 }
 FriendList.propTypes = {
     // onlineUsers: PropTypes.object,
-    setUserCurRoom: PropTypes.func,
+    changeRoom: PropTypes.func,
     clearCount: PropTypes.func,
     setScrollState: PropTypes.func,
     // badgeCount: PropTypes.object,
     nickname: PropTypes.string,
-    isShowRoom: PropTypes.bool
+    listState: PropTypes.string
 }
 export default FriendList;

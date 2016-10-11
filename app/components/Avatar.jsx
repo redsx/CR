@@ -57,7 +57,7 @@ class Avatar extends React.Component{
     }
     render(){
         let isShowMenu = this.state.isShowMenu;
-        let { size, src, nickname, getUserInfo } = this.props;
+        let { size, src, nickname, getUserInfo, radius } = this.props;
         return (
             <div>
                 <div 
@@ -66,6 +66,7 @@ class Avatar extends React.Component{
                         width: size + 'px',
                         height: size + 'px',
                         backgroundImage: 'url(' + src + ')',
+                        borderRadius: radius + 'px' || '50%'
                     }}
                     onClick = {(e)=>this.handleClick(e)}
                 >
@@ -82,7 +83,7 @@ class Avatar extends React.Component{
                         >
                             <li className = 'avatar-li' onClick = {() => {this.handleAt(nickname)}}>@TA</li>
                             <li className = 'avatar-li' onClick = {() => getUserInfo(nickname)}>查看个人资料</li>
-                            <li className = 'avatar-li' onClick = {() => this.props.setUserCurRoom({curRoom:nickname,isPrivate: true})}>发送消息</li>
+                            <li className = 'avatar-li' onClick = {() => this.props.changeRoom({curRoom:nickname,isPrivate: true})}>发送消息</li>
                         </ul>
                     </div>
                 }
@@ -93,9 +94,19 @@ class Avatar extends React.Component{
 }
 Avatar.propTypes = {
     size: PropTypes.number,
+    radius: PropTypes.number,
     src: PropTypes.string,
     nickname: PropTypes.string,
     getUserInfo: PropTypes.func,
     addExpression: PropTypes.func
 }
 export default Avatar;
+
+
+// Avatar 参数：
+// 1. size：头像大小
+// 2. src： 头像图片地址
+// 3. nickname：头像对应用户名
+// 4. radius：头像框弧度
+// 5. mode：类型分为profile(点击出现资料) menu(点击出现菜单)
+// 现在才发现头像组件没有设计好啊，＝.＝下个版本改为通用组件好了

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 
-import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../actions/ajax.js'
+import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../util/ajax.js'
 import { sendMessage, sendPrivateMessage } from '../actions'
 
 import QueueAnim from 'rc-queue-anim'

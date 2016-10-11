@@ -4,11 +4,12 @@ import IconButton from 'material-ui/IconButton'
 import ContentClear from 'material-ui/svg-icons/content/clear';
 
 import { changeAvatar } from '../actions'
-import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../actions/ajax.js'
+import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../util/ajax.js'
 
 import Avatar from '../containers/Avatar.js'
 import Setting from '../containers/Setting.js'
 import SpecialSetting from '../containers/SpecialSetting.js'
+import RoomSetting from '../containers/RoomSetting.js'
 import Drag from './Drag.jsx'
 
 import '../less/infocard.less'
@@ -19,9 +20,10 @@ class InfoCard extends React.Component{
     }
     handleChange(e){
         let fileBtn = e.target;
+        let { title, mode } = this.props;
         let imgFile = fileBtn.files[0],
             formdata = new FormData(),
-            user = this.props.user,
+            user = this.props.user.toJS(),
             setUserInfo = this.props.setUserInfo,
             getUserInfo = this.props.getUserInfo,
             hiddenInfoCard = this.props.hiddenInfoCard,
@@ -37,19 +39,34 @@ class InfoCard extends React.Component{
                 .then((resault)=>{
                     if(resault.code === 'success'){
                         let url = resault.data.url;
-                        return changeAvatar({
-                            nickname: user,
-                            avatar: url
-                        })
+                        if(mode === 'roomCard'){
+                            return this.props.updateRoomInfo({
+                                name: title,
+                                avatar: url,
+                                token: user.token
+                            });
+                        } else{
+                            return changeAvatar({
+                                nickname: user.nickname,
+                                avatar: url
+                            })
+                        }
                     } else{
                         throw new Error('uplode error');
                     }
-                }).then((resault)=>{
-                    return setUserInfo(resault);
                 }).then(()=>{
-                    getUserInfo(user);
+                    if(mode === 'roomCard'){
+                        this.props.getRoomActiveInfo(title);
+                    } else{
+                        getUserInfo(user.nickname);
+                    }
+                    hiddenInfoCard();
                 }).catch((err)=>{
-                    alert('图片上传失败，请重试');
+                    console.log(err);
+                    this.props.setSnackbarState({
+                        content: '图片上传失败，请重试',
+                        open: true
+                    })
                     hiddenInfoCard();
                 })
             }
@@ -57,8 +74,7 @@ class InfoCard extends React.Component{
         
     }
     renderInfoCard(){
-        let { nickname, avatar, time, isShow } = this.props.infoCardState.toJS();
-        let canChangeInfo = this.props.user === nickname;
+        let { mode, isShow, title, creater, time, avatar, canChangeInfo } = this.props;
         return !isShow?null:(
                 <div
                     className = 'info-card-box'
@@ -78,7 +94,7 @@ class InfoCard extends React.Component{
                             className = 'info-card-head-left'
                         >
                             
-                            <h2>{nickname}</h2>
+                            <h2>{title}</h2>
                             <span>{time}</span>
                         </div>
                         <div
@@ -89,7 +105,7 @@ class InfoCard extends React.Component{
                             <Avatar 
                                 src = {avatar} 
                                 size = {65}
-                                nickname = {nickname}
+                                nickname = {title}
                                 mode = ''
                                 className = 'info-card-avatar'
                             />
@@ -99,13 +115,14 @@ class InfoCard extends React.Component{
                         </div>
                     </div>
                     {
-                        canChangeInfo? <Setting userInfo = {this.props.infoCardState}/> : <SpecialSetting userInfo = {this.props.infoCardState}/>
+                        mode === 'roomCard' ? <RoomSetting />
+                        : (canChangeInfo? <Setting /> : <SpecialSetting />)
                     }
                 </div>
             )
     }
     render(){
-        let isShow = this.props.infoCardState.toJS().isShow,
+        let isShow = this.props.isShow,
             y = Math.round(window.innerHeight/2) - 200,
             x = Math.round(window.innerWidth/2) - 165;
         return !isShow?null:(

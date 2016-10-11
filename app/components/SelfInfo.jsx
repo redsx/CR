@@ -13,24 +13,40 @@ import Person from 'material-ui/svg-icons/social/person.js'
 
 import Avatar from '../containers/Avatar.js'
 
-import { logout } from '../actions'
 import '../less/selfinfo.less'
 
 class SelfInfo extends React.Component{
     constructor(props){
         super(props);
     }
-    handleClick(value){
+    handleClick(value,listState){
+        if(value === listState) return;
         this.props.setListShow(value);
+    }
+    handleRoomListClick(value,listState){
+        let token = this.props.user.get('token');
+        if(value === listState){
+            return ;
+        } else{
+            this.props.setListShow(value);
+            this.props.getRoomList(token);
+        }
     }
     handleSettingClick(){
         this.props.setSystemSettingState(true);
-        if(window.innerWidth < 768){
+        if(window.innerWidth < 980){
+            this.props.setMenuState(true);
+        }
+    }
+    handleCreateRoomClick(){
+        this.props.setCreateRoomState(true);
+        if(window.innerWidth < 980){
             this.props.setMenuState(true);
         }
     }
     render(){
         let { avatar, nickname } = this.props.user.toJS();
+        let listState = this.props.listState;
         return (
             <div
                 data-flex = 'main:center cross:center dir:top '
@@ -46,10 +62,22 @@ class SelfInfo extends React.Component{
                 </div>
                 <div data-flex-box = '3'>
                 <ul className = 'selfinfo-icon-ul'>
-                    <li className = 'selfinfo-icon-list' onClick = {()=> this.handleClick(false)}>
-                        <i className = 'selfinfo-icon'>&#xe68c;</i>
+                    <li 
+                        className = {listState !== 'roomList'?'selfinfo-icon-list':'selfinfo-icon-list-select'} 
+                        onClick = {()=> this.handleRoomListClick('roomList',listState)}
+                    >
+                        <i className = 'selfinfo-icon'>&#xe6a3;</i>
                     </li>
-                    <li className = 'selfinfo-icon-list' onClick = {() => this.handleClick(true)}>
+                    <li 
+                        className = {listState !== 'searchList'?'selfinfo-icon-list':'selfinfo-icon-list-select'}  
+                        onClick = {() => this.handleClick('searchList',listState)}
+                    >
+                        <i className = 'selfinfo-icon'>&#xe60f;</i>
+                    </li>
+                    <li 
+                        className = {listState !== 'activeList'?'selfinfo-icon-list':'selfinfo-icon-list-select'}  
+                        onClick = {() => this.handleClick('activeList',listState)}
+                    >
                         <i className = 'selfinfo-icon'>&#xe67f;</i>
                     </li>
                     <li className = 'selfinfo-icon-list' onClick = {() => this.handleSettingClick()} >
@@ -59,18 +87,11 @@ class SelfInfo extends React.Component{
                 </div>
                 <div data-flex-box = '2' data-flex = 'dir:bottom'>
                 <ul className = 'selfinfo-icon-ul'>
-                    <li className = 'selfinfo-icon-list' onClick = {()=>logout()}>
+                    <li className = 'selfinfo-icon-list' onClick = {() => this.props.logout()}>
                         <i className = 'selfinfo-icon'>&#xe67b;</i>
                     </li>
-                    <li className = 'selfinfo-icon-list'>
-                        <a href = 'http://blog.mdzzapp.com/#/article/纪录cr聊天室开发?_k=ey6sdw' target = '_blank'>
-                            <i className = 'selfinfo-icon'>&#xe68e;</i>
-                        </a>
-                    </li>
-                    <li className = 'selfinfo-icon-list'>
-                        <a href = 'https://github.com/redsx/CR' target = '_blank'>
-                            <i className = 'selfinfo-icon' style = {{fontWeight: '900'}}>&#xe692;</i>
-                        </a>
+                    <li className = 'selfinfo-icon-list' onClick = {() => this.handleCreateRoomClick() }>
+                        <i className = 'selfinfo-icon'>&#xe69e;</i>
                     </li>
                 </ul>
                 </div>

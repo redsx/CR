@@ -11,10 +11,11 @@ class SpecialSetting extends React.Component{
         }
     }
     handleSend(){
-        this.props.setUserCurRoom({
+        this.props.changeRoom({
             isPrivate: true,
             curRoom: this.props.userInfo.get('nickname')
         });
+        this.props.hiddenInfoCard();
     }
     handleShield(){
         let nickname = this.props.userInfo.get('nickname');

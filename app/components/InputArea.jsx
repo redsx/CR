@@ -4,7 +4,7 @@ import Immutable from 'immutable'
 import '../less/inputarea.less'
 
 import { sendMessage, sendPrivateMessage, sendImage } from '../actions'
-import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../actions/ajax.js'
+import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../util/ajax.js'
 
 
 class InputArea extends React.Component{
@@ -31,6 +31,7 @@ class InputArea extends React.Component{
     }
     handleClick(){
         let input = this.refs.input;
+        if(!input) return;
         let user = this.props.user.toJS(),
             addPrivateMessage = this.props.addPrivateMessage,
             addMessage = this.props.addMessage,

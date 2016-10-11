@@ -58,6 +58,7 @@ class Message extends React.Component{
                     </div>
                     <div style = {{
                         padding:'0 10px',
+                        width: '100%',
                         textAlign:dir
                     }}>
                         <span className = 'nickname'>

@@ -1,13 +1,10 @@
 import React, {PropTypes} from 'react'
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 
-import AudioGroup from '../containers/AudioGroup.js'
-import ImageSlide from '../containers/ImageSlide.js'
-import Snackbar from '../containers/Snackbar.js'
-import SystemSetting from '../containers/SystemSetting.js'
-
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
+
+import Snackbar from '../containers/Snackbar.js'
 
 import '../less/app.less'
 
@@ -29,10 +26,7 @@ class App extends React.Component{
                                 key: this.props.location.pathname
                             })}
                         </ReactCSSTransitionGroup>
-                    <SystemSetting />
-                    <ImageSlide />
-                    <AudioGroup />
-                    <Snackbar />
+                        <Snackbar />
                 </div>
             </MuiThemeProvider>
         );

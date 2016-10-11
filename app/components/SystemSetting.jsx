@@ -7,11 +7,6 @@ class SystemSetting extends React.Component{
     constructor(props){
         super(props);
     }
-    // componentDidMount(){
-    //     document.addEventListener('scroll',(e)=>{
-    //         console.log(e.target);
-    //     })
-    // }
     launchIntoFullscreen(element) {
         if(element.requestFullscreen) {
             element.requestFullscreen();
@@ -40,7 +35,7 @@ class SystemSetting extends React.Component{
         }
     }
     handleScroll(){
-
+        
     }
     handleNotificationToggle(e,v){
         this.props.setNotificationState(v);
@@ -51,7 +46,9 @@ class SystemSetting extends React.Component{
         this.props.storageSetting();
     }
     handleClick(){
-        this.props.setSystemSettingState(false)
+        this.props.setBgImage(this.refs.imageUrl.value);
+        this.props.storageSetting();
+        this.props.setSystemSettingState(false);
     }
     render(){
         return !this.props.isShowSysSetting?null:(
@@ -86,6 +83,12 @@ class SystemSetting extends React.Component{
                             disabled = {true}
                             onToggle = {(e,v)=>{this.handleFullScreenToggle(e,v)}}
                         />
+                        <div data-flex = 'main: right' className = 'system-setting-toggle'>
+                            <span data-flex-box = '0'>背景图片</span>
+                            <span data-flex-box = '1' data-flex = 'main: left' className = 'system-setting-input'>
+                                <input type= 'text' ref = 'imageUrl' defaultValue = {this.props.bgImage}/>
+                            </span>
+                        </div>
                     </div>
                     <div className = 'system-setting-footer'  data-flex = 'main:center cross:center'>
                         <button className = 'system-setting-btn' onClick = {()=>this.handleClick()}>确定</button>
@@ -98,3 +101,4 @@ class SystemSetting extends React.Component{
     }
 }
 export default SystemSetting;
+
