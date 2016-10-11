@@ -6,7 +6,19 @@ const user = new Schema({
     info: String,
     email: String,
     sex: String,
-    historys: [{type:Schema.Types.ObjectId,ref:'history'}],
+    onlineState: String,
+    lastOnlineTime: {
+        type: Number,
+        default: Date.now()
+    },   
+    device: {
+        type: String,
+        default: 'PC'
+    },
+    rooms: [{
+        type: Schema.Types.ObjectId,
+        ref: 'room'
+    }],
     avatar: {
         type: String, 
         default: 'http://oajmk96un.bkt.clouddn.com/lolo.jpg'
@@ -14,7 +26,11 @@ const user = new Schema({
     createdAt: {
         type: Date, 
         default: Date.now()
-    }
+    },
+    online: {
+        type: Schema.Types.ObjectId,
+        ref: 'online'
+    },
 })
 
 user.statics.findOneUser = function (op) {

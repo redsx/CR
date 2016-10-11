@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const online = new Schema({
-    nickname: String,
-    socket: String,
-    avatar: {
-        type: String,
-        default:'http://7xrutd.com1.z0.glb.clouddn.com/avatar_56f0c64f696c9deb176d770b?v=1463118961270'
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'user'
     },
+    socket: String,
     createdAt: {
         type: Date, 
         default: Date.now()

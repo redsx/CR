@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const history = new Schema({
+const private = new Schema({
     content: String,
-    timestamp: Number,
-    room: String,
-    type: String,
-    owner: {
+    from: {
         type: Schema.Types.ObjectId,
         ref: 'user'
-    }
+    },
+    to: String,    
+    timestamp: Number,
+    type: String
 });
-history.statics.findAll= function (op={}) {
+private.statics.findAll= function (op={}) {
     return new Promise((resolve,reject)=>{
         this.find(op).populate('owner').exec(function (err,rows) {
             if(err) reject(err);
@@ -18,7 +18,7 @@ history.statics.findAll= function (op={}) {
         })
     });
 }
-history.statics.findByRoom= function (op,limit) {
+private.statics.findByRoom= function (op,limit) {
     return new Promise((resolve,reject)=>{
         this.find(op,null,limit).populate('owner').exec(function (err,rows) {
             if(err) reject(err);
@@ -26,4 +26,4 @@ history.statics.findByRoom= function (op,limit) {
         })
     });
 }
-module.exports = mongoose.model('history',history);
+module.exports = mongoose.model('private',private);
