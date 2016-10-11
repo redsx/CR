@@ -4,7 +4,7 @@ import { browserHistory } from 'react-router'
 // export const socket = io('http://mdzzapp.com:3000');
 // export const socket = io('http://mdzzapp.com:3001');
 export const socket = io('http://localhost:3000');
-
+export const LOAD_MESSAGE_LIMIT = 15;
 // page UI state
 export const SET_MENU_STATE = 'SET_MENU_STATE';
 export const SET_EXPRESSION_STATE = 'SET_EXPRESSION_STATE';
@@ -14,6 +14,9 @@ export const SET_IMAGEEXP_STATE = 'SET_IMAGEEXP_STATE';
 export const SET_SCROLL_STATE = 'SET_SCROLL_STATE';
 export const SET_SNACKBAR_STATE = 'SET_SNACKBAR_STATE';
 export const SET_SYS_SETTING_STATE = 'SET_SYS_SETTING_STATE';
+export const SET_ROOM_INFO_STATE = 'SET_ROOM_INFO_STATE';
+export const SET_CREATE_ROOM_STATE = 'SET_CREATE_ROOM_STATE';
+export const SET_SEARCH_USER_STATE = 'SET_SEARCH_USER_STATE';
 export const setMenuState = (menuState) => {
     return {
         type: SET_MENU_STATE,
@@ -82,24 +85,42 @@ export const setSystemSettingState = (state) => {
         state
     }
 }
+export const setRoomInfoState = (state) => {
+    return {
+        type: SET_ROOM_INFO_STATE,
+        state
+    }
+}
+export const setCreateRoomState = (state) => {
+    return {
+        type: SET_CREATE_ROOM_STATE,
+        state
+    }
+}
+export const setSearchUserState = (state) => {
+    return {
+        type: SET_SEARCH_USER_STATE,
+        state
+    }
+}
 // init
 export const SET_USER_INFO = 'SET_USER_INFO';
-export const SET_INITONLINEUSER_INFO = 'SET_INITONLINEUSER_INFO';
 export const setUserInfo = (user) => {
     return {
         type: SET_USER_INFO,
         user
     }
 }
-export const getInitUserInfo = (token) => {
+export const getInitUserInfo = (info) => {
     return (dispatch,getState) => {
         return new Promise((resolve)=>{
-            socket.emit('getInfo',token, (body) => {
+            socket.emit('getInfo',info, (body) => {
                 if(body.isError){
                     alert('用户已经在线');
                     browserHistory.push('/login');
                 } else{
                     body.isPrivate = false; 
+                    body.token = info.token;
                     dispatch(setUserInfo(body));
                     resolve(body);
                 }
@@ -107,59 +128,7 @@ export const getInitUserInfo = (token) => {
         })
     }
 }
-export const setInitOnlineUser = (onlineUsers) => {
-    return {
-        type: SET_INITONLINEUSER_INFO,
-        onlineUsers
-    }
-}
-export const getInitOnlineUser = () => {
-    return (dispatch) => {
-        return new Promise((resolve)=>{
-            socket.emit('getOnlineUsers',(body) => {
-                if(body.isError){
-                    dispatch(setSnackbarState({
-                        content: body.errMsg,
-                        open: true
-                    }));
-                    browserHistory.push('/login');
-                } else{
-                    dispatch(setInitOnlineUser(body));
-                }
-                resolve();
-            })
-        })
-    }
-}
-// set users info
-export const ADD_ONLINEUSER_INFO = 'ADD_ONLINEUSER_INFO';
-export const SET_LOGOUTUSER_INFO = 'SET_LOGOUTUSER_INFO';
-export const ADD_HISTORY_USER_INFO = 'ADD_HISTORY_USER_INFO';
-export const CHANGE_USER_INFO = 'CHANGE_USER_INFO';
-export const addOnlineUser = (user) => {
-    return {
-        type: ADD_ONLINEUSER_INFO,
-        user
-    }
-}
-export const changeUserInfo = (user)=>{
-    return {
-        type: CHANGE_USER_INFO,
-        user
-    }
-}
-export const deleteLogoutUser = (user) => {
-    return {
-        type: SET_LOGOUTUSER_INFO,
-        user
-    }
-}
-export const addHistoryUser = (users) => {
-    return {
-        type: ADD_HISTORY_USER_INFO,
-        users
-    }
-}
+
 // set personal info
 export const LOGIN = 'LOGIN';
 export const SET_USER_CURROOM = 'SET_USER_CURROOM';
@@ -169,6 +138,57 @@ export const setUserCurRoom = (roomInfo) => {
     return {
         type: SET_USER_CURROOM,
         roomInfo
+    }
+}
+export const changeRoom = (roomInfo) => {
+    return (dispatch,getState) => {
+        const state = getState().toJS();
+        if(roomInfo.isPrivate){
+            if(!state['activeList'][roomInfo.curRoom]){
+                //头像会有bug，暂时处理方式
+                let privateUser = state['roomInfo']['active']?state['roomInfo']['active'][roomInfo.curRoom]:null;
+                dispatch(addActiveItem({
+                    roomName: roomInfo.curRoom,
+                    avatar: privateUser ? privateUser.avatar : 'http://oajmk96un.bkt.clouddn.com/lolo.jpg',
+                    isPrivate: true
+                }));
+            }
+            let messages = state['privateMessages'][roomInfo.curRoom] || [];
+            if(messages.length < 15){
+                getPrivateHistory({
+                    fromUser: roomInfo.curRoom,
+                    toUser: state.userState.nickname,
+                    messageCount: messages.length,
+                    limit: LOAD_MESSAGE_LIMIT
+                })(dispatch,getState);
+            }
+            dispatch(setUserCurRoom(roomInfo));
+        } else{
+            if(!state['activeList'][roomInfo.curRoom]){
+                let curRoom = state['roomList'][roomInfo.curRoom] || {};
+                dispatch(addActiveItem({
+                    roomName: roomInfo.curRoom,
+                    avatar: curRoom.avatar,
+                    isPrivate: false
+                }));
+            }
+            let messages = state['messages'][roomInfo.curRoom] || [];
+            clearHistory(state.userState.curRoom);
+            getRoomActiveInfo(roomInfo.curRoom)(dispatch)
+            .then((resault) => {
+                if(messages.length < 15){
+                    return getRoomHistory({
+                        roomName: roomInfo.curRoom,
+                        messageCount: messages.length,
+                        limit: LOAD_MESSAGE_LIMIT
+                    })(dispatch);
+                }
+                return ;
+            })
+            .then(() => {
+                dispatch(setUserCurRoom(roomInfo));
+            })
+        }
     }
 }
 export const updateUserInfo = (userInfo) => {
@@ -189,8 +209,16 @@ export const updateUserInfo = (userInfo) => {
 export const SEND_MESSAGE = 'SEND_MESSAGE';
 export const ADD_MESSAGE = 'ADD_MESSAGE';
 export const ADD__PRIVATE_MESSAGE = 'ADD_PRIVATE_MESSAGE';
-export const GET_HISTORY_MESSAGE = 'GET_HISTORY_MESSAGE';
-export const ADD_HISTORY_MESSAGE ='ADD_HISTORY_MESSAGE';
+export const ADD_HISTORY_MESSAGE = 'ADD_HISTORY_MESSAGE';
+export const CLEAR_HISTORY = 'CLEAR_HISTORY';
+export const ADD_PRIVATE_HISTORY_MESSAGE = 'ADD_PRIVATE_HISTORY_MESSAGE';
+
+export const clearHistory = (room) => {
+    return {
+        type: CLEAR_HISTORY,
+        room
+    }
+}
 export const addMessage = (message) => {
     return {
         type:ADD_MESSAGE,
@@ -213,10 +241,20 @@ export const addHistoryMessage = (room,messages) => {
         messages
     }
 }
-export const getHistoryMessage = (room) => {
+export const getRoomHistory = (info) => {
     return (dispatch,getState) => {
         return new Promise((resolve)=>{
-            socket.emit('history',room, (body,res) => {
+            if(!info) {
+                const state = getState().toJS();
+                let roomName = state.userState.curRoom; 
+                let messages = state['messages'][roomName] ? state['messages'][roomName] : [];
+                info = {
+                    roomName: roomName,
+                    messageCount: messages.length,
+                    limit: LOAD_MESSAGE_LIMIT
+                }
+            }
+            socket.emit('getRoomHistory',info, (body,res) => {
                 if(body.isError){
                     dispatch(setSnackbarState({
                         content: body.errMsg,
@@ -224,11 +262,11 @@ export const getHistoryMessage = (room) => {
                     }));
                     browserHistory.push('/login');
                 } else{
-                    dispatch(addHistoryUser(body.users))
-                    dispatch(addHistoryMessage(room,body.messages))
-                    resolve('get history');
+                    let histories = body.histories || [];
+                    let isloadAll = histories.length < LOAD_MESSAGE_LIMIT;
+                    dispatch(addHistoryMessage(info.roomName,histories));
+                    resolve(isloadAll);
                 }
-                
             })
         })
     }
@@ -251,11 +289,49 @@ export const sendPrivateMessage = (message) => {
         })
     })
 }
-
-
+export const addPrivateHistory = (room,messages) => {
+    return {
+        type: ADD_PRIVATE_HISTORY_MESSAGE,
+        room,
+        messages
+    }
+}
+export const getPrivateHistory = (info) => {
+    return (dispatch,getState) => {
+        return new Promise((resolve) => {
+            if(!info) {
+                const state = getState().toJS();
+                let fromUser = state.userState.curRoom; 
+                let toUser = state.userState.nickname;
+                let messages = state['privateMessages'][fromUser] ? state['privateMessages'][fromUser] : [];
+                info = {
+                    fromUser: fromUser,
+                    toUser: toUser,
+                    messageCount: messages.length,
+                    limit: LOAD_MESSAGE_LIMIT
+                }
+            }
+            socket.emit('getPrivateHistory',info,(body) =>{
+                if(body.isError){
+                    dispatch(setSnackbarState({
+                        content: body.errMsg,
+                        open: true
+                    }));
+                    reject(body);
+                } else{
+                    let histories = body.histories || [];
+                    let isloadAll = histories.length < LOAD_MESSAGE_LIMIT;
+                    dispatch(addPrivateHistory(info.fromUser,histories));
+                    resolve(isloadAll);
+                }
+            })
+        })
+    }
+}
 // info card
 export const SET_INFOCARD_STATE = 'SET_INFOCARD_STATE';
 export const SHOW_INFO_CARD = 'SHOW_INFO_CARD';
+export const SET_USER_CARD_INFO = 'SET_USER_CARD_INFO';
 export const HIDDEN_INFO_CARD = 'HIDDEN_INFO_CARD';
 export const GET_USER_INFO = 'GET_USER_INFO';
 export const getUserInfo = (nickname) => {
@@ -274,18 +350,27 @@ export const getUserInfo = (nickname) => {
                         open: true
                     }));
                 } else{
-                    body.isShow = true;
-                    dispatch(showInfoCard(body));
+                    dispatch(setUserCardInfo(body));
+                    dispatch(showInfoCard({
+                        isShow: true,
+                        mode: 'userCard'
+                    }));
                     resolve();
                 }
             })
         })
     }
 }
-export const showInfoCard = (user) => {
+export const setUserCardInfo = (info) => {
+    return {
+        type: SET_USER_CARD_INFO,
+        info
+    }
+}
+export const showInfoCard = (state) => {
     return {
         type: SHOW_INFO_CARD,
-        user
+        state
     }
 }
 export const hiddenInfoCard = () => {
@@ -303,9 +388,10 @@ export const changeAvatar = (info) => {
 // badge
 export const ADD_BADGE_COUNT = 'ADD_BADGE_COUNT';
 export const CLEAR_BADGE_COUNT = 'CLEAR_BADGE_COUNT';
-export const addCount = (room) => {
+export const addCount = (room, count = 1) => {
     return {
         type: ADD_BADGE_COUNT,
+        count,
         room
     }
 }
@@ -320,6 +406,7 @@ export const SET_AUDIO_STATE = 'SET_AUDIO_STATE';
 export const SET_NOTIFICATION_STATE = 'SET_NOTIFICATION_STATE';
 export const SET_SPECIAL_USER = 'SET_SPECIAL_USER';
 export const SET_SHIELD_USER = 'SET_SHIELD_USER';
+export const SET_BACKGROUND_IMAGE = 'SET_BACKGROUND_IMAGE';
 export const setAudioState =  (state) => {
     return {
         type: SET_AUDIO_STATE,
@@ -343,6 +430,12 @@ export const setShieldUser = (setting) => {
     return {
         type: SET_SHIELD_USER,
         setting
+    }
+}
+export const setBgImage = (url) => {
+    return {
+        type: SET_BACKGROUND_IMAGE,
+        url
     }
 }
 export const storageSetting = () => {
@@ -476,7 +569,256 @@ export const signUp = (nickname,password)=>{
 }
 export const logout = () => {
     //  借用重连事件将online表中的用户删除达到离线效果，socket并未断开
-    socket.emit('reconnect success',localStorage.token); 
-    delete localStorage.token;
-    browserHistory.push('/login');
+    return (dispatch,getState) => {
+        const state = getState().toJS();
+        const token = state.userState.token;
+        delete localStorage.token;
+        socket.emit('reconnect success',token); 
+        browserHistory.push('/login');
+    }
+}
+
+
+//关于history的处理，action实在太长了，改起来太费劲，需要考虑如何解决
+export const INIT_ROOM_HISTORIES = 'INIT_ROOM_HISTORIES';
+export const INIT_PRIVATE_ROOM_HISTORIES = 'INIT_PRIVATE_ROOM_HISTORIES';
+export const ADD_PRIVARE_HISTORY_MESSAGE = 'ADD_PRIVARE_HISTORY_MESSAGE';
+
+export const initRoomHistory = (messages) => {
+    return {
+        type: INIT_ROOM_HISTORIES,
+        messages
+    }
+}
+export const initPrivateHistory = (messages) => {
+    return {
+        type: INIT_PRIVATE_ROOM_HISTORIES,
+        messages
+    }
+}
+// 初始化activeList
+export const INIT_ACTIVE_LIST = 'INIT_ACTIVE_LIST';
+export const ADD_ACTIVE_ITEM = 'ADD_ACTIVE_ITEM';
+export const DELETE_ACTIVE_ITEM = 'DELETE_ACTIVE_ITEM';
+export const initActiveList = (activeList) => {
+    return {
+        type: INIT_ACTIVE_LIST,
+        activeList
+    }
+}
+export const addActiveItem = (item) => {
+    return {
+        type: ADD_ACTIVE_ITEM,
+        item
+    }
+}
+export const deleteActiveItem = (item) => {
+    return {
+        type: DELETE_ACTIVE_ITEM,
+        item
+    }
+}
+
+const initBageCount = (dispatch,histories) => {
+    for(let key in histories){
+        if(key !== 'MDZZ'){
+            dispatch(addCount(key,histories[key]['length']));
+        }
+    }
+}
+export const getActiveList = (token) => {
+    return (dispatch) => {
+        return new Promise((resolve,reject) => {
+            socket.emit('getActiveList',token,(body)=>{
+                if(body.isError){
+                    browserHistory.push('/login');
+                } else{
+                    initBageCount(dispatch,body.roomHistories);
+                    initBageCount(dispatch,body.privateHistories);
+                    dispatch(initRoomHistory(body.roomHistories));
+                    dispatch(initPrivateHistory(body.privateHistories));
+                    dispatch(initActiveList(body.activeList));
+                    resolve(body);
+                }
+            })
+        })
+    }
+}
+export const joinRoom = (info) => {
+    return (dispatch) => {
+        return new Promise((resolve) => {
+            socket.emit('joinRoom',info,(body) => {
+                resolve(body);
+            })
+        })
+    }
+    
+}
+
+export const SET_ROOM_CARD_INFO = 'SET_ROOM_CARD_INFO';
+export const getRoomInfo = (roomName) => {
+    return (dispatch) => {
+        return new Promise((resolve) => {
+            socket.emit('getRoomInfo',roomName,(body) => {
+                dispatch(setRoomCardInfo(body));
+                dispatch(showInfoCard({
+                    isShow: true,
+                    mode: 'roomCard'
+                }));
+            })
+        })
+    }
+} 
+export const setRoomCardInfo = (info) => {
+    return {
+        type: SET_ROOM_CARD_INFO,
+        info
+    }
+}
+export const updateRoomInfo = (info) => {
+    return (dispatch) => {
+        return new Promise((resolve) => {
+            socket.emit('updateRoomInfo',info,(body) => {
+                if(body.isError){
+                    dispatch(setSnackbarState({
+                        content: body.errMsg,
+                        open: true
+                    }));
+                    reject(body);
+                } else{
+                    if(body.isOk){
+                        dispatch(setSnackbarState({
+                            content: body.msg,
+                            open: true
+                        }));
+                        getRoomList(info.token)(dispatch);
+                        dispatch(addActiveItem(body.roomInfo,body.roomInfo.roomName));
+                        resolve(body);
+                    }
+                }
+            })
+        })
+    }
+}
+// roomList
+
+export const SET_ROOM_LIST = 'SET_ROOM_LIST';
+export const setRoomList = (roomList) => {
+    return {
+        type: SET_ROOM_LIST,
+        roomList
+    }
+}
+export const getRoomList = (token) => {
+    return (dispatch) => {
+        return new Promise((resolve,reject) => {
+            socket.emit('getRoomList',token,(body)=>{
+                if(body.isError){
+                    reject(body);
+                } else{
+                    dispatch(setRoomList(body));
+                    resolve(body);
+                }
+                
+            })
+        })
+    }
+}
+
+
+
+//search room
+export const INIT_SEARCH_ROOM = 'INIT_SEARCH_ROOM';
+export const initSearchRoom = (list) => {
+    return {
+        type: INIT_SEARCH_ROOM,
+        list
+    }
+}
+export const searchRoom = (key) => {
+    return (dispatch) => {
+        return new Promise((resolve,reject) => {
+            socket.emit('searchRoom',key,(body) => {
+                dispatch(initSearchRoom(body));
+            })
+        })
+    }
+}
+
+export const createRoom = (info) => {
+    return (dispatch) =>{
+        return new Promise((resolve,reject) => {
+            socket.emit('createRoom',info,(body) => {
+                if(body.isError){
+                    dispatch(setSnackbarState({
+                        content: body.errMsg,
+                        open: true
+                    }));
+                    reject(body);
+                } else{
+                    if(body.isOk){
+                        dispatch(addActiveItem(body.roomInfo));
+                        dispatch(setSnackbarState({
+                            content: body.msg,
+                            open: true
+                        }));
+                    }
+                    resolve(body);
+                }
+            })
+        })
+    }
+    
+}
+
+//
+export const SET_ROOM_INFO = 'SET_ROOM_INFO'
+export const refreshRoomActiveInfo = (info) => {
+    return {
+        type: SET_ROOM_INFO,
+        info
+    }
+}
+export const getRoomActiveInfo = (roomName) => {
+    return (dispatch) => {
+        return new Promise((resolve,reject) => {
+            socket.emit('getRoomActiveInfo',roomName,(body) => {
+                if(body.isError){
+                    dispatch(setSnackbarState({
+                        content: body.errMsg,
+                        open: true
+                    }));
+                    reject(body);
+                } else{
+                    dispatch(refreshRoomActiveInfo(body));
+                    resolve(body);
+                }
+            })
+        })
+    }
+}
+export const SET_SEARCH_USER = 'SET_SEARCH_USER';
+export const setSearchUserList = (list) => {
+    return {
+        type: 'SET_SEARCH_USER',
+        list
+    }
+}
+
+export const searchUser = (info) => {
+    return (dispatch) => {
+        return new Promise((resolve,reject) => {
+            socket.emit('searchUser',info,(body) => {
+                if(body.isError){
+                    dispatch(setSnackbarState({
+                        content: body.errMsg,
+                        open: true
+                    }));
+                    reject(body);
+                } else{
+                    dispatch(setSearchUserList(body));
+                }
+            })
+        })
+    }
 }
