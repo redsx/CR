@@ -1,4 +1,4 @@
-import Favico from './favico-0.3.10.min.js'
+import Favico from './favico.js'
 
 const favicoNotification = (function (Favico,animation = 'popFade',type = '') {
     var favico = new Favico({
