@@ -1,0 +1,46 @@
+
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0, maximum-scale=1, minimum-scale=1"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/flex-css-layout.min.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
+    <title>sign up</title>
+  </head>
+  <body>
+    <div flex="main:center cross:center" class="login-container">
+      <div class="login">
+        <div id="form" class="wx-login-form">
+          <div id="login-owl">
+            <div class="login-hand login-hand-focus"></div>
+            <div class="login-hand-r login-hand-r-focus"></div>
+            <div class="login-arms">
+              <div class="login-arm login-arm-focus"></div>
+              <div class="login-arm-r login-arm-r-focus"></div>
+            </div>
+          </div>
+          <div class="login-pad">
+            <div class="login-control-group">
+              <div class="login-controls">
+                <label for="nickname" class="login-control-label">&#xe602;</label>
+                <input type="text" id="nickname" name="nickname" placeholder="nickname" autofocus="autofocus" required="required" class="login-form-control"/>
+              </div>
+            </div>
+            <div class="login-control-group">
+              <div class="login-controls">
+                <label for="password" class="login-control-label">&#xe601;</label>
+                <input type="password" id="password" name="password" placeholder="password" autofocus="autofocus" required="required" class="login-form-control"/>
+              </div>
+            </div>
+          </div>
+          <div class="login-actions"><a href="/login">login &nbsp;&nbsp;</a>
+            <button id="signUp" class="login-btn">sign up</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/javascripts/reqwest.min.js"></script>
+    <script src="/javascripts/login.js"></script>
+  </body>
+</html>
