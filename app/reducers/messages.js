@@ -1,6 +1,6 @@
 import Immutable from 'immutable'
 
-import { ADD_MESSAGE, ADD_HISTORY_MESSAGE } from '../actions'
+import { ADD_MESSAGE, ADD_HISTORY_MESSAGE, INIT_ROOM_HISTORIES, CLEAR_HISTORY } from '../actions'
 
 let defaultState = Immutable.fromJS({});
 
@@ -14,9 +14,21 @@ export default function messages(state = defaultState,action) {
             roomMessage = roomMessage.push(Immutable.fromJS(action.message));
             return state.set(action.message.room,roomMessage);
         }
+        case INIT_ROOM_HISTORIES: {
+            return Immutable.fromJS(action.messages);
+        }
         case ADD_HISTORY_MESSAGE: {
             let messages = Immutable.fromJS(action.messages);
+            let oldMsg = state.get(action.room) || Immutable.fromJS([]);
+            messages = messages.concat(oldMsg);
             return state.set(action.room,messages);
+        }
+        case CLEAR_HISTORY: {
+            let roomMessage = state.get(action.room) || Immutable.fromJS([]);
+            if(roomMessage > 20){
+                roomMessage = roomMessage.slice(20);
+            }
+            return state.set(action.room,roomMessage);
         }
         default: {
             return state;

@@ -13,14 +13,21 @@ import {
     SET_IMAGEEXP_STATE,
     SET_SCROLL_STATE,
     SET_SNACKBAR_STATE,
-    SET_SYS_SETTING_STATE
+    SET_SYS_SETTING_STATE,
+    SET_ROOM_INFO_STATE,
+    SET_CREATE_ROOM_STATE,
+    SET_SEARCH_USER_STATE
 } from '../actions'
 let defaultState = {
     isShowMenu:true,
-    isShowRoom:true,
     isShowImageExp: false,
     isNeedScroll: false,
     isShowSysSetting: false,
+    isShowRoomInfo: window.innerWidth > 980 ? true:false,
+    isShowCreateRoom: false,
+    isShowSearchUser: false,
+    listState:'activeList',
+    badgeCount: {},
     expressionState: {
         moment:null,
         paused: true,
@@ -37,7 +44,6 @@ let defaultState = {
         timestamp: null,
         emoji:''
     },
-    badgeCount: {},
     snackbar:{
         open: false,
         autoHideDuration: 3000
@@ -58,7 +64,7 @@ export default function pageState(state = defaultState,action) {
             return state.merge(expression);
         }
         case SHOW_INFO_CARD: {
-            let infoCardState = Immutable.fromJS({infoCardState:action.user});
+            let infoCardState = Immutable.fromJS({infoCardState: action.state});
             return state.mergeDeep(infoCardState);
         }
         case HIDDEN_INFO_CARD: {
@@ -66,13 +72,14 @@ export default function pageState(state = defaultState,action) {
         }
         case ADD_BADGE_COUNT: {
             let badgeCount = state.getIn(['badgeCount',action.room]) || 0;
-            return state.setIn(['badgeCount',action.room],badgeCount+1);
+            let count = (badgeCount + action.count) > 10 ? 'n' : (badgeCount + action.count);
+            return state.setIn(['badgeCount',action.room],count);
         }
         case CLEAR_BADGE_COUNT: {
             return state.setIn(['badgeCount',action.room],0);
         }
         case SET_LIST_STATE: {
-            return state.set('isShowRoom',action.isShow);
+            return state.set('listState',action.isShow);
         }
         case SET_IMAGEEXP_STATE: {
             return state.set('isShowImageExp',action.isShow);
@@ -86,6 +93,15 @@ export default function pageState(state = defaultState,action) {
         }
         case SET_SYS_SETTING_STATE: {
             return state.set('isShowSysSetting',action.state);
+        }
+        case SET_ROOM_INFO_STATE: {
+            return state.set('isShowRoomInfo',action.state);
+        }
+        case SET_CREATE_ROOM_STATE: {
+            return state.set('isShowCreateRoom',action.state);
+        }
+        case SET_SEARCH_USER_STATE: {
+            return state.set('isShowSearchUser',action.state);
         }
         default: {
             return state;

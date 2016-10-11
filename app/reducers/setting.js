@@ -1,12 +1,13 @@
 import Immutable from 'immutable'
 
-import { SET_NOTIFICATION_STATE, SET_AUDIO_STATE, SET_SHIELD_USER, SET_SPECIAL_USER } from '../actions'
+import { SET_NOTIFICATION_STATE, SET_AUDIO_STATE, SET_SHIELD_USER, SET_SPECIAL_USER, SET_BACKGROUND_IMAGE } from '../actions'
 
 let defaultState = {
     h5Notification: true,
     audioNotification: false,
     special: [],
-    shield: []
+    shield: [],
+    bgImage: ''
 }
 defaultState = Immutable.fromJS(defaultState);
 
@@ -41,6 +42,9 @@ export default function setting(state = defaultState,action) {
                 });
             }
             return state.set('special',special);
+        }
+        case SET_BACKGROUND_IMAGE: {
+            return state.set('bgImage',action.url);
         }
         default: {
             return state;
