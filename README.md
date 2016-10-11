@@ -4,10 +4,10 @@
 
 ### 最新内容
 
-- 使用immutable.js优化了react的render
-- 使用less
-- 增加设置界面，修改资料卡片
-- 使用react-router将login与signup整合到react中
+- 增加群组功能
+- 增加用户搜索群组搜索
+- 支持自定义背景，创建群组
+- 对ui和动画进行了修改
 
 ### 下版内容预告
 - 增加markdown编辑器
@@ -17,13 +17,14 @@
 - redux
 - bable
 - webpack
+- koa
+- websocket(socket.io)
 
 ### store结构说明
 
 ```
 |--pageState // 控制页面ui状态
 |--userState // 存放用户登录信息
-|--onlineUsers // 存放在线用户信息
 |--messages // 存放消息
 |--privateMessages // 存放私聊消息
 |--setting // 存放设置
@@ -32,9 +33,7 @@
 ```
 ### 效果展示
 
-菜单栏：
-
-![x3](./app/images/show-0.png)
+![x3](http://ooo.0o0.ooo/2016/10/11/57fcd70be9dcc.jpg)
 
 ### 安装
 
