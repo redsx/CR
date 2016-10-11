@@ -20,7 +20,7 @@ var port = normalizePort(process.env.PORT || '3000');
  */
 
 var server = http.createServer(app.callback());
-const io = require('socket.io')(server);
+const io = require('socket.io')(server,{'pingInterval': 15000});
 require('../socket/index')(io);
 /**
  * Listen on provided port, on all network interfaces.
