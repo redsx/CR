@@ -10,7 +10,7 @@ import Message from '../containers/Message.js'
 import SystemMessage from './SystemMessage.jsx'
 import Drag from './Drag.jsx'
 import RoomInfo from '../containers/RoomInfo.js'
-import Loading from './Loading.jsx'
+// import Loading from './Loading.jsx'
 
 import '../less/scroll.less'
 import '../less/chatarea.less'
