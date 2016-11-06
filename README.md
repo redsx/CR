@@ -30,7 +30,7 @@ git clone https://github.com/redsx/CR.git
 cd CR
 npm install
 npm run-script client-start //打包前端
-npm start //开启server，访问 http://localost:3000
+npm start //开启server，访问 http://locahost:3000
 ```
 
 #### tips:
