@@ -40,5 +40,5 @@ npm start //开启server，访问 http://locahost:3000
 
 ### 下版内容
 
-- 准备使用RN开发安卓版
+- <del>准备使用RN开发安卓版</del>
 - 代码发送功能
