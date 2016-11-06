@@ -37,7 +37,6 @@ npm start //开启server，访问 http://locahost:3000
 1. 运行程序前先检查你是否安装mongodb、nodejs(v6.0以上)
 1. 如果你mongodb端口号不是`54321`,请在`npm start` 之前修改文件`./server/config/mongo-config.js` PORT为你mongodb端口号
 2. 如果遇到bcrypt无法install可用bcrypt-nodejs代替，替换后函数参数会有略微不同，在`./server/controller/user.js`文件中已注释说明
-
 ### 下版内容
 
 - <del>准备使用RN开发安卓版</del>
