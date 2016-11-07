@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react'
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import Avatar from './Avatar.jsx'
 import '../less/roominfo.less'
-
 class RoomInfo extends React.Component{
     constructor(props){
         super(props);
@@ -55,7 +54,14 @@ class RoomInfo extends React.Component{
                 >
                     {
                         this.props.isShowRoomInfo ? 
-                        <div className = 'roominfo'>
+                        <div 
+                            className = 'roominfo'
+                            style = {{
+                                position: window.innerWidth > 581 ? 'static':'absolute',
+                                right: '0',
+                                background: window.innerWidth > 581 ? 'rgba(255,255,255,0.3)':'#fcfcfc',
+                            }}
+                        >
                             <div>
                                 <div className = 'roominfo-bulletin scroll-hidden'>
                                 <div>
