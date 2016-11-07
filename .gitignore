@@ -2,4 +2,6 @@
 node_modules
 .DS_Store
 .vscode
-.map
+bundle.js
+*.map
+
