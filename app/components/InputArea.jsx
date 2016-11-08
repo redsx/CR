@@ -19,9 +19,8 @@ class InputArea extends React.Component{
         }
     }
     componentDidMount(){
-        this.refs.input.focus();
         document.addEventListener('keydown', (e) => {
-            if(e.keyCode === 13){
+            if(e.keyCode === 13 && e.target === this.refs.input){
                 this.handleClick();
             }
         })
@@ -31,6 +30,7 @@ class InputArea extends React.Component{
     }
     handleClick(){
         let input = this.refs.input;
+            console.log('input value:',input);
         if(!input) return;
         let user = this.props.user.toJS(),
             addPrivateMessage = this.props.addPrivateMessage,
@@ -131,6 +131,7 @@ class InputArea extends React.Component{
                         className = 'input'
                         ref = 'input'
                         onPaste = {(e)=>{this.handlePaste(e)}}
+                        contentEditable = {true}
                     />
                 </div>
                 <div data-flex-box='0'>

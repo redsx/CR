@@ -120,6 +120,14 @@ class Sign extends React.Component{
             })
         }
     }
+    componentDidMount(){
+        document.addEventListener('keydown', (e) => {
+            //输入昵称回车同样触发登录
+            if(e.keyCode === 13 && (e.target === this.refs.nickname || e.target === this.refs.password)){
+                this.handleClick();
+            }
+        })
+    }
     render(){
         return (
             <div data-flex = 'main:center cross:center' className = 'login-container'>
