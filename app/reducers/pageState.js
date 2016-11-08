@@ -26,14 +26,9 @@ let defaultState = {
     isShowRoomInfo: window.innerWidth > 980 ? true:false,
     isShowCreateRoom: false,
     isShowSearchUser: false,
+    isShowExpression: false,
     listState:'activeList',
     badgeCount: {},
-    expressionState: {
-        moment:null,
-        paused: true,
-        reverse: false,
-        isShow: false
-    },
     infoCardState: {
         nickname: 'loading...',
         avatar: 'loading...',
@@ -56,8 +51,7 @@ export default function pageState(state = defaultState,action) {
             return state.set('isShowMenu',action.menuState);
         }
         case SET_EXPRESSION_STATE: {
-            let expressionState = Immutable.fromJS({expressionState:action.expressionState});
-            return state.merge(expressionState);
+            return state.set('isShowExpression',action.expressionState);
         }
         case ADD_EXPRESSION: {
             let expression = Immutable.fromJS({expression: action.expression});

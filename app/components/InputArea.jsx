@@ -26,7 +26,7 @@ class InputArea extends React.Component{
             }
         })
         document.addEventListener('click', (e) => {
-            e.target != this.refs.expressionBtn && this.props.isShowExpressions ? this.props.setExpressionHidden():null;
+            e.target != this.refs.expressionBtn && this.props.isShowExpressions ? this.props.setExpressionState(false):null;
         })
     }
     handleClick(){
@@ -99,15 +99,13 @@ class InputArea extends React.Component{
         }
     }
     render(){
-        let { expState, setExpressionShow, setExpressionHidden, isShowImageExp, setImageExpState } = this.props;
+        let { expState, setExpressionState, isShowImageExp, setImageExpState } = this.props;
         return (
             <div data-flex = 'main:center cross:top' className = 'inputarea'>
                 <div data-flex-box='0'>
                     <div 
                         className = 'click-div'
-                        onClick = {()=>{
-                            this.props.isShowExpressions ? setExpressionHidden() : setExpressionShow();
-                        }} 
+                        onClick = {()=>setExpressionState(!this.props.isShowExpressions)} 
                         ref = 'expressionBtn'
                     ></div>
                     <div className = 'icon-box'>
@@ -150,8 +148,7 @@ class InputArea extends React.Component{
 InputArea.propTypes = {
     isShowExpressions: PropTypes.bool,
     isShowImageExp: PropTypes.bool,
-    setExpressionShow: PropTypes.func,
-    setExpressionHidden: PropTypes.func,
+    setExpressionState: PropTypes.func,
     addMessage: PropTypes.func,
     addPrivateMessage: PropTypes.func,
     setImageExpState: PropTypes.func,

@@ -27,9 +27,6 @@ export const setExpressionShow = () => {
     return {
         type: SET_EXPRESSION_STATE,
         expressionState:{
-            moment: 0,
-            paused: false,
-            reverse: false,
             isShow: true
         }
     }
@@ -38,11 +35,14 @@ export const setExpressionHidden = () => {
     return {
         type: SET_EXPRESSION_STATE,
         expressionState:{
-            moment: 0,
-            paused: false,
-            reverse: true,
             isShow: false
         }
+    }
+}
+export const  setExpressionState = (expressionState) => {
+    return {
+        type: SET_EXPRESSION_STATE,
+        expressionState
     }
 }
 

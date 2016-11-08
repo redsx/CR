@@ -47,10 +47,10 @@ class RoomInfo extends React.Component{
         let user = this.props.user;
         return (
                 <ReactCSSTransitionGroup
-                            component = 'div'
-                            transitionName = 'roominfo'
-                            transitionEnterTimeout = {400}
-                            transitionLeaveTimeout = {200}
+                    component = 'div'
+                    transitionName = 'roominfo'
+                    transitionEnterTimeout = {400}
+                    transitionLeaveTimeout = {200}
                 >
                     {
                         this.props.isShowRoomInfo ? 

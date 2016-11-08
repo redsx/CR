@@ -1,14 +1,38 @@
+.transition(@trans:all,@time:0.5s,@func:ease-in,@delay:0ms){
+    -webkit-transition: @trans @time @func @delay ;
+    -moz-transition: @trans @time @func @delay ;
+    transition: @trans @time @func @delay ;
+}
+.animationBox-enter {
+    transform: translateY(-100px);
+    opacity: 0.1,
+}
+
+.animationBox-enter.animationBox-enter-active {
+    .transition(all,450ms,cubic-bezier(0.23, 1, 0.32, 1),0ms);
+    transform: translateX(0px);
+    opacity: 1,
+}
+
+.animationBox-leave {
+    transform: translate(0,0px);
+    opacity: 1,
+}
+
+.animationBox-leave.animationBox-leave-active {
+    .transition(all,450ms,cubic-bezier(0.23, 1, 0.32, 1),0ms);
+    transform: translate(0,-100px);
+    opacity: 0.1,
+}
 .animationBox {
     position: absolute;
     z-index: 998;
     background: white;
     width: 320px;
     height: 200px;
-    bottom: 120px;
+    bottom: 60px;
     left: 50%;
     margin-left: -160px;
-    transform: scale(0);
-    opacity: 0;
     box-shadow: 0px 0px 10px #777;
 }
 .expressionsBox {
