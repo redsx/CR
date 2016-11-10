@@ -30,7 +30,7 @@ class InputArea extends React.Component{
     }
     handleClick(){
         let input = this.refs.input;
-            console.log('input value:',input);
+            // console.log('input value:',input);
         if(!input) return;
         let user = this.props.user.toJS(),
             addPrivateMessage = this.props.addPrivateMessage,

@@ -129,6 +129,8 @@ class InfoCard extends React.Component{
                 <Drag
                     x = {x}
                     y = {y}
+                    width = {330}
+                    height = {400}
                     component = {
                         this.renderInfoCard()
                     }

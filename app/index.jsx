@@ -217,7 +217,3 @@ render(
     ,
     document.getElementById('App')
 )
-
-
-
-// 加入房间逻辑，以及信息发送逻辑，历史记录查询未按照加入房间名

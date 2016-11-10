@@ -18,12 +18,17 @@ class Drag extends React.Component{
     handleDrag(e){
         e.target.style.opacity = 1;
         let pageX = e.pageX,
-            pageY = e.pageY;
+            pageY = e.pageY,
+            width = this.props.width,
+            height = this.props.height,
+            x = pageX - this.state.offsetX,
+            y = pageY - this.state.offsetY;
+        if(x < 0) x = 0;
+        if(x > window.innerWidth - width) x = window.innerWidth - width;
+        if(y < 0) y = 0;
+        if(y > window.innerHeight - height) y = window.innerHeight - height;
         if(pageX !== 0 && pageY !== 0){
-            this.setState({
-                x: pageX - this.state.offsetX,
-                y: pageY - this.state.offsetY
-            })
+            this.setState({x,y})
         }
     }
     render(){
@@ -48,5 +53,11 @@ class Drag extends React.Component{
 Drag.defaultProps = {
     x:0,
     y:0
+}
+Drag.propTypes = {
+    x: PropTypes.number,
+    y: PropTypes.number,
+    width: PropTypes.number,
+    height: PropTypes.number
 }
 export default Drag;
