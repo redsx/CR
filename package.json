@@ -15,7 +15,7 @@
     "flex-css-layout": "^1.2.8",
     "highlight.js": "^9.6.0",
     "immutable": "^3.8.1",
-    "jquery-image-explode": "^1.0.8",
+    "jquery-image-explode": "^1.0.10",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
     "marked": "^0.3.6",
