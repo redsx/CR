@@ -10,6 +10,7 @@ import Message from '../containers/Message.js'
 import SystemMessage from './SystemMessage.jsx'
 import Drag from './Drag.jsx'
 import RoomInfo from '../containers/RoomInfo.js'
+import api from '../plugins/api.js'
 // import Loading from './Loading.jsx'
 
 import '../less/scroll.less'
@@ -184,6 +185,9 @@ class ChatArea extends React.Component {
                         >
                             {
                                 messages.map((item,index) => {
+                                    if(item.timestamp>api.timestamp){
+                                        api.timestamp=item.timestamp;
+                                    }
                                     switch (item.type) {
                                         case 'imageMessage':
                                         case 'textMessage': {
