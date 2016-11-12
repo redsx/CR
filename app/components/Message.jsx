@@ -2,9 +2,54 @@ import React, {PropTypes} from 'react'
 import pureMixin from '../mixin/pureMixin.js'
 import Immutable from 'immutable'
 import Avatar from '../containers/Avatar.js'
+import api from '../plugins/api.js'
 
 import '../less/message.less'
 
+function requireAll(requireContext) {
+    return requireContext.keys().map(requireContext);
+}
+// requires and returns all modules that match
+requireAll(require.context('../plugins/plugin/', true, /^\.\/.*\.js$/));
+
+class PluginMessage extends React.Component {
+     
+
+    componentDidMount() {
+        this.renderMessage();
+    }
+
+    shouldComponentUpdate(nextProps) {
+        const currentProps = this.props;
+        return !(
+            currentProps.content === nextProps.content &&
+            currentProps.name === nextProps.name
+        );
+    }
+
+    componentDidUpdate() {
+        this.renderMessage();
+    }
+
+    renderMessage() {
+        jQuery(this.dom).empty()
+             .append(api.getMessage(this.props.name, this.props.content, this.props.isNew));
+    }
+    render() {
+        return (<div
+            className="plugin-dom-container"
+            ref={dom => this.dom = dom}
+        />);
+    }
+ }
+ 
+ PluginMessage.propTypes = {
+        name: PropTypes.string.isRequired,
+        content: PropTypes.any,
+        isNew: PropTypes.bool.isRequired,
+    };
+ 
+ 
 class Message extends React.Component{
     constructor(props){
         super(props);
@@ -42,11 +87,48 @@ class Message extends React.Component{
     // }
     render(){
         let { avatar, timestamp, content, nickname, type } = this.props.message.toJS();
+        
+        
+        const messageInfo=(function plugin(){
+            let isNew=false;
+            if(timestamp>=api.timestamp){//new message                
+                api.timestamp++;
+                isNew=true;
+            }
+            const message={content,from:{username:nickname},isNew};
+
+            const ret=api.getPluginMessageInfo(message);
+            if(ret){
+                ret.isNew=isNew;    
+            }            
+            return ret;            
+        })();
+        if(messageInfo){
+            type="pluginMessage";
+
+        }
+                
+        
         let time = this.dealTimestamp(timestamp),
             text = type === 'textMessage' ? this.dealContent(content):'',
             dir = this.props.dir || 'left';
+
+        function getMessageComponent(type){
+            switch(type){
+                case 'textMessage':
+                    return <span  dangerouslySetInnerHTML={ {__html: text}}></span>;
+                case 'imageMessage':
+                    return (<span>
+                                    <img src ={content} onClick = {()=>{this.handleDbclick()}} className = 'imageMessage'/>
+                                  </span>);
+                case 'pluginMessage':
+                    return <PluginMessage name={messageInfo.name} content={messageInfo.content} isNew={messageInfo.isNew}/>;
+                default:
+                    console.error(`Wrong message type: ${type}`);
+            }
+        }
         return (
-            <div data-flex={'dir:'+dir}>
+            <div data-flex={'dir:'+dir} className="message-list-item">
                 <div data-flex={'dir:'+dir} data-flex-box = '0' className = 'message-container'>
                     <div data-flex-box = '0' data-flex = 'main:top cross:top' className = 'avatar-container'>
                         <Avatar
@@ -65,13 +147,7 @@ class Message extends React.Component{
                             {nickname + ' '+time}
                         </span>
                         <div className = 'message'>
-                             {
-                                 type === 'textMessage' ?
-                                 <span  dangerouslySetInnerHTML={ {__html: text}}></span>
-                                 :<span>
-                                    <img src ={content} onClick = {()=>{this.handleDbclick()}} className = 'imageMessage'/>
-                                  </span>
-                             }
+                            {getMessageComponent(type)}
                              <div className = {dir === 'left' ? 'triangle-left-outer' : 'triangle-right-outer'}></div>
                              <div className = {dir === 'left' ? 'triangle-left-inner' : 'triangle-right-inner'}></div>
                         </div>
