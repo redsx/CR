@@ -13,6 +13,7 @@ class InputArea extends React.Component{
         super(props);
         this.state = {
             isPreView: false,
+            size: 3,
             inputValue: ''
         }
     }
@@ -23,12 +24,6 @@ class InputArea extends React.Component{
             this.refs.input.focus();
         }
     }
-    shouldComponentUpdate(nextProps,nextState){
-        if(this.state.isPreView !== nextState.isPreView){
-            return true;
-        }
-        return false;
-    }
     componentDidMount(){
         this.refs.input.focus();
          marked.setOptions({
@@ -36,14 +31,11 @@ class InputArea extends React.Component{
                 return require('highlight.js').highlightAuto(code).value;
             }
         });
-        // document.addEventListener('keydown', (e) => {
-        //     if(e.keyCode === 13){
-        //         this.handleClick();
-        //     }
-        // })
+
         document.addEventListener('keydown', (e)=>{
             if(e.keyCode === 9){
                 e.preventDefault();
+                e.shiftKey? document.execCommand('outdent',false) : document.execCommand('indent',false);
             }
         })
         document.addEventListener('click', (e) => {
@@ -54,34 +46,52 @@ class InputArea extends React.Component{
         this.setState({isPreView:!this.state.isPreView});
     }
     handleChange(e){
+        console.log(e.target.innerText);
+        console.log(marked(e.target.innerText));
         this.setState({
-            inputValue:e.target.value
+            inputValue: marked(e.target.innerText)
         });
     }
-    handleClick(){
-        let input = this.refs.input;
-        let user = this.props.user.toJS(),
-            addPrivateMessage = this.props.addPrivateMessage,
-            addMessage = this.props.addMessage,
-            content = (input.value.trim()).slice(0,150);
-        if(content !== ''){
-            input.value = '';
-            input.focus();
-            this.setState({
-                inputValue: ''
-            });
-            let message = {
-                nickname:user.nickname,
-                room: user.curRoom,
-                content:content,
-                type:'textMessage'
+    shouldComponentUpdate(nextProps,nextState){
+        if(this.state.isPreView !== nextState.isPreView){
+            return true;
+        }
+        return false;
+    }
+    handleClick(command){
+        switch (command) {
+            case 'bold': {
+                document.execCommand('bold',false);
+                console.log('bold');
+                break;
             }
-            user.isPrivate?sendPrivateMessage(message).then((resault)=>{
-                return addPrivateMessage(resault);
-            })
-            :sendMessage(message).then((resault)=>{
-                return addMessage(resault);
-            });
+            case 'formatBlock': {
+                document.execCommand('formatBlock',false,'PRE');
+                console.log('formatBlock');
+                break;
+            }
+            case 'strikeThrough': {
+                    document.execCommand('strikeThrough');
+                    console.log('strikeThrough');
+                    break;
+                }
+            case 'fontSize': {
+                if(this.state.size === 5){
+                    document.execCommand('fontSize',false,'3');
+                    this.setState({size:2});
+                } else{
+                    document.execCommand('fontSize',false,'5');
+                    this.setState({size:5});
+                }
+                break;
+            }
+            case 'insertUnorderedList': {
+                document.execCommand('insertUnorderedList',false);
+                console.log('insertUnorderedList');
+                break;
+            }
+            default:
+                break;
         }
     }
     handlePaste(e){
@@ -102,24 +112,10 @@ class InputArea extends React.Component{
                         ajaxHandle.request('post',UPLOAD_URL,formdata,null)
                         .then((resault)=>{
                             if(resault.code === 'success'){
-                                let message = {
-                                    content:resault.data.url,
-                                    room: user.curRoom,
-                                    type: 'imageMessage',
-                                    nickname: user.nickname
-                                }
-                                if(user.isPrivate){
-                                    return sendPrivateMessage(message);
-                                }
-                                return sendMessage(message);
+                                // resault.data.url
                             } else{
                                 throw new Error('uplode error');
                             }
-                        }).then((resault)=>{
-                            if(user.isPrivate){
-                                return addPrivateMessage(resault);
-                            }
-                            addMessage(resault);
                         }).catch((err)=>{
                             console.log(err);
                         })
@@ -132,43 +128,90 @@ class InputArea extends React.Component{
         let { expState, setExpressionState, isShowImageExp, setImageExpState } = this.props;
         return (
             <div data-flex = 'main:left cross:top dir:top' className = 'textarea-container'>
-                <div data-flex-box='0' data-flex = 'main: left cross: center' className = 'btn-box'>
+                <div data-flex = 'main:center box:mean' data-flex-box = '1' data-flex = 'dir:top main:left' className = 'textarea-box' >
+                    <div><input className = 'textarea-title'/></div>   
+                    <ul className = 'btn-box'>
+                        <li className = 'icon-list'>
+                            <button
+                                className = 'icon-btn-box'
+                                onClick = {()=> this.handleClick('bold')}
+                            >
+                                <i className = 'icon'>&#xe6b4;</i>
+                            </button>
+                        </li>
+                        <li className = 'icon-list'>
+                            <button
+                                className = 'icon-btn-box'
+                                onClick = {()=> this.handleClick('formatBlock')}
+                            >
+                                <i className = 'icon'>&#xe6b6;</i>
+                            </button>
+                        </li>
+                        <li className = 'icon-list'>
+                            <button
+                                className = 'icon-btn-box'
+                                onClick = {()=> this.handleClick('strikeThrough')}
+                            >
+                                <i className = 'icon'>&#xe6a4;</i>
+                            </button>
+                        </li>
+                        
+                        <li className = 'icon-list'>
+                            <button
+                                className = 'icon-btn-box'
+                                onClick = {()=> this.handleClick('fontSize')}
+                            >
+                                <i className = 'icon'>&#xe6a7;</i>
+                            </button>
+                        </li>
+                        
+                        <li className = 'icon-list'>
+                            <button
+                                className = 'icon-btn-box'
+                                onClick = {()=> this.handleClick('insertUnorderedList')}
+                            >
+                                <i className = 'icon'>&#xe67e;</i>
+                            </button>
+                        </li>
+                        <li className = 'icon-list'>
+                            <button
+                                className = 'icon-btn-box'
+                                onClick = {()=> this.handleClick('insertUnorderedList')}
+                            >
+                                <i className = 'icon'>&#xe6aa;</i>
+                            </button>
+                        </li>
+                        <li className = 'icon-list'>
+                            <button
+                                className = 'icon-btn-box'
+                                onClick = {()=> this.handleClick('insertUnorderedList')}
+                            >
+                                <i className = 'icon'>&#xe63d;</i>
+                            </button>
+                        </li>
 
-                    <div className = 'icon-box'>
-                        <i className = 'icon'>&#xe650;</i>
-                    </div>
-                    <div className = 'icon-box'>
-                        <i className = 'icon'>&#xe63d;</i>
-                    </div>
-                    <div className = 'icon-box'>
-                        <i className = 'icon'>&#xe667;</i>
-                    </div>
+                        <li className = 'icon-list-right'>
+                            <button
+                                className = 'text-btn-box'
+                            >
+                                <span className = 'text-btn'>发送内容</span>
+                            </button>
+                        </li>
+                        <li className = 'icon-list-right'>
+                            <button
+                                className = 'text-btn-box'
+                            >
+                                <span className = 'text-btn'>关闭</span>
+                            </button>
+                        </li>
+                    </ul>
                     <div 
-                        className = 'icon-box'
-                        onClick = {()=>this.handlePreView()}
-                    >
-                        <i className = 'icon'>&#xe664;</i>
-                    </div>
-                    <div 
-                        className = 'icon-box'
-                        onClick = {()=>{this.handleClick()}}
-                    >
-                        <i className = 'icon'> &#xe649; </i>
-                    </div>
-                </div>
-                <div data-flex = 'main:center box:mean' data-flex-box = '1' data-flex = 'main:left' className = 'textarea-box' >
-                    {
-                        this.state.isPreView ? <div className = 'preView' dangerouslySetInnerHTML={{__html: marked(this.state.inputValue)}}></div>
-                        :<textarea 
-                            data-flex-box = '1' 
-                            className = 'textarea'
-                            ref = 'input'
-                            defaultValue = {this.state.inputValue}
-                            placeholder = 'Click here to type a chat message. Supports GitHub flavoured markdown. ⌘/ctrl+Enter to send....'
-                            onPaste = {(e)=>{this.handlePaste(e)}}
-                            onChange = {(e)=>{this.handleChange(e)}}
-                        />
-                    }
+                        contentEditable = {true}
+                        data-flex-box = '1' 
+                        className = 'textarea scroll-hidden'
+                        ref = 'input'
+                        onPaste = {(e)=>{this.handlePaste(e)}}
+                    />
                 </div>
             </div>
         );
