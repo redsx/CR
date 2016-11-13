@@ -15,6 +15,7 @@
     "flex-css-layout": "^1.2.8",
     "highlight.js": "^9.6.0",
     "immutable": "^3.8.1",
+    "jquery-image-explode": "^1.0.10",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
     "marked": "^0.3.6",
@@ -59,7 +60,9 @@
     "should": "^11.0.0",
     "socket.io": "^1.4.8"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "cz-conventional-changelog": "^1.2.0"
+  },
   "scripts": {
     "start": "node ./server/bin/www",
     "client-start": "webpack -d"
@@ -69,5 +72,10 @@
     "chatroom"
   ],
   "author": "MDZZ",
-  "license": "ISC"
+  "license": "ISC",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }

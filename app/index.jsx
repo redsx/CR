@@ -118,6 +118,8 @@ socket.on('privateMessage', (message) => {
             }))
         }
         if(document.hidden){
+            // 匹配插件消息正则
+            //  /^([\w-]+)\s*\(([\s\S]*)\)\s*;?\s*$/
             favico.addBage();        
             if(state.setting.audioNotification){
                 state.setting.special.indexOf(message.nickname) === -1 ? audio.play() : audioSpecial.play();

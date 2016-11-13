@@ -139,7 +139,7 @@ class InputArea extends React.Component{
                         className = 'icon-box'
                         onClick = {()=>{this.handleClick()}}
                     >
-                        <i className = 'icon'> &#xe649; </i>
+                        <i className = 'icon'> &#xe649;</i>
                     </div>
                 </div>
             </div>

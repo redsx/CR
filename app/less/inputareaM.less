@@ -6,34 +6,64 @@
     color: @color;
     cursor: pointer;
 }
-.icon{
+.icon {
     .icon-font(18px,#555);
 }
-.textarea-container{
-    border-top: 1px solid #ccc;
+.textarea-container {
+    margin: auto;
+    position: relative;
+    margin-top: 80px;
+    height: 80%;
+    max-width: 800px;
+    min-width: 290px;
+    overflow: visible;
 }
-.btn-box{
-    padding: 5px 0px 0px 5px;
+.btn-box {
+    background: #eee;
 }
-.icon-box {
-    width: 40px;
-    height: 30px;
+.icon-list {
+    display: inline-block;
+}
+.icon-list-right {
+    .icon-list;
+    float: right;
+}
+.btnBox(@height){
+    height: @height;
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    background: transparent;
     text-align: center;
-    line-height: 30px
+    line-height: @height;
 }
+.icon-btn-box {
+    .btnBox(45px);
+    width: 35px;
+}
+.text-btn-box {
+    .btnBox(45px);
+    padding: 0 10px;
+}
+.text-btn {
+    .icon-font(12px,#555);
+}
+
 .textarea-box {
     width: 100%;
     position: relative;
     padding: 6px;
 }
 .textarea {
-    padding: 0px 5px;
     border: none;
     resize: none;
     background: #fbfbfb;
     font-size: 1rem;
     height: 7rem;
     overflow-y: scroll;
+    outline: none;
+    padding: 25px 25px 0;
+    color: #222;
 }
 .preView {
     max-height: 20rem;
@@ -42,10 +72,12 @@
     overflow-y: scroll;
 }
 pre{
-    background: white;
+    background: #ccc;
     padding: 10px;
+    margin: 0px;
     overflow: scroll;
     max-height: 6rem;
+    border-left: 5px #888 solid;
 }
 .click-div {
     position: absolute;
@@ -65,4 +97,23 @@ pre{
     position: absolute;
     right: 11px;
     top: 14px;
+}
+.textarea-title{
+    width: 100%;
+    height: 50px;
+    font-size: 1.5rem;
+    border: none;
+    background: #fbfbfb;
+    padding-left: 25px;
+}
+
+
+
+.richtext-container{
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    position: fixed;
+    top: 0;
+    left: 0;
 }

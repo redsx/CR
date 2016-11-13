@@ -9,6 +9,7 @@ import SearchUser from '../../containers/SearchUser.js'
 import SystemSetting from '../../containers/SystemSetting.js'
 import '../../less/indexpage.less'
 
+// import RichText from '../../components/RichText.jsx'
 class Index extends React.Component{
     constructor(props){
         super(props);
