@@ -2,52 +2,9 @@ import React, {PropTypes} from 'react'
 import pureMixin from '../mixin/pureMixin.js'
 import Immutable from 'immutable'
 import Avatar from '../containers/Avatar.js'
-import api from '../plugins/api.js'
+import api from '../plugins'
 
 import '../less/message.less'
-
-function requireAll(requireContext) {
-    return requireContext.keys().map(requireContext);
-}
-// requires and returns all modules that match
-requireAll(require.context('../plugins/plugin/', true, /^\.\/.*\.js$/));
-
-class PluginMessage extends React.Component {
-     
-
-    componentDidMount() {
-        this.renderMessage();
-    }
-
-    shouldComponentUpdate(nextProps) {
-        const currentProps = this.props;
-        return !(
-            currentProps.content === nextProps.content &&
-            currentProps.name === nextProps.name
-        );
-    }
-
-    componentDidUpdate() {
-        this.renderMessage();
-    }
-
-    renderMessage() {
-        jQuery(this.dom).empty()
-             .append(api.getMessage(this.props.name, this.props.content, this.props.isNew));
-    }
-    render() {
-        return (<div
-            className="plugin-dom-container"
-            ref={dom => this.dom = dom}
-        />);
-    }
- }
- 
- PluginMessage.propTypes = {
-        name: PropTypes.string.isRequired,
-        content: PropTypes.any,
-        isNew: PropTypes.bool.isRequired,
-    };
  
  
 class Message extends React.Component{
@@ -122,7 +79,7 @@ class Message extends React.Component{
                                     <img src ={content} onClick = {()=>{this.handleDbclick()}} className = 'imageMessage'/>
                                   </span>);
                 case 'pluginMessage':
-                    return <PluginMessage name={messageInfo.name} content={messageInfo.content} isNew={messageInfo.isNew}/>;
+                    return <api.PluginMessage name={messageInfo.name} content={messageInfo.content} isNew={messageInfo.isNew} />;
                 default:
                     console.error(`Wrong message type: ${type}`);
             }

@@ -19,7 +19,15 @@ module.exports = {
         loaders: [
             {
                 test: /\.jsx?$/,
-                exclude: /(node_modules|bower_components)/,
+                exclude: function(input){
+                    if(input.match(/(node_modules|bower_components)/)){
+                        if(input.indexOf("chat-room-plugin")!==-1){
+                           return false;
+                        }
+                        return true;
+                    }
+                    return false;                       
+                },
                 loader: 'babel-loader', // 'babel-loader' is also a legal name to reference
                 query: {
                     presets: ['react', 'es2015']
