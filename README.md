@@ -4,7 +4,7 @@
 
 ### 最新内容
 
-- 新增插件系统插件（基于 [https://github.com/blackmiaool/jquery-image-explode](https://github.com/blackmiaool/jquery-image-explode)）
+- 新增插件系统（基于 [https://github.com/blackmiaool/jquery-image-explode](https://github.com/blackmiaool/jquery-image-explode)）
 
 ### 基础功能
 
