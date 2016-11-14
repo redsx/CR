@@ -12,7 +12,7 @@ class Message extends React.Component{
         super(props);
         this.shouldComponentUpdate = pureMixin.bind(this);
     }
-    handleDbclick(){
+    handleClick() {
         let index = this.props.message.toJS().index,
             setSlideState = this.props.setSlideState,
             findSlideArr = this.props.findSlideArr;
@@ -76,8 +76,8 @@ class Message extends React.Component{
                     return <span  dangerouslySetInnerHTML={ {__html: text}}></span>;
                 case 'imageMessage':
                     return (<span>
-                                    <img src ={content} onClick = {()=>{this.handleDbclick()}} className = 'imageMessage'/>
-                                  </span>);
+                                <img src ={content} onClick = {()=>{this.handleClick()}} className = 'imageMessage'/>
+                            </span>);
                 case 'pluginMessage':
                     return <api.PluginMessage name={messageInfo.name} content={messageInfo.content} isNew={messageInfo.isNew} />;
                 default:
@@ -104,7 +104,7 @@ class Message extends React.Component{
                             {nickname + ' '+time}
                         </span>
                         <div className = 'message'>
-                            {getMessageComponent(type)}
+                            {getMessageComponent.call(this,type)}
                              <div className = {dir === 'left' ? 'triangle-left-outer' : 'triangle-right-outer'}></div>
                              <div className = {dir === 'left' ? 'triangle-left-inner' : 'triangle-right-inner'}></div>
                         </div>
