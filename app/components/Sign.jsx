@@ -26,7 +26,7 @@ class Sign extends React.Component{
     handleNicChange(e){
         let val = e.target.value.trim(),
             pwd = this.refs.password.value.trim();
-        if(val.length<=0 || val.length>10){
+        if(val.length<=0 || val.length>20){
             if(this.state.isNicErr === false){
                 this.setState({isNicErr:true});
             }

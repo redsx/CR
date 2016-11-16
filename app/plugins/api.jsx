@@ -1,5 +1,7 @@
 import jQuery from 'jquery';
 import plugin from 'chat-room-plugin'
+import MessageBox from '../components/MessageBox.jsx'
+import Immutable from 'immutable'
 
 import React, {
     PropTypes
@@ -84,7 +86,9 @@ class PluginMessage extends React.Component {
     shouldComponentUpdate(nextProps) {
         const currentProps = this.props;
         return !(
-            currentProps.content === nextProps.content &&
+            Immutable.is(currentProps.boxInfo,nextProps.boxInfo) &&
+            currentProps.content.from === nextProps.content.from &&
+            currentProps.content.content === nextProps.content.content &&
             currentProps.name === nextProps.name
         );
     }
@@ -98,10 +102,18 @@ class PluginMessage extends React.Component {
             .append(plugin.getMessage(this.props.name, this.props.content, this.props.isNew));
     }
     render() {
-        return (<div
-            className="plugin-dom-container"
-            ref={dom => this.dom = dom}
-        />);
+        return (
+            <MessageBox 
+                info = {this.props.boxInfo}
+                messageContent = {
+                    <div
+                        className="plugin-dom-container"
+                        ref={dom => this.dom = dom}
+                    />
+                }
+            />
+            
+        );
     }
 }
 

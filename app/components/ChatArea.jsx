@@ -6,11 +6,14 @@ import InputArea from '../containers/InputArea.js'
 import Expressions from '../containers/Expressions.js'
 import ImageExpressions from '../containers/ImageExpressions.js'
 import InfoCard from '../containers/InfoCard.js'
-import Message from '../containers/Message.js'
+import TextMessage from './TextMessage.jsx'
 import SystemMessage from './SystemMessage.jsx'
+import RichTextMessage from './RichTextMessage.jsx'
 import Drag from './Drag.jsx'
 import RoomInfo from '../containers/RoomInfo.js'
 import api from '../plugins'
+import ImageMessage from '../containers/ImageMessage.js'
+
 // import Loading from './Loading.jsx'
 
 import '../less/scroll.less'
@@ -53,9 +56,11 @@ class ChatArea extends React.Component {
     componentDidMount(){
         let messageArea = this.refs.messageArea,
             gif = this.refs.gif,
-            scrollHandle = null,
+            scrollTimer = null,
             loadHistoryHandle = null,
             user = this.props.user.toJS(),
+            showLoadBtnTimer = null,
+            needScrollTimer = null,
             messages = this.props.messages.toJS();
         messageArea.addEventListener('scroll',()=>{
             if(messageArea.scrollTop < 20 && messageArea.scrollTop > 0){
@@ -64,11 +69,19 @@ class ChatArea extends React.Component {
                         showLoadBtn: true,
                         needScroll: false
                     });
-                    setTimeout(() => {
+                    //暂时解决了出现加载按钮后自己发消息不回滚动到末位的问题
+                    showLoadBtnTimer && clearTimeout(showLoadBtnTimer);
+                    needScrollTimer && clearTimeout(needScrollTimer);
+                    showLoadBtnTimer = setTimeout(() => {
                         this.setState({
                             showLoadBtn: false
                         });
                     },2000);
+                    needScrollTimer = setTimeout(() => {
+                        this.setState({
+                            needScroll: true
+                        });
+                    },2500);
                 }
             }
             if(messageArea.scrollTop === messageArea.scrollHeight-messageArea.offsetHeight){
@@ -76,8 +89,8 @@ class ChatArea extends React.Component {
                 gif.style.display = 'none';
             }
             if(messageArea.className = 'scroll-show'){
-                scrollHandle && clearTimeout(scrollHandle);
-                scrollHandle = setTimeout(()=>{
+                scrollTimer && clearTimeout(scrollTimer);
+                scrollTimer = setTimeout(()=>{
                     messageArea.className = 'scroll-hidden';
                 },1000)
             } else{
@@ -116,14 +129,11 @@ class ChatArea extends React.Component {
             gif = this.refs.gif,
             needScroll = this.state.needScroll;
         if(messageArea.scrollHeight > messageArea.offsetHeight){
-            messages = messages[user.curRoom] || [];
             lastMessage = messages[messages.length -1] || {};
             imglist = messageArea.querySelectorAll('img');
             lastChild = messageArea.lastElementChild;
             childHeight = lastChild?lastChild.offsetHeight : 1;
-            if(lastMessage.nickname === user.nickname){
-                    willScroll = true;            
-            }
+            
             if(needScroll){
                 // －30容错
                 if( messageArea.offsetHeight <= preScroll - messageArea.scrollTop -30){
@@ -135,6 +145,9 @@ class ChatArea extends React.Component {
                 if(isNeedScroll){
                     willScroll = true;
                     setScrollState(false);
+                }
+                if(lastMessage.nickname === user.nickname){
+                    willScroll = true;
                 }
                 if(willScroll){
                     if(imglist[imglist.length -1]){
@@ -154,7 +167,10 @@ class ChatArea extends React.Component {
     }
     render(){
         let user = this.props.user.toJS();
-        let messages = this.props.messages.toJS();
+        let messages = this.props.messages.toJS() || [];
+        if(!api.timestamp && messages[messages.length -1]){
+                api.timestamp = messages[messages.length -1]['timestamp'];
+        }
         return (
             <div data-flex = 'dir:top '>
                 <InfoCard />
@@ -185,22 +201,52 @@ class ChatArea extends React.Component {
                         >
                             {
                                 messages.map((item,index) => {
-                                    if(item.timestamp>api.timestamp){
-                                        api.timestamp=item.timestamp;
-                                    }
+                                    let dir = user.nickname === item.nickname ? 'right' : 'left';
+                                    const boxInfo = Immutable.fromJS({
+                                        nickname:item.nickname,
+                                        avatar:item.avatar,
+                                        timestamp:item.timestamp,
+                                        dir
+                                    })
                                     switch (item.type) {
-                                        case 'imageMessage':
+                                        case 'imageMessage': {
+                                            return <ImageMessage 
+                                                key = {index}
+                                                index = {index}
+                                                content = {item.content}
+                                                info = {boxInfo}
+                                            />
+                                        }
                                         case 'textMessage': {
-                                            let message = Immutable.fromJS({
-                                                nickname: item.nickname,
-                                                avatar: item.avatar,
-                                                timestamp: item.timestamp,
-                                                content: item.content,
-                                                type: item.type,
-                                                index: index
-                                            })
-                                            let dir = user.nickname === item.nickname ? 'right' : 'left';
-                                            return <Message message = {message} dir = {dir} key = {index} />
+                                            return <TextMessage 
+                                                        info = {boxInfo} 
+                                                        content = {item.content} 
+                                                        key = {index} 
+                                                    />
+                                        }
+                                        case 'pluginMessage': {
+                                            const messageInfo=(function plugin(){
+                                                let isNew= false;
+                                                if(item.timestamp > api.timestamp) {
+                                                    isNew = true;
+                                                    api.timestamp = item.timestamp;
+                                                }
+                                                const message={content:item.content,from:{username:item.nickname},isNew};
+
+                                                const ret=api.getPluginMessageInfo(message);
+                                                if(ret){
+                                                    ret.isNew=isNew;
+                                                }            
+                                                return ret;            
+                                            })();
+                                            
+                                            return <api.PluginMessage 
+                                                        key = {index}
+                                                        name={messageInfo.name} 
+                                                        content={messageInfo.content} 
+                                                        isNew={messageInfo.isNew} 
+                                                        boxInfo = {boxInfo}
+                                                    /> ;
                                         }
                                         case 'systemMessage': {
                                             return <SystemMessage content = {item.content || ''} key = {index}/>
@@ -208,7 +254,6 @@ class ChatArea extends React.Component {
                                         default:
                                             break;
                                     }
-                                    
                                 })
                             }
                         </div>

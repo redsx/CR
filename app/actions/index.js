@@ -17,6 +17,17 @@ export const SET_SYS_SETTING_STATE = 'SET_SYS_SETTING_STATE';
 export const SET_ROOM_INFO_STATE = 'SET_ROOM_INFO_STATE';
 export const SET_CREATE_ROOM_STATE = 'SET_CREATE_ROOM_STATE';
 export const SET_SEARCH_USER_STATE = 'SET_SEARCH_USER_STATE';
+
+//暂定编辑器显示方式，以后改异步加载
+export const SET_RICHTEXT_STATE = 'SET_RICHTEXT_STATE';
+export const setRichTextState = (richTextState) => {
+    return {
+        type: SET_RICHTEXT_STATE,
+        richTextState
+    }
+}
+//
+
 export const setMenuState = (menuState) => {
     return {
         type: SET_MENU_STATE,
@@ -254,6 +265,7 @@ export const getRoomHistory = (info) => {
                     limit: LOAD_MESSAGE_LIMIT
                 }
             }
+            console.log('开始获取房间历史记录：',new Date().getTime());
             socket.emit('getRoomHistory',info, (body,res) => {
                 if(body.isError){
                     dispatch(setSnackbarState({
@@ -262,6 +274,7 @@ export const getRoomHistory = (info) => {
                     }));
                     browserHistory.push('/login');
                 } else{
+                    console.log('得到房间历史记录：',new Date().getTime());
                     let histories = body.histories || [];
                     let isloadAll = histories.length < LOAD_MESSAGE_LIMIT;
                     dispatch(addHistoryMessage(info.roomName,histories));
@@ -311,6 +324,7 @@ export const getPrivateHistory = (info) => {
                     limit: LOAD_MESSAGE_LIMIT
                 }
             }
+            console.log('开始获取私聊记录：',new Date().getTime());
             socket.emit('getPrivateHistory',info,(body) =>{
                 if(body.isError){
                     dispatch(setSnackbarState({
@@ -319,6 +333,7 @@ export const getPrivateHistory = (info) => {
                     }));
                     reject(body);
                 } else{
+                    console.log('得到私聊记录：',new Date().getTime());
                     let histories = body.histories || [];
                     let isloadAll = histories.length < LOAD_MESSAGE_LIMIT;
                     dispatch(addPrivateHistory(info.fromUser,histories));
@@ -782,6 +797,7 @@ export const refreshRoomActiveInfo = (info) => {
 export const getRoomActiveInfo = (roomName) => {
     return (dispatch) => {
         return new Promise((resolve,reject) => {
+            console.log('开始获取活跃列表：',new Date().getTime());
             socket.emit('getRoomActiveInfo',roomName,(body) => {
                 if(body.isError){
                     dispatch(setSnackbarState({
@@ -790,6 +806,7 @@ export const getRoomActiveInfo = (roomName) => {
                     }));
                     reject(body);
                 } else{
+                    console.log('得到活跃列表：',new Date().getTime());
                     dispatch(refreshRoomActiveInfo(body));
                     resolve(body);
                 }

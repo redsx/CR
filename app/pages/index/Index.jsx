@@ -9,7 +9,7 @@ import SearchUser from '../../containers/SearchUser.js'
 import SystemSetting from '../../containers/SystemSetting.js'
 import '../../less/indexpage.less'
 
-// import RichText from '../../components/RichText.jsx'
+import RichText from '../../containers/RichText.js'
 class Index extends React.Component{
     constructor(props){
         super(props);
@@ -60,6 +60,7 @@ class Index extends React.Component{
                 <AudioGroup />
                 <CreateRoom />
                 <SearchUser />
+                <RichText />
             </div>
         );
     }

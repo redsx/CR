@@ -10,7 +10,6 @@ import App from './components/App.jsx'
 import Login from './pages/login/Login.jsx'
 import SignUp from './pages/signup/SignUp.jsx'
 import Index from './pages/index/'
-// import Edit from './pages/edit/index.jsx'
 
 import store from './store'
 
@@ -118,14 +117,12 @@ socket.on('privateMessage', (message) => {
             }))
         }
         if(document.hidden){
-            // 匹配插件消息正则
-            //  /^([\w-]+)\s*\(([\s\S]*)\)\s*;?\s*$/
             favico.addBage();        
             if(state.setting.audioNotification){
                 state.setting.special.indexOf(message.nickname) === -1 ? audio.play() : audioSpecial.play();
             }    
             state.setting.h5Notification ? notification.showNotification(message.nickname,{
-                body: message.content,
+                body: message.type === 'pluginMessage'? '[plugin]' : message.content,
                 icon: message.avatar,
             }) : null;
         } else if(state.setting.audioNotification && state.userState.curRoom !== message.room){

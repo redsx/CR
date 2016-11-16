@@ -16,7 +16,8 @@ import {
     SET_SYS_SETTING_STATE,
     SET_ROOM_INFO_STATE,
     SET_CREATE_ROOM_STATE,
-    SET_SEARCH_USER_STATE
+    SET_SEARCH_USER_STATE,
+    SET_RICHTEXT_STATE
 } from '../actions'
 let defaultState = {
     isShowMenu:true,
@@ -27,6 +28,7 @@ let defaultState = {
     isShowCreateRoom: false,
     isShowSearchUser: false,
     isShowExpression: false,
+    isShowRichText: false,
     listState:'activeList',
     badgeCount: {},
     infoCardState: {
@@ -52,6 +54,9 @@ export default function pageState(state = defaultState,action) {
         }
         case SET_EXPRESSION_STATE: {
             return state.set('isShowExpression',action.expressionState);
+        }
+        case SET_RICHTEXT_STATE: {
+            return state.set('isShowRichText',action.richTextState);
         }
         case ADD_EXPRESSION: {
             let expression = Immutable.fromJS({expression: action.expression});

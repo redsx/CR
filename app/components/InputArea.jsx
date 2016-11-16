@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import Immutable from 'immutable'
+import api from '../plugins'
 
 import '../less/inputarea.less'
 
@@ -30,7 +31,6 @@ class InputArea extends React.Component{
     }
     handleClick(){
         let input = this.refs.input;
-            // console.log('input value:',input);
         if(!input) return;
         let user = this.props.user.toJS(),
             addPrivateMessage = this.props.addPrivateMessage,
@@ -45,7 +45,7 @@ class InputArea extends React.Component{
                 content:content,
                 type:'textMessage'
             }
-
+            if(api.getPluginMessageInfo({content,from:{username:user.nickname}})) message.type = 'pluginMessage';
             user.isPrivate?sendPrivateMessage(message).then((resault)=>{
                 return addPrivateMessage(resault);
             })
@@ -133,6 +133,10 @@ class InputArea extends React.Component{
                         onPaste = {(e)=>{this.handlePaste(e)}}
                         contentEditable = {true}
                     />
+                    <i 
+                        className = 'change-btn'
+                        onClick = {() => this.props.setRichTextState(true)}
+                    >&#xe65b;</i>
                 </div>
                 <div data-flex-box='0'>
                     <div 
@@ -153,10 +157,8 @@ InputArea.propTypes = {
     addMessage: PropTypes.func,
     addPrivateMessage: PropTypes.func,
     setImageExpState: PropTypes.func,
+    setRichTextState: PropTypes.func,
     // expression: PropTypes.object,
     // user: PropTypes.object
 }
 export default InputArea;
-
-// markdown 输入框暂定，MDZZ我需要一个ui啊啊啊啊啊
-//  <i className = 'change-btn'>&#xe65b;</i>

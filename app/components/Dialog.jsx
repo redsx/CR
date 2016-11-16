@@ -1,16 +1,15 @@
 import React, {PropTypes} from 'react'
 
-// import 
-
-class Dialog extends React.Component{
+class RichTextMessage extends React.Component{
     constructor(props){
         super(props);
     }
     render(){
-        <div >
-            <div></div>
-            <div></div>
-        </div>
+        return(
+            <div >
+                <div>123</div>
+            </div>
+        )
     }
 }
-export default Dialog;
+export default RichTextMessage;
