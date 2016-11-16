@@ -21,7 +21,7 @@ module.exports = {
                 test: /\.jsx?$/,
                 exclude: function(input){
                     if(input.match(/(node_modules|bower_components)/)){
-                        if(input.indexOf("chat-room-plugin")!==-1){
+                        if(input.indexOf("chat-room-plugin")!==-1||input.indexOf("jquery-image-explode")!==-1){
                            return false;
                         }
                         return true;
