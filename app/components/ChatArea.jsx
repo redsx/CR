@@ -219,10 +219,17 @@ class ChatArea extends React.Component {
                                         }
                                         case 'textMessage': {
                                             return <TextMessage 
-                                                        info = {boxInfo} 
-                                                        content = {item.content} 
-                                                        key = {index} 
-                                                    />
+                                                info = {boxInfo} 
+                                                content = {item.content} 
+                                                key = {index} 
+                                            />
+                                        }
+                                        case 'richTextMessage': {
+                                            return <RichTextMessage 
+                                                info = {boxInfo} 
+                                                content = {item.content} 
+                                                key = {index} 
+                                            />
                                         }
                                         case 'pluginMessage': {
                                             const messageInfo=(function plugin(){

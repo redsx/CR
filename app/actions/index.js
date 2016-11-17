@@ -839,3 +839,19 @@ export const searchUser = (info) => {
         })
     }
 }
+
+export const getRichTextContent = (info) => {
+    return new Promise((resolve,reject) => {
+        socket.emit('getRichTextContent',info,(body) => {
+            if(body.isError){
+                    dispatch(setSnackbarState({
+                        content: body.errMsg,
+                        open: true
+                    }));
+                    reject(body);
+                } else{
+                    resolve(body);
+                }
+        })
+    })
+}

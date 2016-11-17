@@ -9,7 +9,6 @@ class Message extends React.Component{
         super(props);
         this.shouldComponentUpdate = pureMixin.bind(this);
     }
-    
     render(){
         return (
             <MessageBox 
@@ -17,10 +16,10 @@ class Message extends React.Component{
                 messageContent = {
                     <span>
                         <div className = 'message-richtext-image-container'>
-                            <img src = 'http://ooo.0o0.ooo/2016/11/16/582c46b382ead.jpg'/>
+                            <img className = 'message-richtext-image' src = 'http://ooo.0o0.ooo/2016/11/16/582c46b382ead.jpg'/>
                         </div>
                         <div className = 'message-richtext-text-container'>
-                            <span className = 'message-richtext-title'>{this.props.content}</span>
+                            <p className = 'message-richtext-title'>{this.props.content}</p>
                             <span className = 'message-richtext-tip'>点击查看</span>
                         </div>
                     </span>

@@ -4,27 +4,15 @@ import marked from 'marked'
 
 import '../less/inputareaM.less'
 
-import { sendMessage, sendPrivateMessage, sendImage } from '../actions'
+import { sendMessage, sendPrivateMessage } from '../actions'
 import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../util/ajax.js'
 
 
 class InputArea extends React.Component{
     constructor(props){
         super(props);
-        this.state = {
-            isPreView: false,
-            size: 3,
-            inputValue: ''
-        }
     }
     componentDidMount(){
-        this.refs.input.focus();
-         marked.setOptions({
-            highlight: function (code) {
-                return require('highlight.js').highlightAuto(code).value;
-            }
-        });
-
         document.addEventListener('keydown', (e)=>{
             if(e.keyCode === 9){
                 e.preventDefault();
@@ -32,13 +20,28 @@ class InputArea extends React.Component{
             }
         })
     }
-    handlePreView(){
-        this.setState({isPreView:!this.state.isPreView});
-    }
-    handleChange(e){
-        this.setState({
-            inputValue: marked(e.target.innerText)
-        });
+    handleSend(){
+        let inputTitle = this.refs.inputTitle.value || '',
+            inputContent = this.refs.inputContent.innerHTML || '',
+            user = this.props.user.toJS(),
+            addPrivateMessage = this.props.addPrivateMessage,
+            addMessage = this.props.addMessage;
+        if(inputContent !== ''){
+            let message = {
+                nickname:user.nickname,
+                room: user.curRoom,
+                title: inputTitle,
+                content: inputContent,
+                type:'richTextMessage',
+            }
+            user.isPrivate?sendPrivateMessage(message).then((resault)=>{
+                return addPrivateMessage(resault);
+            })
+            :sendMessage(message).then((resault)=>{
+                return addMessage(resault);
+            });
+        }
+        this.props.setRichTextState(false);
     }
     handleClick(command){
         switch (command) {
@@ -111,7 +114,7 @@ class InputArea extends React.Component{
         return (
             <div data-flex = 'main:left cross:top dir:top' className = 'textarea-container'>
                 <div data-flex = 'main:center box:mean' data-flex-box = '1' data-flex = 'dir:top main:left' className = 'textarea-box' >
-                    <div><input className = 'textarea-title'/></div>   
+                    <div><input className = 'textarea-title' ref = 'inputTitle'/></div>   
                     <ul className = 'btn-box'>
                         <li className = 'icon-list'>
                             <button
@@ -175,6 +178,7 @@ class InputArea extends React.Component{
                         <li className = 'icon-list-right'>
                             <button
                                 className = 'text-btn-box'
+                                onClick = {() => this.handleSend()}
                             >
                                 <span className = 'text-btn'>发送内容</span>
                             </button>
@@ -192,7 +196,7 @@ class InputArea extends React.Component{
                         contentEditable = {true}
                         data-flex-box = '1' 
                         className = 'textarea scroll-hidden'
-                        ref = 'input'
+                        ref = 'inputContent'
                         onPaste = {(e)=>{this.handlePaste(e)}}
                     />
                 </div>

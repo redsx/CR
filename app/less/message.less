@@ -21,7 +21,7 @@
     border-bottom: 7px solid transparent; 
 }
 .message-container{
-    width: 80%;
+    width: 100%;
     max-width: 980px;
     padding: 10px 6px 0px 12px;
 }
@@ -32,7 +32,7 @@
     background: white;
     text-align: left;
     padding: 6px 12px;
-    max-width: 85%;
+    max-width: 95%;
     min-height: 35px;
     border: 1px solid rgb(204, 204, 204);
     border-radius: 8px;
@@ -73,14 +73,20 @@
 }
 .message-richtext-text-container{
     display: inline-block;
-    width: 138px;
+    width: 130px;
+    padding-top: 6px;
 }
 .message-richtext-title{
-    margin: 10px 15px;
+    margin: 5px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .message-richtext-tip{
     padding: 0;
-    margin: 0 15px;
+    margin: 0 10px;
     font-size: small;
     color: #909090;
+    cursor: pointer;
 }
