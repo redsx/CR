@@ -44,7 +44,7 @@ module.exports = {
     selectOnlineUser: function(list){
         let onlineList = {};
         for(let i = 0; i<list.length; i++){
-            if(list[i].online && onlineList[list[i]['nickname']]){
+            if(list[i].online && !onlineList[list[i]['nickname']]){
                 onlineList[list[i]['nickname']] = {
                     nickname: list[i]['nickname'],
                     avatar: list[i]['avatar'],

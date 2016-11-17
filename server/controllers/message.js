@@ -4,10 +4,12 @@ const request = require('request')
     , Online = require('../models/online-mongo')
     , History = require('../models/history-mongo')
     , Private = require('../models/private-mongo')
+    , RichText = require('../models/richtext-mongo')
     , Room = require('../models/room-mongo')
     , config = require('../config/cr-config');
 module.exports = {
     saveMessage: function *(message,socket,cb) {
+        // if(message.type === 'richTextMessage')
         let history = {
             room: message.room,
             content: message.content.slice(0,150),
@@ -19,6 +21,19 @@ module.exports = {
         if(user){
             message.avatar = user.avatar;
             history.owner = user._id;
+            //用timestamp＋userId确定唯一的richtext
+            if(message.type === 'richTextMessage') {
+                let title = message.title || '无标题';
+                let richtext = new RichText({
+                    content: message.content,
+                    title: title,
+                    owner: user._id,
+                    timestamp: message.timestamp,
+                });
+                yield richtext.save();
+                history.content = title;
+                message.content = title;              
+            }
             let newHistory = new History(history);
             let room = yield Room.findOne({name: message.room});
             if(room){
@@ -45,7 +60,6 @@ module.exports = {
         }
     },
     savePrivateMessage: function *(message,socket,cb) {
-        console.log('message.js message 48:',message);
         let send = {
             nickname: message.nickname,
             content: message.content,
@@ -53,12 +67,24 @@ module.exports = {
             room: message.room,
             type: message.type
         }
+        
         if(message.room === config.ROBOT_NAME){
             this.robotMessage(send,cb);
         } else{
             let toUser = yield User.findOne({nickname: message.room}).populate('online');
             let fromUser = yield User.findOne({nickname: message.nickname});
             send.avatar = fromUser.avatar;
+            if(message.type === 'richTextMessage') {
+                let title = message.title || '无标题';
+                let richtext = new RichText({
+                    content: send.content,
+                    title: message.title,
+                    owner: fromUser._id,
+                    timestamp: send.timestamp,
+                });
+                yield richtext.save();
+                send.content = title;
+            }
             if(toUser.online){
                 console.log('message.js toUser 63:',toUser);
                 socket.broadcast.to(toUser.online.socket).emit('privateMessage',send);
@@ -70,6 +96,7 @@ module.exports = {
                 timestamp: send.timestamp,
                 type: send.type
             });
+
             yield privateMessage.save();
             cb(send);
         }

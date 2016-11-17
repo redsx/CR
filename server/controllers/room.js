@@ -3,13 +3,13 @@ const Room = require('../models/room-mongo')
     , moment = require('moment')
     , User = require('../models/user-mongo')
     , listUtil = require('../util/list.js')
+    , config = require('../config/cr-config')
     , JWT_KEY = require('../config/cr-config').JWT_KEY;
 module.exports = {
     createRoom: function *(socket,info,cb) {
         let user = yield User.findOne({nickname: info.user});
         let room = yield Room.findOne({name: info.roomName});
         let count = yield Room.count({creater: user._id});
-        console.log(count);
         if(count >= 3){
             return cb({
                 isError: true,
@@ -158,14 +158,13 @@ module.exports = {
         }
     },
     getRoomActiveInfo: function *(roomName,cb){
-        //房间活跃用户设定为近期发言用户以及房间当前在线用户
-        let room = yield Room.findOne({name: roomName}).populate({path: 'histories', populate: { path: 'owner' }, options: {sort:'-timestamp',limit:20}}).populate('creater');
-        let online = yield Room.findOne({name: roomName}).populate({path: 'users', populate: {path: 'online'}, options: {sort:'-lastOnlineTime',limit:50}});
+        //房间活跃用户设定为房间当前在线用户
+        let room = yield Room.findOne({name: roomName});
+        let online = yield Room.findOne({name: roomName}).populate({path: 'users', populate: {path: 'online'}, options: {sort:'-lastOnlineTime',limit:30}});
         if(room && online){
-            let historyUsers = listUtil.getHistoryUsers(room.histories,'owner');
             let onlineUsers = listUtil.selectOnlineUser(online.users);
             cb({
-                active: Object.assign({},historyUsers,onlineUsers),
+                active: onlineUsers,
                 info: room.info,
                 name: room.name,
                 creater: room.creater ? room.creater.nickname : ''

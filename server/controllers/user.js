@@ -28,6 +28,8 @@ module.exports = {
             rooms: [room._id]
         });
         if(resault){ 
+            room.users.push(resault._id)
+            yield room.save();
             let verify = jwt.sign({
                     user: nickname,
                     exp:Math.floor((new Date().getTime())/1000) + 60 * 60 * 24 * 30
