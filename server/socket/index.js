@@ -132,5 +132,10 @@ module.exports = function (io) {
                 callbackError(cb,err);
             })
         })
+        socket.on('getRichTextContent',(info,cb) => {
+            co(message.getRichTextContent(info,cb)).catch((err) => {
+                callbackError(cb,err);
+            })
+        })
     })
 }

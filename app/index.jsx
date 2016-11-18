@@ -216,3 +216,11 @@ render(
     ,
     document.getElementById('App')
 )
+
+
+
+// 1. 编辑器加入codemirror
+// 2. 首次加载慢
+// 3. 解决移动端弹出键盘会出现的问题
+// 4. 下拉加载更多
+// 5. 群组管理内容

@@ -11,6 +11,9 @@ import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../util/ajax.js'
 class InputArea extends React.Component{
     constructor(props){
         super(props);
+        this.state = {
+            size: 3
+        }
     }
     componentDidMount(){
         document.addEventListener('keydown', (e)=>{
@@ -60,7 +63,7 @@ class InputArea extends React.Component{
             case 'fontSize': {
                 if(this.state.size === 5){
                     document.execCommand('fontSize',false,'3');
-                    this.setState({size:2});
+                    this.setState({size:3});
                 } else{
                     document.execCommand('fontSize',false,'5');
                     this.setState({size:5});

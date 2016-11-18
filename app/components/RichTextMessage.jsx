@@ -9,12 +9,23 @@ class Message extends React.Component{
         super(props);
         this.shouldComponentUpdate = pureMixin.bind(this);
     }
+    handleClick(){
+        let { timestamp, nickname } = this.props.info.toJS();
+        this.props.setModalState({
+            modalInfo: {
+                title: this.props.content,
+                owner: nickname,
+                timestamp: timestamp,
+            },
+            isShow: true
+        })
+    }
     render(){
         return (
             <MessageBox 
                 info = {this.props.info}
                 messageContent = {
-                    <span>
+                    <span onClick = {() => this.handleClick()}>
                         <div className = 'message-richtext-image-container'>
                             <img className = 'message-richtext-image' src = 'http://ooo.0o0.ooo/2016/11/16/582c46b382ead.jpg'/>
                         </div>

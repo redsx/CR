@@ -17,7 +17,8 @@ import {
     SET_ROOM_INFO_STATE,
     SET_CREATE_ROOM_STATE,
     SET_SEARCH_USER_STATE,
-    SET_RICHTEXT_STATE
+    SET_RICHTEXT_STATE,
+    SET_MODAL_STATE
 } from '../actions'
 let defaultState = {
     isShowMenu:true,
@@ -31,6 +32,14 @@ let defaultState = {
     isShowRichText: false,
     listState:'activeList',
     badgeCount: {},
+    modalState: {
+        modalInfo: {
+            title: '',
+            owner: '',
+            timestamp: 0,
+        },
+        isShow: false
+    },
     infoCardState: {
         nickname: 'loading...',
         avatar: 'loading...',
@@ -54,6 +63,9 @@ export default function pageState(state = defaultState,action) {
         }
         case SET_EXPRESSION_STATE: {
             return state.set('isShowExpression',action.expressionState);
+        }
+        case SET_MODAL_STATE: {
+            return state.set('modalState',Immutable.fromJS(action.info));
         }
         case SET_RICHTEXT_STATE: {
             return state.set('isShowRichText',action.richTextState);

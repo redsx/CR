@@ -10,8 +10,8 @@ class  Loading extends React.Component{
             <div 
                 className= 'loading'
                 style = {{
-                    width: this.props.size + 'px',
-                    height: this.props.size + 'px'
+                    width: this.props.width,
+                    height: this.props.height
                 }}
             >
             <div className= 'loading-center'>

@@ -7,9 +7,10 @@ import ImageSlide from '../../containers/ImageSlide.js'
 import CreateRoom from '../../containers/CreateRoom.js'
 import SearchUser from '../../containers/SearchUser.js'
 import SystemSetting from '../../containers/SystemSetting.js'
+import RichText from '../../containers/RichText.js'
+import Modal from '../../containers/Modal.js'
 import '../../less/indexpage.less'
 
-import RichText from '../../containers/RichText.js'
 class Index extends React.Component{
     constructor(props){
         super(props);
@@ -61,6 +62,7 @@ class Index extends React.Component{
                 <CreateRoom />
                 <SearchUser />
                 <RichText />
+                <Modal />
             </div>
         );
     }

@@ -149,5 +149,18 @@ module.exports = {
             messages: messages,
             users: users
         });
+    },
+    getRichTextContent: function *(info,cb){
+        let owner = yield User.findOne({nickname:info.owner});
+        if(owner){
+            let richTextContent = yield RichText.findOne({title: info.title,timestamp: info.timestamp, owner: owner._id})
+            if(richTextContent){
+                return cb({content: richTextContent.content});
+            }
+        }
+        return cb({
+            isError: true,
+            errMsg: '消息不存在！'
+        });
     }
 }

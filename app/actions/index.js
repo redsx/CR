@@ -17,6 +17,7 @@ export const SET_SYS_SETTING_STATE = 'SET_SYS_SETTING_STATE';
 export const SET_ROOM_INFO_STATE = 'SET_ROOM_INFO_STATE';
 export const SET_CREATE_ROOM_STATE = 'SET_CREATE_ROOM_STATE';
 export const SET_SEARCH_USER_STATE = 'SET_SEARCH_USER_STATE';
+export const SET_MODAL_STATE = 'SET_MODAL_STATE';
 
 //暂定编辑器显示方式，以后改异步加载
 export const SET_RICHTEXT_STATE = 'SET_RICHTEXT_STATE';
@@ -27,6 +28,12 @@ export const setRichTextState = (richTextState) => {
     }
 }
 //
+export const setModalState = (info) => {
+    return {
+        type: SET_MODAL_STATE,
+        info
+    }
+}
 
 export const setMenuState = (menuState) => {
     return {
@@ -844,10 +851,6 @@ export const getRichTextContent = (info) => {
     return new Promise((resolve,reject) => {
         socket.emit('getRichTextContent',info,(body) => {
             if(body.isError){
-                    dispatch(setSnackbarState({
-                        content: body.errMsg,
-                        open: true
-                    }));
                     reject(body);
                 } else{
                     resolve(body);

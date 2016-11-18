@@ -36,8 +36,9 @@ class MessageBox extends React.Component{
                         width: '100%',
                         textAlign:dir
                     }}>
-                        <span className = 'nickname'>
-                            {nickname + ' '+time}
+                        <span className = 'message-nickname-box'>
+                            <span className = 'message-nickname'>{nickname}</span>
+                            <span>{time}</span>
                         </span>
                         <div className = 'message'>
                             {this.props.messageContent}
