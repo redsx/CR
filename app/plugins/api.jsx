@@ -55,7 +55,7 @@ function findUserMessage(userName) {
         userName = match[1];
         fullMatch = true;
     }
-    const $names = $('.message-list-item').find('.nickname');
+    const $names = $('.message-list-item').find('.message-nickname');
     let $item;
     for (let i = $names.length - 1; i >= 0; i--) {
         const thisName = $names.eq(i).text();
@@ -71,8 +71,10 @@ function findUserMessage(userName) {
             }
         }
     }
-    $item.avatar = $item.find(".avatar");
-    
+    if($item){
+        $item.avatar = $item.find(".avatar");
+        $item.direction=$item.data("flex").match(/:(\w+)$/)[1];
+    }   
     return $item;
 }
 
