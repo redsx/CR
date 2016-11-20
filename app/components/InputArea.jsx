@@ -136,7 +136,7 @@ class InputArea extends React.Component{
                     <i 
                         className = 'change-btn'
                         onClick = {() => this.props.setRichTextState(true)}
-                    >&#xe65b;</i>
+                    >&#xe6b8;</i>
                 </div>
                 <div data-flex-box='0'>
                     <div 

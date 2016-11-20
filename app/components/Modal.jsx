@@ -6,14 +6,18 @@ import { getRichTextContent } from '../actions'
 
 import '../less/modal.less'
 
+import Highlight from 'react-highlight'
+
 class Modal extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            content: ''
+            content: '',
+            willExec: false
         }
     }
     handleClick(){
+        this.setState({willExec: false});
         this.props.setModalState({
             modalInfo: {
                 title: '',
@@ -45,7 +49,14 @@ class Modal extends React.Component{
                 <div className = 'modal-container'>
                     <div className = 'modal'>
                         <div className = 'modal-header'>
-                            <span className = 'modal-title'> {modalInfo.title} </span>
+                            <span className = 'modal-title'> 
+                                <span> {modalInfo.title + '   '}</span>
+                                <span
+                                    onClick = {() => this.setState({willExec: !this.state.willExec})}
+                                >
+                                    <i className = 'icon'>&#xe8ca;</i>
+                                </span>
+                            </span>
                             <span 
                                 className = 'modal-close-btn'
                                 onClick = {() => this.handleClick()}
@@ -62,7 +73,7 @@ class Modal extends React.Component{
                                     width = '100%'
                                 />
                                 :
-                                <div dangerouslySetInnerHTML= { {__html: this.state.content}} />
+                                this.state.willExec? <div dangerouslySetInnerHTML= { {__html: this.state.content}}/>: <Highlight>{this.state.content}</Highlight>
                             }
                         </div>
                     </div>

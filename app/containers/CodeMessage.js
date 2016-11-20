@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import RichTextMessage from '../components/RichTextMessage.jsx'
+import CodeMessage from '../components/CodeMessage.jsx'
 import { setModalState } from '../actions'
 function mapStateToProps(state) {
     return {}
@@ -8,4 +8,4 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({ setModalState },dispatch);
 }
-export default connect(mapStateToProps,mapDispatchToProps)(RichTextMessage);
+export default connect(mapStateToProps,mapDispatchToProps)(CodeMessage);

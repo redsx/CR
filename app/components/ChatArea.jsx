@@ -8,7 +8,7 @@ import ImageExpressions from '../containers/ImageExpressions.js'
 import InfoCard from '../containers/InfoCard.js'
 import TextMessage from './TextMessage.jsx'
 import SystemMessage from './SystemMessage.jsx'
-import RichTextMessage from '../containers/RichTextMessage.js'
+import CodeMessage from '../containers/CodeMessage.js'
 import Drag from './Drag.jsx'
 import RoomInfo from '../containers/RoomInfo.js'
 import api from '../plugins'
@@ -224,8 +224,8 @@ class ChatArea extends React.Component {
                                                 key = {index} 
                                             />
                                         }
-                                        case 'richTextMessage': {
-                                            return <RichTextMessage 
+                                        case 'codeMessage': {
+                                            return <CodeMessage 
                                                 info = {boxInfo} 
                                                 content = {item.content} 
                                                 key = {index} 

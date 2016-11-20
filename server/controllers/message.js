@@ -1,4 +1,5 @@
 const request = require('request')
+    , xss = require('xss')
     , bluebird = require('bluebird')
     , User = require('../models/user-mongo')
     , Online = require('../models/online-mongo')
@@ -9,7 +10,6 @@ const request = require('request')
     , config = require('../config/cr-config');
 module.exports = {
     saveMessage: function *(message,socket,cb) {
-        // if(message.type === 'richTextMessage')
         let history = {
             room: message.room,
             content: message.content.slice(0,150),
@@ -22,10 +22,10 @@ module.exports = {
             message.avatar = user.avatar;
             history.owner = user._id;
             //用timestamp＋userId确定唯一的richtext
-            if(message.type === 'richTextMessage') {
+            if(message.type === 'codeMessage') {
                 let title = message.title || '无标题';
                 let richtext = new RichText({
-                    content: message.content,
+                    content: xss(message.content),
                     title: title,
                     owner: user._id,
                     timestamp: message.timestamp,
@@ -74,10 +74,10 @@ module.exports = {
             let toUser = yield User.findOne({nickname: message.room}).populate('online');
             let fromUser = yield User.findOne({nickname: message.nickname});
             send.avatar = fromUser.avatar;
-            if(message.type === 'richTextMessage') {
+            if(message.type === 'codeMessage') {
                 let title = message.title || '无标题';
                 let richtext = new RichText({
-                    content: send.content,
+                    content: xss(send.content),
                     title: message.title,
                     owner: fromUser._id,
                     timestamp: send.timestamp,

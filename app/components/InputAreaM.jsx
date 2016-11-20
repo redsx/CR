@@ -6,13 +6,14 @@ import '../less/inputareaM.less'
 
 import { sendMessage, sendPrivateMessage } from '../actions'
 import ajaxHandle, { UPLOAD_URL, HISTORY_URL } from '../util/ajax.js'
-
+import Highlight from 'react-highlight'
 
 class InputArea extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            size: 3
+            type: 'textarea',
+            content: ''
         }
     }
     componentDidMount(){
@@ -23,9 +24,15 @@ class InputArea extends React.Component{
             }
         })
     }
+    shouldComponentUpdate(nextProps,nextState){
+        if(this.state.type !== nextState.type || nextProps !== this.props){
+            return true;
+        }
+        return false;
+    }
     handleSend(){
         let inputTitle = this.refs.inputTitle.value || '',
-            inputContent = this.refs.inputContent.innerHTML || '',
+            inputContent = this.state.content.trim(),
             user = this.props.user.toJS(),
             addPrivateMessage = this.props.addPrivateMessage,
             addMessage = this.props.addMessage;
@@ -35,7 +42,7 @@ class InputArea extends React.Component{
                 room: user.curRoom,
                 title: inputTitle,
                 content: inputContent,
-                type:'richTextMessage',
+                type:'codeMessage',
             }
             user.isPrivate?sendPrivateMessage(message).then((resault)=>{
                 return addPrivateMessage(resault);
@@ -46,74 +53,47 @@ class InputArea extends React.Component{
         }
         this.props.setRichTextState(false);
     }
-    handleClick(command){
-        switch (command) {
-            case 'bold': {
-                document.execCommand('bold',false);
-                break;
-            }
-            case 'formatBlock': {
-                document.execCommand('formatBlock',false,'PRE');
-                break;
-            }
-            case 'strikeThrough': {
-                    document.execCommand('strikeThrough');
-                    break;
-                }
-            case 'fontSize': {
-                if(this.state.size === 5){
-                    document.execCommand('fontSize',false,'3');
-                    this.setState({size:3});
-                } else{
-                    document.execCommand('fontSize',false,'5');
-                    this.setState({size:5});
-                }
-                break;
-            }
-            case 'insertUnorderedList': {
-                document.execCommand('insertUnorderedList',false);
-                break;
-            }
-            case 'createLink': {
-                document.execCommand('createLink',false,window.getSelection().toString());
-                break;
-            }
-            case 'insertImage': {
-                document.execCommand('insertImage',false,window.getSelection().toString());
-                break;
-            }
-            default:
-                break;
-        }
+    handleChange(e) {
+        this.setState({content: e.target.value});
     }
-    handlePaste(e){
-        let items = e.clipboardData.items;
-        if (e.clipboardData.types.indexOf('Files') !== -1) {
-            for (let i = 0; i < items.length; i++) {
-                let item = items[i];
-                if( item && item.kind === 'file' && item.type.match(/^image\/\w+/) ){
-                    let formdata = new FormData(),
-                        imgFile = item.getAsFile();
-                    if(imgFile.size > 3*1024*1024){
-                        alert('文件过大');
-                    } else{
-                        formdata.append('smfile',imgFile);
-                        ajaxHandle.request('post',UPLOAD_URL,formdata,null)
-                        .then((resault)=>{
-                            if(resault.code === 'success'){
-                                document.execCommand('insertImage',false,resault.data.url);
-                            } else{
-                                throw new Error('uplode error');
-                            }
-                        }).catch((err)=>{
-                            console.log(err);
-                        })
-                    }
-                }
+    renderTextarea(){
+        switch(this.state.type){
+            case 'preview': {
+                return (
+                    <div
+                        data-flex-box = '1' 
+                        className = 'textarea scroll-hidden'
+                        ref = 'inputContent'
+                    >
+                        <Highlight>{this.state.content}</Highlight>
+                    </div>
+                )
+            }
+            case 'exec': {
+                return (
+                    <div
+                        data-flex-box = '1' 
+                        className = 'textarea scroll-hidden'
+                        ref = 'inputContent'
+                        dangerouslySetInnerHTML= { {__html: this.state.content}}
+                    />
+                )
+            }
+            default: {
+                return (
+                    <textarea 
+                        data-flex-box = '1' 
+                        className = 'textarea scroll-hidden'
+                        onChange = {(e) => this.handleChange(e)}
+                        defaultValue = {this.state.content}
+                        ref = 'inputContent'
+                    />
+                )
             }
         }
     }
     render(){
+        console.log('inputareaM');
         return (
             <div data-flex = 'main:left cross:top dir:top' className = 'textarea-container'>
                 <div data-flex = 'main:center box:mean' data-flex-box = '1' data-flex = 'dir:top main:left' className = 'textarea-box' >
@@ -122,62 +102,28 @@ class InputArea extends React.Component{
                         <li className = 'icon-list'>
                             <button
                                 className = 'icon-btn-box'
-                                onClick = {()=> this.handleClick('bold')}
+                                onClick = {()=> this.setState({type: 'textarea'})}
                             >
-                                <i className = 'icon'>&#xe6b4;</i>
+                                <i className = 'icon inputM-icon'>&#xe6b8;</i>
                             </button>
                         </li>
                         <li className = 'icon-list'>
                             <button
                                 className = 'icon-btn-box'
-                                onClick = {()=> this.handleClick('formatBlock')}
+                                onClick = {()=> this.setState({type: 'preview'})}
                             >
-                                <i className = 'icon'>&#xe6b6;</i>
+                                <i className = 'icon inputM-icon'>&#xe664;</i>
                             </button>
                         </li>
                         <li className = 'icon-list'>
                             <button
                                 className = 'icon-btn-box'
-                                onClick = {()=> this.handleClick('strikeThrough')}
+                                onClick = {()=> this.setState({type: 'exec'})}
                             >
-                                <i className = 'icon'>&#xe6a4;</i>
+                                <i className = 'icon inputM-icon'>&#xe8ca;</i>
                             </button>
                         </li>
                         
-                        <li className = 'icon-list'>
-                            <button
-                                className = 'icon-btn-box'
-                                onClick = {()=> this.handleClick('fontSize')}
-                            >
-                                <i className = 'icon'>&#xe6a7;</i>
-                            </button>
-                        </li>
-                        
-                        <li className = 'icon-list'>
-                            <button
-                                className = 'icon-btn-box'
-                                onClick = {()=> this.handleClick('insertUnorderedList')}
-                            >
-                                <i className = 'icon'>&#xe67e;</i>
-                            </button>
-                        </li>
-                        <li className = 'icon-list'>
-                            <button
-                                className = 'icon-btn-box'
-                                onClick = {()=> this.handleClick('createLink')}
-                            >
-                                <i className = 'icon'>&#xe6aa;</i>
-                            </button>
-                        </li>
-                        <li className = 'icon-list'>
-                            <button
-                                className = 'icon-btn-box'
-                                onClick = {()=> this.handleClick('insertImage')}
-                            >
-                                <i className = 'icon'>&#xe63d;</i>
-                            </button>
-                        </li>
-
                         <li className = 'icon-list-right'>
                             <button
                                 className = 'text-btn-box'
@@ -195,13 +141,7 @@ class InputArea extends React.Component{
                             </button>
                         </li>
                     </ul>
-                    <div 
-                        contentEditable = {true}
-                        data-flex-box = '1' 
-                        className = 'textarea scroll-hidden'
-                        ref = 'inputContent'
-                        onPaste = {(e)=>{this.handlePaste(e)}}
-                    />
+                    {this.renderTextarea()}
                 </div>
             </div>
         );
