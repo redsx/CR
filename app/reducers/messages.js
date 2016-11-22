@@ -25,8 +25,8 @@ export default function messages(state = defaultState,action) {
         }
         case CLEAR_HISTORY: {
             let roomMessage = state.get(action.room) || Immutable.fromJS([]);
-            if(roomMessage > 20){
-                roomMessage = roomMessage.slice(20);
+            if(roomMessage.size > 20){
+                roomMessage = roomMessage.slice(roomMessage.size-20);
             }
             return state.set(action.room,roomMessage);
         }
