@@ -3,6 +3,31 @@
     -webkit-transition: all @time;
     transition: all @time;
 }
+.chatarea-loading-anim {
+    .transition(0.5s);
+}
+.chatarea-loading {
+    width: 100%;
+    position: relative;
+    background: #ccc;
+    text-align: center;
+    line-height: 50px;
+    color: white;
+}
+.chatarea-loading-content {
+    width: 150px;
+    left: 50%;
+    margin-left: -75;
+    bottom: 0px;
+    position: absolute;
+}
+.chatarea-loading-icon {
+    font-family: iconfont;
+    font-style: normal;
+    font-size: 18px;
+    padding-right: 10px;
+    color: white;
+}
 .chatarea-messages {
     position: relative;
     [data-flex]{

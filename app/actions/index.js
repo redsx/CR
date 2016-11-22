@@ -18,6 +18,7 @@ export const SET_ROOM_INFO_STATE = 'SET_ROOM_INFO_STATE';
 export const SET_CREATE_ROOM_STATE = 'SET_CREATE_ROOM_STATE';
 export const SET_SEARCH_USER_STATE = 'SET_SEARCH_USER_STATE';
 export const SET_MODAL_STATE = 'SET_MODAL_STATE';
+export const SET_LOADING_STATE = 'SET_LOADING_STATE';
 
 //暂定编辑器显示方式，以后改异步加载
 export const SET_RICHTEXT_STATE = 'SET_RICHTEXT_STATE';
@@ -28,6 +29,12 @@ export const setRichTextState = (richTextState) => {
     }
 }
 //
+export const setLoadingState = (loadingState) => {
+    return {
+        type: SET_LOADING_STATE,
+        loadingState
+    }
+}
 export const setModalState = (info) => {
     return {
         type: SET_MODAL_STATE,
@@ -161,6 +168,8 @@ export const setUserCurRoom = (roomInfo) => {
 export const changeRoom = (roomInfo) => {
     return (dispatch,getState) => {
         const state = getState().toJS();
+        let preRoom = state.userState.curRoom;
+        dispatch(setUserCurRoom(roomInfo));
         if(roomInfo.isPrivate){
             if(!state['activeList'][roomInfo.curRoom]){
                 //头像会有bug，暂时处理方式
@@ -173,14 +182,17 @@ export const changeRoom = (roomInfo) => {
             }
             let messages = state['privateMessages'][roomInfo.curRoom] || [];
             if(messages.length < 15){
+                dispatch(setLoadingState(true));
                 getPrivateHistory({
                     fromUser: roomInfo.curRoom,
                     toUser: state.userState.nickname,
                     messageCount: messages.length,
                     limit: LOAD_MESSAGE_LIMIT
-                })(dispatch,getState);
+                })(dispatch,getState)
+                .then(
+                    () => dispatch(setLoadingState(false))
+                );
             }
-            dispatch(setUserCurRoom(roomInfo));
         } else{
             if(!state['activeList'][roomInfo.curRoom]){
                 let curRoom = state['roomList'][roomInfo.curRoom] || {};
@@ -191,7 +203,8 @@ export const changeRoom = (roomInfo) => {
                 }));
             }
             let messages = state['messages'][roomInfo.curRoom] || [];
-            clearHistory(state.userState.curRoom);
+            dispatch(clearHistory(preRoom));
+            dispatch(setLoadingState(true));
             getRoomActiveInfo(roomInfo.curRoom)(dispatch)
             .then((resault) => {
                 if(messages.length < 15){
@@ -203,9 +216,9 @@ export const changeRoom = (roomInfo) => {
                 }
                 return ;
             })
-            .then(() => {
-                dispatch(setUserCurRoom(roomInfo));
-            })
+            .then(
+                () => dispatch(setLoadingState(false))
+            )
         }
     }
 }
@@ -272,7 +285,6 @@ export const getRoomHistory = (info) => {
                     limit: LOAD_MESSAGE_LIMIT
                 }
             }
-            console.log('开始获取房间历史记录：',new Date().getTime());
             socket.emit('getRoomHistory',info, (body,res) => {
                 if(body.isError){
                     dispatch(setSnackbarState({
@@ -281,7 +293,6 @@ export const getRoomHistory = (info) => {
                     }));
                     browserHistory.push('/login');
                 } else{
-                    console.log('得到房间历史记录：',new Date().getTime());
                     let histories = body.histories || [];
                     let isloadAll = histories.length < LOAD_MESSAGE_LIMIT;
                     dispatch(addHistoryMessage(info.roomName,histories));
@@ -331,7 +342,6 @@ export const getPrivateHistory = (info) => {
                     limit: LOAD_MESSAGE_LIMIT
                 }
             }
-            console.log('开始获取私聊记录：',new Date().getTime());
             socket.emit('getPrivateHistory',info,(body) =>{
                 if(body.isError){
                     dispatch(setSnackbarState({
@@ -340,7 +350,6 @@ export const getPrivateHistory = (info) => {
                     }));
                     reject(body);
                 } else{
-                    console.log('得到私聊记录：',new Date().getTime());
                     let histories = body.histories || [];
                     let isloadAll = histories.length < LOAD_MESSAGE_LIMIT;
                     dispatch(addPrivateHistory(info.fromUser,histories));
@@ -804,7 +813,6 @@ export const refreshRoomActiveInfo = (info) => {
 export const getRoomActiveInfo = (roomName) => {
     return (dispatch) => {
         return new Promise((resolve,reject) => {
-            console.log('开始获取活跃列表：',new Date().getTime());
             socket.emit('getRoomActiveInfo',roomName,(body) => {
                 if(body.isError){
                     dispatch(setSnackbarState({
@@ -813,7 +821,6 @@ export const getRoomActiveInfo = (roomName) => {
                     }));
                     reject(body);
                 } else{
-                    console.log('得到活跃列表：',new Date().getTime());
                     dispatch(refreshRoomActiveInfo(body));
                     resolve(body);
                 }

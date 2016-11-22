@@ -5,6 +5,7 @@ import Index from './Index.jsx'
 import { setMenuState } from '../../actions'
 function mapStateToProps(state) {
     return {
+        loadingState: state.getIn(['pageState','isLoading']),
         menuState: state.getIn(['pageState','isShowMenu']),
         bgImage: state.getIn(['setting','bgImage'])
     };

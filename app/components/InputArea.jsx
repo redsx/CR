@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import Immutable from 'immutable'
 import api from '../plugins'
+import browser from '../util/browser.js'
 
 import '../less/inputarea.less'
 
@@ -28,6 +29,11 @@ class InputArea extends React.Component{
         document.addEventListener('click', (e) => {
             e.target != this.refs.expressionBtn && this.props.isShowExpressions ? this.props.setExpressionState(false):null;
         })
+    }
+    handleFocus(){
+        if(browser.versions.mobile){
+            this.props.setScrollState(true);
+        }
     }
     handleClick(){
         let input = this.refs.input;
@@ -130,11 +136,12 @@ class InputArea extends React.Component{
                         data-flex-box = '1' 
                         className = 'input'
                         ref = 'input'
+                        onClick = {() => this.handleFocus()}
                         onPaste = {(e)=>{this.handlePaste(e)}}
                         contentEditable = {true}
                     />
                     <i 
-                        className = 'change-btn'
+                        className = 'show-codetext-btn'
                         onClick = {() => this.props.setRichTextState(true)}
                     >&#xe6b8;</i>
                 </div>

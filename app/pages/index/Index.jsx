@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react/'
 
 import Menu from '../../components/Menu.jsx'
+import Loading from '../../components/Loading.jsx'
 import ChatArea from '../../containers/ChatArea.js'
 import AudioGroup from '../../containers/AudioGroup.js'
 import ImageSlide from '../../containers/ImageSlide.js'
@@ -53,7 +54,9 @@ class Index extends React.Component{
                     }}
                 >
                     <div data-flex = 'main:center box:mean' style = {{height:'100%'}}>
-                        <ChatArea />
+                    {
+                        this.props.loadingState ?  <Loading color = '#ccc'/> : <ChatArea />
+                    }
                     </div>
                 </div>
                 <SystemSetting />

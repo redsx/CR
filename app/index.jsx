@@ -38,7 +38,8 @@ import {
     addActiveItem,
     setBgImage,
     getRoomActiveInfo,
-    searchUser
+    searchUser,
+    setLoadingState
 } from './actions'
 
 import notification from './util/notification.js'
@@ -50,32 +51,38 @@ import Immutable from 'immutable'
 favico.resetWhenDocVisibility();
 notification.requestPermission();
 
+const handleReadLocalSetting = (nickname) => {
+    let storage = localStorage.getItem(nickname);
+        storage = storage ? JSON.parse(storage) : {};
+    let setting = storage.setting;
+    if(setting){
+        store.dispatch(setNotificationState(setting.h5Notification));
+        store.dispatch(setAudioState(!!(setting.audioNotification)));
+        store.dispatch(setShieldUser({
+            user: setting.shield,
+            isAdd: true
+        }));
+        store.dispatch(setBgImage(setting.bgImage));
+        store.dispatch(setSpecialUser({
+            user: setting.special,
+            isAdd: true
+        }));
+    };
+    if(storage.expressions){
+        store.dispatch(initStorageExpression(storage.expressions));
+    }
+}
 const handleInit = (info) => {
+    store.dispatch(setLoadingState(true));
     getActiveList(info.token)(store.dispatch).then((res)=>{
         return getRoomList(info.token)(store.dispatch);
     }).then(() => {
         return getInitUserInfo(info)(store.dispatch);
     }).then((resault)=>{
-        let storage = localStorage.getItem(resault.nickname);
-        storage = storage ? JSON.parse(storage) : {};
-        let setting = storage.setting;
-        if(setting){
-            store.dispatch(setNotificationState(setting.h5Notification));
-            store.dispatch(setAudioState(!!(setting.audioNotification)));
-            store.dispatch(setShieldUser({
-                user: setting.shield,
-                isAdd: true
-            }));
-            store.dispatch(setBgImage(setting.bgImage));
-            store.dispatch(setSpecialUser({
-                user: setting.special,
-                isAdd: true
-            }));
-        };
-        if(storage.expressions){
-            store.dispatch(initStorageExpression(storage.expressions));
-        }
+        handleReadLocalSetting(resault.nickname);
         return changeRoom({curRoom: resault.curRoom,isPrivate: false})(store.dispatch,store.getState);
+    }).then(() => {
+        store.dispatch(setLoadingState(false));
     }).catch((err) => {
         console.log(err);
         browserHistory.push('/login');

@@ -18,7 +18,8 @@ import {
     SET_CREATE_ROOM_STATE,
     SET_SEARCH_USER_STATE,
     SET_RICHTEXT_STATE,
-    SET_MODAL_STATE
+    SET_MODAL_STATE,
+    SET_LOADING_STATE
 } from '../actions'
 let defaultState = {
     isShowMenu:true,
@@ -30,6 +31,7 @@ let defaultState = {
     isShowSearchUser: false,
     isShowExpression: false,
     isShowRichText: false,
+    isLoading: false,
     listState:'activeList',
     badgeCount: {},
     modalState: {
@@ -58,6 +60,9 @@ let defaultState = {
 defaultState = Immutable.fromJS(defaultState);
 export default function pageState(state = defaultState,action) {
     switch(action.type){
+        case SET_LOADING_STATE: {
+            return state.set('isLoading',action.loadingState);
+        }
         case SET_MENU_STATE: {
             return state.set('isShowMenu',action.menuState);
         }

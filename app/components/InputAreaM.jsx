@@ -93,7 +93,6 @@ class InputArea extends React.Component{
         }
     }
     render(){
-        console.log('inputareaM');
         return (
             <div data-flex = 'main:left cross:top dir:top' className = 'textarea-container'>
                 <div data-flex = 'main:center box:mean' data-flex-box = '1' data-flex = 'dir:top main:left' className = 'textarea-box' >
