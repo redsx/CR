@@ -34,6 +34,12 @@ class SystemSetting extends React.Component{
             this.exitFullscreen();
         }
     }
+    handleFullScreenState(){
+        if(document.fullscreenElement || document.webkitCurrentFullScreenElement || document.mozFullscreenElement){
+            return true;
+        }
+        return false;
+    }
     handleScroll(){
         
     }
@@ -72,7 +78,7 @@ class SystemSetting extends React.Component{
                         />
                         <Toggle
                             label = '全屏'
-                            defaultToggled = {false}
+                            defaultToggled = {this.handleFullScreenState()}
                             className = 'system-setting-toggle'
                             onToggle = {(e,v)=>{this.handleFullScreenToggle(e,v)}}
                         />
