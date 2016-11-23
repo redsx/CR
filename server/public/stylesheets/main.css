@@ -1,16 +1,17 @@
 /* custom font icons */
 @import "./font-icons/style.css";
+@import "./github.css";
+
 
 /*@import "./iconfont.css";*/
 @font-face {
-  font-family: 'iconfont';
-  src: url('http://at.alicdn.com/t/font_1478943494_6020699.eot'); /* IE9*/
-  src: url('http://at.alicdn.com/t/font_1478943494_6020699.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url('http://at.alicdn.com/t/font_1478943494_6020699.woff') format('woff'), /* chrome、firefox */
-  url('http://at.alicdn.com/t/font_1478943494_6020699.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
-  url('http://at.alicdn.com/t/font_1478943494_6020699.svg#iconfont') format('svg'); /* iOS 4.1- */
-}
-                    
+  font-family: 'iconfont';  /* project id："119381" */
+  src: url('http://at.alicdn.com/t/font_6b81rnfafuzt1emi.eot');
+  src: url('http://at.alicdn.com/t/font_6b81rnfafuzt1emi.eot?#iefix') format('embedded-opentype'),
+  url('http://at.alicdn.com/t/font_6b81rnfafuzt1emi.woff') format('woff'),
+  url('http://at.alicdn.com/t/font_6b81rnfafuzt1emi.ttf') format('truetype'),
+  url('http://at.alicdn.com/t/font_6b81rnfafuzt1emi.svg#iconfont') format('svg');
+}      
                                                         
 a {
   color: rgba(34, 131, 201, 0.83);
