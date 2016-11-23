@@ -118,6 +118,18 @@ class ChatArea extends React.Component {
             }
         })
     }
+    componentWillReceiveProps(nextProps){
+        // 下拉时将needscroll设置为false导致自己发消息不能滚动到底部
+        if(this.props.messages && this.props.messages.size === 0) return;
+        if(nextProps.messages && nextProps.messages.size === 0) return;
+        let npm = nextProps.messages.toJS(),
+            tpm = this.props.messages.toJS(),
+            user = this.props.user? this.props.user.toJS() : {};
+        // 判断收到消息
+        if(1 === npm.length - tpm.length && npm[0].timestamp ===  tpm[0].timestamp && npm[npm.length-1].nickname === user.nickname){
+            this.setState({needScroll: true});
+        }
+    }
     shouldComponentUpdate(nextProps,nextState){
         let isUserChange = !Immutable.is(this.props.user,nextProps.user),
             isMessageChange = !Immutable.is(this.props.messages,nextProps.messages),
@@ -205,7 +217,8 @@ class ChatArea extends React.Component {
     pulling(e,pageY){
         if(this.state.isTouching){
             let pHeight = this.state.loadingHeight || 1,
-                nHeight = pageY - this.state.startY;
+                nHeight = pageY - this.state.startY,
+                speed = (1 - (pHeight/window.innerHeight))/13;
             if(nHeight > 6){
                 // 防止浏览器下拉刷新，chrome浏览器中大概是15PX的下拉后触发默认刷新，微信中大概是6像素
                 e.preventDefault();
@@ -216,7 +229,7 @@ class ChatArea extends React.Component {
                     loadingState: 'releaseLoading',
                 });
             }
-            this.setState({loadingHeight: nHeight});
+            this.setState({loadingHeight: pHeight + (nHeight - pHeight)*speed});
         }
     }
     handleTouchMove(e){
