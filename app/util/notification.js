@@ -15,15 +15,13 @@ const notification = {
     showNotification: function (title,options) {
         if(this.isPermissionGranted() && this.isNotificationSupported){
             var n = new Notification(title,options);
-            n.onshow =function () {
-                setTimeout(function () {
-                    n.close()
-                },3000);
-            }
             n.onclick = function () {
                 window.focus();
                 n.close();
             }
+            setTimeout(function () {
+                n.close()
+            },3000);
             return n;
         }
     }
