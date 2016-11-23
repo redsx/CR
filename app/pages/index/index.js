@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import Index from './Index.jsx'
 
-import { setMenuState } from '../../actions'
+import { setMenuState, setScrollState } from '../../actions'
 function mapStateToProps(state) {
     return {
         loadingState: state.getIn(['pageState','isLoading']),
@@ -11,6 +11,6 @@ function mapStateToProps(state) {
     };
 }
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ setMenuState },dispatch);
+    return bindActionCreators({ setMenuState, setScrollState },dispatch);
 }
 export default connect(mapStateToProps,mapDispatchToProps)(Index);

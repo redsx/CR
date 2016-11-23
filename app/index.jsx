@@ -45,6 +45,7 @@ import {
 import notification from './util/notification.js'
 import favico from './util/favicoNotification.js'
 import browser from './util/browser.js'
+import api from './util/api.js'
 
 import Immutable from 'immutable'
 
@@ -80,6 +81,7 @@ const handleInit = (info) => {
         return getInitUserInfo(info)(store.dispatch);
     }).then((resault)=>{
         handleReadLocalSetting(resault.nickname);
+        window.cr = new api(resault.nickname,function(message){store.dispatch(addMessage(message))});
         return changeRoom({curRoom: resault.curRoom,isPrivate: false})(store.dispatch,store.getState);
     }).then(() => {
         store.dispatch(setLoadingState(false));
@@ -223,12 +225,3 @@ render(
     ,
     document.getElementById('App')
 )
-
-
-
-// 1. 编辑器加入codemirror
-// 2. 首次加载慢
-// 3. 解决移动端弹出键盘会出现的问题
-// 4. 下拉加载更多
-// 5. 发言频率限制
-// 5. 群组管理内容

@@ -10,6 +10,8 @@ import SearchUser from '../../containers/SearchUser.js'
 import SystemSetting from '../../containers/SystemSetting.js'
 import RichText from '../../containers/RichText.js'
 import Modal from '../../containers/Modal.js'
+import browser from '../../util/browser.js'
+
 import '../../less/indexpage.less'
 
 class Index extends React.Component{
@@ -19,12 +21,15 @@ class Index extends React.Component{
     componentDidMount() {
         let handle = null;
         let rightBox = this.refs.rightBox;
-        window.addEventListener('resize',function(event){
+        window.addEventListener('resize',(event) => {
             if(window.innerWidth>980){
                 handle && clearTimeout(handle);
                 handle = setTimeout(function () {
                     rightBox.style.width = window.innerWidth - 275 + 'px'
                 },200)
+            }
+            if(browser.versions.mobile){
+                this.props.setScrollState(true);
             }
         });
     }

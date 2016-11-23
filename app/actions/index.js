@@ -257,10 +257,13 @@ export const addMessage = (message) => {
     }
 }
 export const sendMessage = (message) => {
-    return new Promise((resolve)=>{
+    return new Promise((resolve,reject)=>{
         socket.emit('message',message, (body) => {
-            // dispatch(addMessage(body));
-            resolve(body);
+            if(body.isError){
+                 reject(body);
+            } else{
+                resolve(body);
+            }
         })
     })
 }
