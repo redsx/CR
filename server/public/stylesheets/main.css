@@ -6,12 +6,12 @@
 /*@import "./iconfont.css";*/
 @font-face {
   font-family: 'iconfont';  /* project id："119381" */
-  src: url('http://at.alicdn.com/t/font_6b81rnfafuzt1emi.eot');
-  src: url('http://at.alicdn.com/t/font_6b81rnfafuzt1emi.eot?#iefix') format('embedded-opentype'),
-  url('http://at.alicdn.com/t/font_6b81rnfafuzt1emi.woff') format('woff'),
-  url('http://at.alicdn.com/t/font_6b81rnfafuzt1emi.ttf') format('truetype'),
-  url('http://at.alicdn.com/t/font_6b81rnfafuzt1emi.svg#iconfont') format('svg');
-}      
+  src: url('http://at.alicdn.com/t/font_16dyof2ukp4x6r.eot');
+  src: url('http://at.alicdn.com/t/font_16dyof2ukp4x6r.eot?#iefix') format('embedded-opentype'),
+  url('http://at.alicdn.com/t/font_16dyof2ukp4x6r.woff') format('woff'),
+  url('http://at.alicdn.com/t/font_16dyof2ukp4x6r.ttf') format('truetype'),
+  url('http://at.alicdn.com/t/font_16dyof2ukp4x6r.svg#iconfont') format('svg');
+}   
                                                         
 a {
   color: rgba(34, 131, 201, 0.83);
