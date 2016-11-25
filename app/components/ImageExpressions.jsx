@@ -190,9 +190,11 @@ class ImageExpressions extends React.Component{
         let user = this.props.user.toJS(),
             addMessage = this.props.addMessage,
             addPrivateMessage = this.props.addPrivateMessage,
-            deleteStorageExpression = this.props.deleteStorageExpression;
+            deleteStorageExpression = this.props.deleteStorageExpression,
+            storageSetting = this.props.storageSetting;
         if(e.shiftKey){
-            return deleteStorageExpression(src);
+            deleteStorageExpression(src)
+            return storageSetting();
         }
         let message = {
             content:src,
