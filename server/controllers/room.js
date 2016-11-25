@@ -159,7 +159,7 @@ module.exports = {
     },
     getRoomActiveInfo: function *(roomName,cb){
         //房间活跃用户设定为房间当前在线用户
-        let room = yield Room.findOne({name: roomName});
+        let room = yield Room.findOne({name: roomName}).populate('creater');
         let online = yield Room.findOne({name: roomName}).populate({path: 'users', populate: {path: 'online'}, options: {sort:'-lastOnlineTime',limit:30}});
         if(room && online){
             let onlineUsers = listUtil.selectOnlineUser(online.users);
