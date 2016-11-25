@@ -88,7 +88,7 @@ export default function pageState(state = defaultState,action) {
         }
         case ADD_BADGE_COUNT: {
             let badgeCount = state.getIn(['badgeCount',action.room]) || 0;
-            let count = (badgeCount + action.count) > 10 ? 'n' : (badgeCount + action.count);
+            let count = (badgeCount + action.count) > 10 ||  badgeCount === 'n' ? 'n' : (badgeCount + action.count);
             return state.setIn(['badgeCount',action.room],count);
         }
         case CLEAR_BADGE_COUNT: {
