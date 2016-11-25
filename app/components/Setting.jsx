@@ -18,8 +18,8 @@ class Setting extends React.Component{
                 user = {};
             user.nickname = form.nickname.value;
             user.sex = form.sex.value;
-            user.email = form.email.value;
-            user.info = form.info.value;
+            user.email = form.email.value? form.email.value.slice(0,100) : '';
+            user.info = form.info.value? form.info.value.slice(0,200) : '';
             updateUserInfo(user).then((resault)=>{
                 if(resault.ok){
                     this.props.getUserInfo(this.props.userInfo.get('nickname'));
