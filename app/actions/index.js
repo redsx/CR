@@ -159,7 +159,6 @@ export const LOGIN = 'LOGIN';
 export const SET_USER_CURROOM = 'SET_USER_CURROOM';
 
 export const setUserCurRoom = (roomInfo) => {
-    document.title = roomInfo.curRoom;
     return {
         type: SET_USER_CURROOM,
         roomInfo
