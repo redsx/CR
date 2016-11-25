@@ -14,6 +14,7 @@ import RoomInfo from '../containers/RoomInfo.js'
 import api from '../plugins'
 import ImageMessage from '../containers/ImageMessage.js'
 
+import fioraMiddleware from '../middlewares/fioraMiddleware.js'
 // import Loading from './Loading.jsx'
 
 import '../less/scroll.less'
@@ -35,8 +36,9 @@ class ChatArea extends React.Component {
         }
     }
     scrollToBottom(){
-        let messageArea = this.messageArea;
-        messageArea.scrollTop = messageArea.scrollHeight;
+        if(this.messageArea){
+            this.messageArea.scrollTop = this.messageArea.scrollHeight
+        }
     }
     handleLoad(){
         let user = this.props.user.toJS();
@@ -142,57 +144,55 @@ class ChatArea extends React.Component {
         return false;
     }
     componentDidUpdate(){
-        if(this.isMount){
-            let user = this.props.user.toJS(),
-                isNeedScroll = this.props.isNeedScroll,
-                setScrollState = this.props.setScrollState;
-            let lastMessage,
-                imglist,
-                lastChild,
-                childHeight,
-                willScroll = true,
-                preScroll = this.preScroll,
-                messages = this.props.messages.toJS(),
-                messageArea = this.messageArea,
-                gif = this.gif,
-                needScroll = this.state.needScroll;
-            if(messageArea.scrollHeight > messageArea.offsetHeight){
-                lastMessage = messages[messages.length -1] || {};
-                imglist = messageArea.querySelectorAll('img');
-                lastChild = messageArea.lastElementChild;
-                childHeight = lastChild?lastChild.offsetHeight : 1;
-                
-                if(needScroll){
-                    // －30容错
-                    if( messageArea.offsetHeight <= preScroll - messageArea.scrollTop -30){
-                        willScroll = false;
-                    }
-                    if( messageArea.scrollHeight !== preScroll + childHeight){
-                        willScroll = true;
-                    }
-                    if(isNeedScroll){
-                        willScroll = true;
-                        setScrollState(false);
-                    }                
-                    if(lastMessage.nickname === user.nickname){
-                        willScroll = true;
-                    }
-                    if(willScroll){
-                        // 图片加载完成才滚动到末尾
-                        if(imglist[imglist.length -1]){
-                            imglist[imglist.length -1].addEventListener('load',(e)=>{
-                                this.scrollToBottom();
-                                this.preScroll = messageArea.scrollHeight;
-                            })
-                        }
-                        setTimeout(()=>{
+        let user = this.props.user.toJS(),
+            isNeedScroll = this.props.isNeedScroll,
+            setScrollState = this.props.setScrollState;
+        let lastMessage,
+            imglist,
+            lastChild,
+            childHeight,
+            willScroll = true,
+            preScroll = this.preScroll,
+            messages = this.props.messages.toJS(),
+            messageArea = this.messageArea,
+            gif = this.gif,
+            needScroll = this.state.needScroll;
+        if(messageArea.scrollHeight > messageArea.offsetHeight){
+            lastMessage = messages[messages.length -1] || {};
+            imglist = messageArea.querySelectorAll('img');
+            lastChild = messageArea.lastElementChild;
+            childHeight = lastChild?lastChild.offsetHeight : 1;
+            
+            if(needScroll){
+                // －30容错
+                if( messageArea.offsetHeight <= preScroll - messageArea.scrollTop -30){
+                    willScroll = false;
+                }
+                if( messageArea.scrollHeight !== preScroll + childHeight){
+                    willScroll = true;
+                }
+                if(isNeedScroll){
+                    willScroll = true;
+                    setScrollState(false);
+                }                
+                if(lastMessage.nickname === user.nickname){
+                    willScroll = true;
+                }
+                if(willScroll){
+                    // 图片加载完成才滚动到末尾
+                    if(imglist[imglist.length -1]){
+                        imglist[imglist.length -1].addEventListener('load',(e)=>{
                             this.scrollToBottom();
                             this.preScroll = messageArea.scrollHeight;
-                        },100)
+                        })
                     }
+                    setTimeout(()=>{
+                        this.scrollToBottom();
+                        this.preScroll = messageArea.scrollHeight;
+                    },100)
                 }
-                gif.style.display = willScroll?'none':'block';
             }
+            gif.style.display = willScroll?'none':'block';
         }
     }
     componentWillUnmount(){
@@ -223,7 +223,7 @@ class ChatArea extends React.Component {
                 // 防止浏览器下拉刷新，chrome浏览器中大概是15PX的下拉后触发默认刷新，微信中大概是6像素
                 e.preventDefault();
             }
-            if(!this.state.isValid && nHeight > 60){
+            if(!this.state.isValid && nHeight > 100){
                 this.setState({
                     isValid: true,
                     loadingState: 'releaseLoading',
@@ -353,6 +353,7 @@ class ChatArea extends React.Component {
                         >
                             {
                                 messages.map((item,index) => {
+                                    item = fioraMiddleware.dealFioraMessage(item);
                                     let dir = user.nickname === item.nickname ? 'right' : 'left';
                                     const boxInfo = Immutable.fromJS({
                                         nickname:item.nickname,
@@ -398,20 +399,32 @@ class ChatArea extends React.Component {
                                                 }            
                                                 return ret;            
                                             })();
-                                            
-                                            return <api.PluginMessage 
+                                            if(messageInfo){
+                                                return <api.PluginMessage 
                                                         key = {index}
-                                                        name={messageInfo.name} 
-                                                        content={messageInfo.content} 
-                                                        isNew={messageInfo.isNew} 
+                                                        name = {messageInfo.name} 
+                                                        content = {messageInfo.content} 
+                                                        isNew = {messageInfo.isNew} 
                                                         boxInfo = {boxInfo}
                                                     /> ;
+                                            } else {
+                                                return <TextMessage 
+                                                    info = {boxInfo} 
+                                                    content = {item.content} 
+                                                    key = {index} 
+                                                />
+                                            }
                                         }
                                         case 'systemMessage': {
                                             return <SystemMessage content = {item.content || ''} key = {index}/>
                                         }
-                                        default:
-                                            break;
+                                        default: {
+                                            return <TextMessage 
+                                                info = {boxInfo} 
+                                                content = {item.content} 
+                                                key = {index} 
+                                            />
+                                        }
                                     }
                                 })
                             }

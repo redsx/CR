@@ -100,8 +100,13 @@ class PluginMessage extends React.Component {
     }
 
     renderMessage() {
-        jQuery(this.dom).empty()
-            .append(plugin.getMessage(this.props.name, this.props.content, this.props.isNew));
+        try{
+            jQuery(this.dom).empty()
+                .append(plugin.getMessage(this.props.name, this.props.content, this.props.isNew));
+        } catch(err){
+            console.error('[我的猴,插件给我报了个错]：',err);
+        }
+        
     }
     render() {
         return (
