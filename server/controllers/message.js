@@ -12,7 +12,7 @@ module.exports = {
     saveMessage: function *(message,socket,cb) {
         let history = {
             room: message.room,
-            content: message.content.slice(0,150),
+            content: message.content.slice(0,500),
             type: message.type
         };
         history.timestamp = new Date().getTime();
