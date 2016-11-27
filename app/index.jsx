@@ -108,6 +108,12 @@ const handleLeave = () => {
 }
 socket.on('privateMessage', (message) => {
     const state = store.getState().toJS();
+    if(message.type === 'textMessage'){
+        if(!cr.filterMsg(message.content)){
+            return;
+        }
+        message.content = cr.filterMsg(message.content);
+    }
     if(state.setting.shield.indexOf(message.nickname) === -1){
         const audio = document.getElementById('audio1'),
               audioSpecial = document.getElementById('audio3'),
@@ -141,6 +147,12 @@ socket.on('privateMessage', (message) => {
 });
 socket.on('newMessage', (message) => {
     const state = store.getState().toJS();
+    if(message.type === 'textMessage'){
+        if(!cr.filterMsg(message.content)){
+            return;
+        }
+        message.content = cr.filterMsg(message.content);
+    }
     if(state.setting.shield.indexOf(message.nickname) === -1){
         const audio = document.getElementById('audio1'),
               audioSpecial = document.getElementById('audio3'),

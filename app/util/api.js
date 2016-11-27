@@ -1,4 +1,4 @@
-import { sendMessage } from '../actions'
+import { sendMessage, getRichTextContent } from '../actions'
 
 const api = function(nickname,addMessage){
     return {
@@ -20,7 +20,33 @@ const api = function(nickname,addMessage){
             }).then((result) => {
                 addMessage(result)
             })
-        }
+        },
+        getCondeMessageContent: function(title,timestamp){
+            return getRichTextContent({
+                owner: nickname,
+                timestamp,
+                title
+            });
+        },
+        filterMsg(messageContent){
+            if(this.filterRule){
+                try{
+                    var content =  this.filterRule(messageContent);
+                } catch(err){
+                    console.error(err);
+                    return messageContent;
+                }
+                if(!content){
+                    return;
+                }
+                // 如果content为string代表内容被修改
+                if(typeof content === 'string'){
+                    return content;
+                }
+            }
+            return messageContent
+        },
+        filterRule: null
     }
 }
 export default api
