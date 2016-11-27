@@ -67,7 +67,7 @@ class Sign extends React.Component{
             password = this.refs.password.value.trim(),
             clickFunc = this.props.clickFunc,
             setSnackbarState = this.props.setSnackbarState;
-        if(nickname.length>0 && nickname.length<10 && password.length>0){
+        if(nickname.length>0 && nickname.length <= 20 && password.length>0){
             clickFunc(nickname,password).then((resault)=>{
                 if(resault.isError){
                     if(resault.isNicErr){
