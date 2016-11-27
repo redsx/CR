@@ -25,6 +25,7 @@ module.exports = {
         let resault  = yield User.create({
             nickname: nickname,
             password: password,
+            avatar: 'http://cr.mdzzapp.com/images/expressions/' + config.AVATAR_ARR[parseInt(Math.random()*39)] + '.png',
             rooms: [room._id]
         });
         if(resault){ 

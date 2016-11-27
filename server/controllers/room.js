@@ -17,7 +17,12 @@ module.exports = {
             })
         }
         if(user && !room){
-            let room = new Room(Object.assign({},{name: info.roomName},{creater: user._id,users:[user._id]}));
+            let room = new Room(Object.assign(
+                {},
+                {name: info.roomName},
+                {creater: user._id, users:[user._id]},
+                {avatar: 'http://cr.mdzzapp.com/images/expressions/' + config.AVATAR_ARR[parseInt(Math.random()*39)] + '.png'}
+            ));
             user.rooms.push(room._id);
             user.save();
             room.save();
