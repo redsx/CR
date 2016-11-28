@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import SelfInfo from '../components/SelfInfo.jsx'
-import { setListShow, setSystemSettingState, setMenuState, logout, getRoomList, setCreateRoomState } from '../actions'
+import { setListShow, setSystemSettingState, setMenuState, logout, getRoomList, setCreateRoomState, setUserState } from '../actions'
 
 function mapStateToProps(state) {
     return {
@@ -10,6 +10,6 @@ function mapStateToProps(state) {
     }
 }
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ setListShow, setSystemSettingState, setMenuState, logout, getRoomList, setCreateRoomState },dispatch);
+    return bindActionCreators({ setListShow, setSystemSettingState, setMenuState, logout, getRoomList, setCreateRoomState, setUserState },dispatch);
 }
 export default connect(mapStateToProps,mapDispatchToProps)(SelfInfo);

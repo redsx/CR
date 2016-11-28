@@ -44,6 +44,10 @@ class SelfInfo extends React.Component{
             this.props.setMenuState(true);
         }
     }
+    handleLogout(){
+        this.props.setUserState('logout');
+        this.props.logout();
+    }
     render(){
         let { avatar, nickname } = this.props.user.toJS();
         let listState = this.props.listState;
@@ -87,7 +91,7 @@ class SelfInfo extends React.Component{
                 </div>
                 <div data-flex-box = '2' data-flex = 'dir:bottom'>
                 <ul className = 'selfinfo-icon-ul'>
-                    <li className = 'selfinfo-icon-list' onClick = {() => this.props.logout()}>
+                    <li className = 'selfinfo-icon-list' onClick = {() => this.handleLogout()}>
                         <i className = 'selfinfo-icon'>&#xe67b;</i>
                     </li>
                     <li className = 'selfinfo-icon-list' onClick = {() => this.handleCreateRoomClick() }>

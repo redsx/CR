@@ -3,7 +3,8 @@ import { browserHistory } from 'react-router'
 
 // export const socket = io('http://mdzzapp.com:3000');
 // export const socket = io('http://mdzzapp.com:3001');
-export const socket = io('http://localhost:3000');
+export const socket = io('http://localhost:3000',{'force new connection': true});
+
 export const LOAD_MESSAGE_LIMIT = 15;
 // page UI state
 export const SET_MENU_STATE = 'SET_MENU_STATE';
@@ -157,13 +158,20 @@ export const getInitUserInfo = (info) => {
 // set personal info
 export const LOGIN = 'LOGIN';
 export const SET_USER_CURROOM = 'SET_USER_CURROOM';
-
+export const SET_USER_STATE = 'SET_USER_STATE';
+export const setUserState = (state) => {
+    return {
+        type: SET_USER_STATE,
+        state
+    }
+}
 export const setUserCurRoom = (roomInfo) => {
     return {
         type: SET_USER_CURROOM,
         roomInfo
     }
 }
+
 export const changeRoom = (roomInfo) => {
     return (dispatch,getState) => {
         const state = getState().toJS();
@@ -601,15 +609,27 @@ export const signUp = (nickname,password)=>{
     })
 }
 export const logout = () => {
-    //  借用重连事件将online表中的用户删除达到离线效果，socket并未断开
     return (dispatch,getState) => {
         const state = getState().toJS();
         const token = state.userState.token;
         delete localStorage.token;
-        socket.emit('reconnect success',token); 
+        socket.disconnect();
+        socket.connect();
         browserHistory.push('/login');
     }
 }
+export const reconnert = (token) => {
+    return new Promise((resolve, reject) => {
+        socket.emit('reconnect success',token,(body) => {
+            if(body.isError){
+                reject(body);
+            } else{
+                resolve(body);
+            }
+        });
+    });
+}
+
 
 
 //关于history的处理，action实在太长了，改起来太费劲，需要考虑如何解决

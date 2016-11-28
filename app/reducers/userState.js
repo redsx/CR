@@ -1,7 +1,7 @@
 import Immutable from 'immutable'
 
 
-import { SET_USER_INFO, SET_USER_CURROOM } from '../actions'
+import { SET_USER_INFO, SET_USER_CURROOM, SET_USER_STATE } from '../actions'
 
 let defaultState = Immutable.fromJS({});
 
@@ -14,6 +14,9 @@ export default function userState(state = defaultState,action) {
         case SET_USER_CURROOM: {
             let roomInfo = Immutable.fromJS(action.roomInfo);
             return state.merge(roomInfo);
+        }
+        case SET_USER_STATE: {
+            return state.set('state',action.state);
         }
         default: {
             return state;

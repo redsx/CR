@@ -105,7 +105,7 @@ module.exports = {
         }
         let res = yield Online.removeOnline({socket:socket.id});
     },
-    reconnect: function *(token,io) {
+    reconnect: function *(token,cb) {
         let decode = jwt.verify(token,JWT_KEY);
         if(decode){
             let user = yield User.findOne({nickname: decode.user}).populate('online');
@@ -115,8 +115,13 @@ module.exports = {
                 user.lastOnlineTime = new Date().getTime();
             }
                 let userSave =  yield user.save();
-                console.log('[reconnect]user leave:',user.nickname);
-                io.emit('user leaved',{nickname: decode.user});
+                if(userSave){
+                    console.log('[reconnect]user leave:',user.nickname);
+                    return cb({isSuccess: true});
+                } else{
+                    console.log('[reconnect]user leave error:',user.nickname);
+                    return cb({isError: true});
+                }
             }
     }
 }

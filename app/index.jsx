@@ -39,7 +39,9 @@ import {
     setBgImage,
     getRoomActiveInfo,
     searchUser,
-    setLoadingState
+    setLoadingState,
+    setUserState,
+    reconnert
 } from './actions'
 
 import notification from './util/notification.js'
@@ -94,6 +96,7 @@ const handleEnter = (nextState,replace) => {
     const token = localStorage.getItem('token');
     const device = browser.versions.mobile ? 'mobile' : 'PC';
     if(token){
+        console.log('enter');
         return handleInit({token,device});
     } else{
         replace({pathname: '/login'});
@@ -181,7 +184,7 @@ socket.on('newMessage', (message) => {
         }
     }
 });
-
+socket.on('forcedOffline',()=>{});
 socket.on('disconnect',()=>{
     console.log('disconnect');
     const state = store.getState().toJS();
@@ -191,17 +194,21 @@ socket.on('disconnect',()=>{
         type: 'systemMessage'
     }));
 })
-let reconnect = 0;
-socket.on('connect', () => {
-    if(reconnect > 0){
-        const state = store.getState().toJS();
-        const token = state.userState.token;
-        if(!token){
-            return browserHistory.push('/login')
-        }
-        handleInit({token});
-    }
-})
+
+
+// socket.on('connect', () => {
+//     const state = store.getState().toJS();
+//     // 用户状态暂定为logout、enter、offline、online，其中offline为断线重连时需要重新init，并标记为online状态
+//     if(state.userState.state === 'offline'){
+//         const token = state.userState.token;
+//         console.log('userState',state);
+//         if(token){
+//             return browserHistory.push('/login');
+//         }
+//         handleInit({token});
+//         store.dispatch(setUserState('online'));
+//     }
+// })
 
 socket.on('reconnect_failed',()=>{
     console.log('重连失败');
@@ -210,15 +217,29 @@ socket.on('reconnect_failed',()=>{
 socket.on('reconnect',()=>{
     console.log('断线重连成功');
     const state = store.getState().toJS();
-    const token = state.userState.token;  
-    if(!token){
-        return browserHistory.push('/login')
+    // ffline为断线重连，需要重新init
+    if(state.userState.state === 'offline'){
+        const token = state.userState.token;  
+        if(!token){
+            return browserHistory.push('/login');
+        }
+        reconnert(token).then((() => {
+            store.dispatch(setUserState('online'));
+            return handleInit({token});
+        })).catch((err) => {
+            console.log(err);
+            return browserHistory.push('/login');
+        })
+        
     }
-    socket.emit('reconnect success',token);
+    
 })
 socket.on('reconnecting',()=>{
-    reconnect++;
-    console.log('重新连接#('+reconnect+')');
+    const userState = store.getState().get('userState').toJS();
+    if(userState.state !== 'logout'){
+        store.dispatch(setUserState('offline'));
+    }
+    console.log('重新连接...');
 })
 
 injectTapEventPlugin();

@@ -107,8 +107,8 @@ module.exports = function (io) {
                 callbackError(cb,err);
             });
         })
-        socket.on('reconnect success',(token) => {
-            co(connect.reconnect(token,io)).catch((err) =>{
+        socket.on('reconnect success',(token,cb) => {
+            co(connect.reconnect(token,cb)).catch((err) =>{
                 callbackError(cb,err);
             });
         })
