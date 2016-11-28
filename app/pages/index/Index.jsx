@@ -31,6 +31,9 @@ class Index extends React.Component{
             if(browser.versions.mobile){
                 this.props.setScrollState(true);
             }
+            if(this.props.isShowRoomInfo && window.innerWidth < 581){
+                this.props.setRoomInfoState(false);
+            }
         });
     }
     //背景图片可控制
