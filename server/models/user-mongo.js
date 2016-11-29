@@ -7,6 +7,8 @@ const user = new Schema({
     email: String,
     sex: String,
     onlineState: String,
+    lastRoom: String,
+    isPrivate: Boolean,
     lastOnlineTime: {
         type: Number,
         default: Date.now()

@@ -48,7 +48,7 @@ import notification from './util/notification.js'
 import favico from './util/favicoNotification.js'
 import browser from './util/browser.js'
 import api from './util/api.js'
-
+import config from './plugins/config.js'
 import Immutable from 'immutable'
 
 favico.resetWhenDocVisibility();
@@ -84,7 +84,7 @@ const handleInit = (info) => {
     }).then((resault)=>{
         handleReadLocalSetting(resault.nickname);
         window.cr = new api(resault.nickname,function(message){store.dispatch(addMessage(message))});
-        return changeRoom({curRoom: resault.curRoom,isPrivate: false})(store.dispatch,store.getState);
+        return changeRoom({curRoom: resault.curRoom,isPrivate: resault.isPrivate})(store.dispatch,store.getState);
     }).then(() => {
         store.dispatch(setLoadingState(false));
     }).catch((err) => {
@@ -96,7 +96,6 @@ const handleEnter = (nextState,replace) => {
     const token = localStorage.getItem('token');
     const device = browser.versions.mobile ? 'mobile' : 'PC';
     if(token){
-        console.log('enter');
         return handleInit({token,device});
     } else{
         replace({pathname: '/login'});
@@ -140,7 +139,7 @@ socket.on('privateMessage', (message) => {
                 state.setting.special.indexOf(message.nickname) === -1 ? audio.play() : audioSpecial.play();
             }    
             state.setting.h5Notification ? notification.showNotification(message.nickname,{
-                body: message.type === 'pluginMessage'? '[plugin]' : message.content,
+                body: message.type === 'pluginMessage' ? '[plugin]' : message.content,
                 icon: message.avatar,
             }) : null;
         } else if(state.setting.audioNotification && state.userState.curRoom !== message.room){
@@ -176,7 +175,7 @@ socket.on('newMessage', (message) => {
                 state.setting.special.indexOf(message.nickname) !== -1 || reg.test(message.content) ? audioSpecial.play() : audio.play() ;
             }
             state.setting.h5Notification && !(message.nickname === state.userState.nickname) ? notification.showNotification(message.nickname,{
-                body: message.content,
+                body:  message.type === 'pluginMessage' || message.nickname === config.PLUGIN_ROBOT ? '[plugin]' : message.content,
                 icon: message.avatar,
             }) : null;
         } else if(!(message.nickname === state.userState.nickname) && state.setting.audioNotification && state.userState.curRoom !== message.room){

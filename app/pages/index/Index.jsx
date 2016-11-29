@@ -13,6 +13,7 @@ import Modal from '../../containers/Modal.js'
 import browser from '../../util/browser.js'
 
 import '../../less/indexpage.less'
+import { updateUserInfo } from '../../actions'
 
 class Index extends React.Component{
     constructor(props){
@@ -35,6 +36,14 @@ class Index extends React.Component{
                 this.props.setRoomInfoState(false);
             }
         });
+        window.addEventListener('unload',(event) => {
+            let info = this.props.userState? this.props.userState.toJS() : {};
+            updateUserInfo({
+                nickname: info.nickname,
+                lastRoom: info.curRoom,
+                isPrivate: info.isPrivate
+            });
+        })
     }
     //背景图片可控制
     render(){

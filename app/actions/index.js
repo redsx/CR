@@ -145,7 +145,6 @@ export const getInitUserInfo = (info) => {
                     alert('用户已经在线');
                     browserHistory.push('/login');
                 } else{
-                    body.isPrivate = false; 
                     body.token = info.token;
                     dispatch(setUserInfo(body));
                     resolve(body);

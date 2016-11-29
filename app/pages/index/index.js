@@ -8,7 +8,8 @@ function mapStateToProps(state) {
         loadingState: state.getIn(['pageState','isLoading']),
         menuState: state.getIn(['pageState','isShowMenu']),
         bgImage: state.getIn(['setting','bgImage']),
-        isShowRoomInfo: state.getIn(['pageState','isShowRoomInfo'])
+        isShowRoomInfo: state.getIn(['pageState','isShowRoomInfo']),
+        userState: state.get('userState')
     };
 }
 function mapDispatchToProps(dispatch) {

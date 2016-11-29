@@ -37,7 +37,8 @@ module.exports = {
                         id: socket.id,
                         avatar: user.avatar,
                         isOnline: 1,
-                        curRoom: crConfig.INIT_ROOM
+                        curRoom: user.lastRoom || crConfig.INIT_ROOM,
+                        isPrivate: user.isPrivate
                     };
                     cb(userInfo);
                 } else {
