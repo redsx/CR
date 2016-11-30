@@ -41,7 +41,8 @@ import {
     searchUser,
     setLoadingState,
     setUserState,
-    reconnert
+    reconnect,
+    logout
 } from './actions'
 
 import notification from './util/notification.js'
@@ -101,13 +102,7 @@ const handleEnter = (nextState,replace) => {
         replace({pathname: '/login'});
     }
 }
-const handleLeave = () => {
-    const state = store.getState().toJS();
-    const token = state.userState.token;
-    if(token){
-        socket.emit('reconnect success',token);
-    }
-}
+
 socket.on('privateMessage', (message) => {
     const state = store.getState().toJS();
     if(message.type === 'textMessage'){
@@ -183,7 +178,10 @@ socket.on('newMessage', (message) => {
         }
     }
 });
-socket.on('forcedOffline',()=>{});
+socket.on('forcedOffline',()=>{
+    store.dispatch(logout());
+    alert('账号在其他设备登录');
+});
 socket.on('disconnect',()=>{
     console.log('disconnect');
     const state = store.getState().toJS();
@@ -198,15 +196,7 @@ socket.on('disconnect',()=>{
 // socket.on('connect', () => {
 //     const state = store.getState().toJS();
 //     // 用户状态暂定为logout、enter、offline、online，其中offline为断线重连时需要重新init，并标记为online状态
-//     if(state.userState.state === 'offline'){
-//         const token = state.userState.token;
-//         console.log('userState',state);
-//         if(token){
-//             return browserHistory.push('/login');
-//         }
-//         handleInit({token});
-//         store.dispatch(setUserState('online'));
-//     }
+//         console.log('connect: ',state.userState.nickname);
 // })
 
 socket.on('reconnect_failed',()=>{
@@ -214,15 +204,15 @@ socket.on('reconnect_failed',()=>{
 })
 
 socket.on('reconnect',()=>{
-    console.log('断线重连成功');
     const state = store.getState().toJS();
-    // ffline为断线重连，需要重新init
+    console.log('断线重连成功');
+    // offline为断线重连，需要重新init
     if(state.userState.state === 'offline'){
         const token = state.userState.token;  
         if(!token){
             return browserHistory.push('/login');
         }
-        reconnert(token).then((() => {
+        reconnect(token).then((() => {
             store.dispatch(setUserState('online'));
             return handleInit({token});
         })).catch((err) => {
@@ -247,7 +237,7 @@ render(
         <div>
             <Router history = {browserHistory}>
                 <Route path = '/' component = {App} >
-                    <IndexRoute component= {Index} onEnter = {(nextState,replace)=>handleEnter(nextState,replace)} onLeave = {()=>handleLeave()}/>
+                    <IndexRoute component= {Index} onEnter = {(nextState,replace)=>handleEnter(nextState,replace)} />
                     <Route path= 'login' component= {Login} />
                     <Route path= 'signUp' component= {SignUp} />
                 </Route>

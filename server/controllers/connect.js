@@ -17,37 +17,33 @@ module.exports = {
             let user = yield User.findOne({nickname: decode.user}).populate('online').populate('rooms');
             // v2.2 修改上线方式
             if(user.online){
-                console.log('玩家已经在线');
+                console.log('forcedOffline: ',user.nickname);
+                socket.broadcast.to(user.online.socket).emit('forcedOffline');
+            }
+            let roomList = listUtil.getRoomNameArr(user.rooms);
+            let onliner = new Online({socket: socket.id,user: user._id});
+            user.device = info.device;
+            user.online = onliner._id;
+            let saveOnline = yield onliner.save();
+            let saveUser = yield user.save();
+            if(saveOnline && saveUser){
+                socket.join(socket.id);
+                listUtil.joinRooms(socket,roomList);
+                let userInfo = {
+                    nickname: user.nickname,
+                    id: socket.id,
+                    avatar: user.avatar,
+                    isOnline: 1,
+                    curRoom: user.lastRoom || crConfig.INIT_ROOM,
+                    isPrivate: user.isPrivate
+                };
+                cb(userInfo);
+            } else {
+                console.log('不存在的用户');
                 cb({
                     isError: true,
-                    errMsg:'玩家已经在线'
+                    errMsg:'不存在的用户'
                 });
-            } else{
-                let roomList = listUtil.getRoomNameArr(user.rooms);
-                let onliner = new Online({socket: socket.id,user: user._id});
-                user.device = info.device;
-                user.online = onliner._id;
-                let saveOnline = yield onliner.save();
-                let saveUser = yield user.save();
-                if(saveOnline && saveUser){
-                    socket.join(socket.id);
-                    listUtil.joinRooms(socket,roomList);
-                    let userInfo = {
-                        nickname: user.nickname,
-                        id: socket.id,
-                        avatar: user.avatar,
-                        isOnline: 1,
-                        curRoom: user.lastRoom || crConfig.INIT_ROOM,
-                        isPrivate: user.isPrivate
-                    };
-                    cb(userInfo);
-                } else {
-                    console.log('不存在的玩家');
-                    cb({
-                        isError: true,
-                        errMsg:'不存在的玩家'
-                    });
-                }
             }
         } else{
             console.log('解析错误');
