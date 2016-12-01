@@ -153,7 +153,8 @@ module.exports = {
         .populate({
             path: 'histories', 
             populate: { path: 'owner' }, 
-            options: {sort:'-timestamp',limit: info.limit, skip: info.messageCount}
+            match: {timestamp: {'$lt': info.timestamp}},
+            options: {sort:'-timestamp',limit: info.limit}
         });
         if(room){
             let roomInfo = listUtil.getHistoryList(room.histories,'owner','room');

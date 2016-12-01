@@ -1,6 +1,6 @@
 import Immutable from 'immutable'
 
-import { ADD__PRIVATE_MESSAGE, INIT_PRIVATE_ROOM_HISTORIES, ADD_PRIVARE_HISTORY_MESSAGE, ADD_PRIVATE_HISTORY_MESSAGE } from '../actions'
+import { ADD__PRIVATE_MESSAGE, INIT_PRIVATE_ROOM_HISTORIES, ADD_PRIVARE_HISTORY_MESSAGE, ADD_PRIVATE_HISTORY_MESSAGE, CLEAR_PRIVATE_HISTORY } from '../actions'
 
 let defaultState = Immutable.fromJS({});
 
@@ -30,6 +30,13 @@ export default function privateMessages(state = defaultState,action) {
             } else{
                 return state.mergeIn([action.room],state.messages);
             }
+        }
+        case CLEAR_PRIVATE_HISTORY: {
+            let roomMessage = state.get(action.room) || Immutable.fromJS([]);
+            if(roomMessage.size > 20){
+                roomMessage = roomMessage.slice(roomMessage.size-20);
+            }
+            return state.set(action.room,roomMessage);
         }
         default: {
             return state;

@@ -176,6 +176,11 @@ export const changeRoom = (roomInfo) => {
         const state = getState().toJS();
         let preRoom = state.userState.curRoom;
         dispatch(setUserCurRoom(roomInfo));
+        if(state.userState.isPrivate){
+            dispatch(clearPrivateHistory(preRoom));
+        } else{
+            dispatch(clearHistory(preRoom));
+        }
         if(roomInfo.isPrivate){
             if(!state['activeList'][roomInfo.curRoom]){
                 //头像会有bug，暂时处理方式
@@ -186,13 +191,14 @@ export const changeRoom = (roomInfo) => {
                     isPrivate: true
                 }));
             }
+            // 如果之前房间不是私聊则清除公共房间记录
             let messages = state['privateMessages'][roomInfo.curRoom] || [];
             if(messages.length < 15){
                 dispatch(setLoadingState(true));
                 getPrivateHistory({
                     fromUser: roomInfo.curRoom,
                     toUser: state.userState.nickname,
-                    messageCount: messages.length,
+                    timestamp: messages.length>0 ? messages[0].timestamp : new Date().getTime(),
                     limit: LOAD_MESSAGE_LIMIT
                 })(dispatch,getState)
                 .then(
@@ -209,14 +215,13 @@ export const changeRoom = (roomInfo) => {
                 }));
             }
             let messages = state['messages'][roomInfo.curRoom] || [];
-            dispatch(clearHistory(preRoom));
             dispatch(setLoadingState(true));
             getRoomActiveInfo(roomInfo.curRoom)(dispatch)
             .then((resault) => {
                 if(messages.length < 15){
                     return getRoomHistory({
                         roomName: roomInfo.curRoom,
-                        messageCount: messages.length,
+                        timestamp: messages.length>0 ? messages[0].timestamp : new Date().getTime(),
                         limit: LOAD_MESSAGE_LIMIT
                     })(dispatch);
                 }
@@ -245,10 +250,12 @@ export const updateUserInfo = (userInfo) => {
 //message
 export const SEND_MESSAGE = 'SEND_MESSAGE';
 export const ADD_MESSAGE = 'ADD_MESSAGE';
+export const MERGE_MESSAGE = 'MERGE_MESSAGE';
 export const ADD__PRIVATE_MESSAGE = 'ADD_PRIVATE_MESSAGE';
 export const ADD_HISTORY_MESSAGE = 'ADD_HISTORY_MESSAGE';
 export const CLEAR_HISTORY = 'CLEAR_HISTORY';
 export const ADD_PRIVATE_HISTORY_MESSAGE = 'ADD_PRIVATE_HISTORY_MESSAGE';
+export const CLEAR_PRIVATE_HISTORY = 'CLEAR_PRIVATE_HISTORY';
 
 export const clearHistory = (room) => {
     return {
@@ -290,7 +297,7 @@ export const getRoomHistory = (info) => {
                 let messages = state['messages'][roomName] ? state['messages'][roomName] : [];
                 info = {
                     roomName: roomName,
-                    messageCount: messages.length,
+                    timestamp: messages.length>0 ? messages[0].timestamp : new Date().getTime(),
                     limit: LOAD_MESSAGE_LIMIT
                 }
             }
@@ -347,7 +354,7 @@ export const getPrivateHistory = (info) => {
                 info = {
                     fromUser: fromUser,
                     toUser: toUser,
-                    messageCount: messages.length,
+                    timestamp: messages.length>0 ? messages[0].timestamp : new Date().getTime(),
                     limit: LOAD_MESSAGE_LIMIT
                 }
             }
@@ -366,6 +373,12 @@ export const getPrivateHistory = (info) => {
                 }
             })
         })
+    }
+}
+export const clearPrivateHistory = (room) => {
+    return {
+        type: CLEAR_PRIVATE_HISTORY,
+        room
     }
 }
 // info card
@@ -617,7 +630,7 @@ export const logout = () => {
         browserHistory.push('/login');
     }
 }
-export const reconnert = (token) => {
+export const reconnect = (token) => {
     return new Promise((resolve, reject) => {
         socket.emit('reconnect success',token,(body) => {
             if(body.isError){

@@ -8,7 +8,8 @@ module.exports = {
         if(fromUser && toUser){
             let privateMessage = yield Private.find({
                 $or: [{from: fromUser._id, to: toUser.nickname},{from: toUser._id, to: fromUser.nickname}],
-            },null, {sort:'-timestamp',limit: info.limit, skip: info.messageCount}).populate('from');
+                timestamp: {'$lt': info.timestamp}
+            },null, {sort:'-timestamp',limit: info.limit}).populate('from');
             if(privateMessage){
                 for(let i = 0; i < privateMessage.length; i++){
                     privateHistories.unshift({

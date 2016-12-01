@@ -1,6 +1,6 @@
 import Immutable from 'immutable'
 
-import { ADD_MESSAGE, ADD_HISTORY_MESSAGE, INIT_ROOM_HISTORIES, CLEAR_HISTORY } from '../actions'
+import { ADD_MESSAGE, ADD_HISTORY_MESSAGE, INIT_ROOM_HISTORIES, CLEAR_HISTORY, MERGE_MESSAGE } from '../actions'
 
 let defaultState = Immutable.fromJS({});
 
@@ -13,6 +13,11 @@ export default function messages(state = defaultState,action) {
             }
             roomMessage = roomMessage.push(Immutable.fromJS(action.message));
             return state.set(action.message.room,roomMessage);
+        }
+        case MERGE_MESSAGE: {
+            if(action.message.type === 'imageMessage') delete action.message.content;
+            let message = Immutable.fromJS([action.message]);
+            return state;
         }
         case INIT_ROOM_HISTORIES: {
             return Immutable.fromJS(action.messages);
