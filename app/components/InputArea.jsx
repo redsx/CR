@@ -35,6 +35,10 @@ class InputArea extends React.Component{
         let user = this.props.user.toJS(),
             addPrivateMessage = this.props.addPrivateMessage,
             addMessage = this.props.addMessage,
+            mergeMessage = this.props.mergeMessage,
+            mergePrivateMessage = this.props.mergePrivateMessage,
+            sendPrivateMessageWithPre = this.props.sendPrivateMessageWithPre,
+            sendMessageWithPre = this.props.sendMessageWithPre,
             content = (input.value.trim()).slice(0,150);
         if(content !== ''){
             input.value = '';
@@ -45,20 +49,31 @@ class InputArea extends React.Component{
                 content:content,
                 type:'textMessage'
             }
+            
             if(api.getPluginMessageInfo({content,from:{username:user.nickname}})) message.type = 'pluginMessage';
-            user.isPrivate?sendPrivateMessage(message).then((resault)=>{
-                return addPrivateMessage(resault);
+            user.isPrivate?
+            sendPrivateMessageWithPre(message).then((timestamp)=>{
+                return mergePrivateMessage({
+                    room: user.curRoom,
+                    timestamp
+                });
             })
-            :sendMessage(message).then((resault)=>{
-                return addMessage(resault);
+            :sendMessageWithPre(message).then((timestamp)=>{
+                return mergeMessage({
+                    room: user.curRoom,
+                    timestamp
+                }); 
             });
         }
     }
     handlePaste(e){
         let items = e.clipboardData.items,
             user = this.props.user.toJS(),
+            timestamp = new Date().getTime(),
             addMessage = this.props.addMessage,
-            addPrivateMessage = this.props.addPrivateMessage;
+            addPrivateMessage = this.props.addPrivateMessage,
+            mergeMessage = this.props.mergeMessage,
+            mergePrivateMessage = this.props.mergePrivateMessage;
         if (e.clipboardData.types.indexOf('Files') !== -1) {
             for (let i = 0; i < items.length; i++) {
                 let item = items[i];
@@ -76,7 +91,8 @@ class InputArea extends React.Component{
                                     content:resault.data.url,
                                     room: user.curRoom,
                                     type: 'imageMessage',
-                                    nickname: user.nickname
+                                    nickname: user.nickname,
+                                    time: timestamp
                                 }
                                 if(user.isPrivate){
                                     return sendPrivateMessage(message);
@@ -85,14 +101,46 @@ class InputArea extends React.Component{
                             } else{
                                 throw new Error('uplode error');
                             }
-                        }).then((resault)=>{
+                        }).then((timestamp)=>{
                             if(user.isPrivate){
-                                return addPrivateMessage(resault);
+                                return mergePrivateMessage({
+                                    room: user.curRoom,
+                                    timestamp
+                                });
                             }
-                            addMessage(resault);
+                            return mergeMessage({
+                                room: user.curRoom,
+                                timestamp
+                            });
                         }).catch((err)=>{
                             console.log(err);
                         })
+                        let fileReader = new FileReader();
+                        fileReader.readAsDataURL(imgFile);
+                        fileReader.onload = (event) => {
+                            let imgDataUrl = event.target.result;
+                            let message = {
+                                room: user.curRoom,
+                                type: 'imageMessage',
+                                nickname: user.nickname,
+                                avatar: user.avatar,
+                                content: imgDataUrl,
+                                isLoading: true,
+                                timestamp
+                            };
+                            this.setState({
+                                preview:imgDataUrl,
+                                progress:{
+                                    type: 'progress',
+                                    persent: 0
+                                }
+                            });
+                            if(user.isPrivate){
+                                return addPrivateMessage(message);
+                            }
+                            addMessage(message);
+                            
+                        }
                     }
                 }
             }

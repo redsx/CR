@@ -87,10 +87,10 @@ module.exports = {
                     sex: user.sex || '未知'
                 })
             } else{
-                console.log('查找的玩家不存在');
+                console.log('查找的用户不存在');
                 cb({
                     isError:true,
-                    errMsg: '查找的玩家不存在'
+                    errMsg: '查找的用户不存在'
                 });
             }
         }

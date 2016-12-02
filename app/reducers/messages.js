@@ -15,9 +15,14 @@ export default function messages(state = defaultState,action) {
             return state.set(action.message.room,roomMessage);
         }
         case MERGE_MESSAGE: {
-            if(action.message.type === 'imageMessage') delete action.message.content;
-            let message = Immutable.fromJS([action.message]);
-            return state;
+            let roomMessage = state.get(action.info.room) ? state.get(action.info.room).toJS() : [];
+            for(let i = roomMessage.length - 1;i > -1; i--){
+                if(roomMessage[i].isLoading && roomMessage[i].timestamp === action.info.timestamp){
+                    roomMessage[i].isLoading = false;
+                    break;
+                }
+            }
+            return state.set(action.info.room,Immutable.fromJS(roomMessage));
         }
         case INIT_ROOM_HISTORIES: {
             return Immutable.fromJS(action.messages);

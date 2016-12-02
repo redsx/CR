@@ -1,31 +1,31 @@
-.rotate(@deg){
+.rotate(@deg) {
     -webkit-transform: rotate(@deg);
     -moz-transform: rotate(@deg);
     -o-transform: rotate(@deg);
     transform: rotate(@deg);
 }
-.triangle(left,@top,@right,@color){
+.triangle(left,@top,@right,@color) {
     left: @right;
     border-right: 10px solid @color;
     .rotate(20deg);
 }
-.triangle(right,@top,@right,@color){
+.triangle(right,@top,@right,@color) {
     right: @right;
     border-left: 10px solid @color;
     .rotate(-20deg);
 }
-.triangle(@_,@top,@right,@color){
+.triangle(@_,@top,@right,@color) {
     position: absolute;
     top: @top;
     border-top: 2px solid transparent;
     border-bottom: 7px solid transparent; 
 }
-.message-container{
+.message-container {
     width: 100%;
     max-width: 980px;
     padding: 10px 6px 0px 12px;
 }
-.message{
+.message {
     position: relative;
     display: inline-block;
     word-break: break-all;
@@ -37,10 +37,10 @@
     border: 1px solid rgb(204, 204, 204);
     border-radius: 8px;
 }
-.avatar-container{
+.avatar-container {
     margin-top: 5px;
 }
-.message-nickname-box{
+.message-nickname-box {
     padding: 0px 2px;
     display: block;
     font-size: 0.85rem;
@@ -49,47 +49,62 @@
 .message-nickname {
     padding-right: 5px; 
 }
-.triangle-left-inner{
+.triangle-left-inner {
     content: "";
     .triangle(left,6px,-7px,white);
 }
-.triangle-left-outer{
+.triangle-left-outer {
     content: "";
     .triangle(left,5px,-9px,#ccc);
 }
-.triangle-right-inner{
+.triangle-right-inner {
     content: "";
     .triangle(right,6px,-7px,white);
 }
-.triangle-right-outer{
+.triangle-right-outer {
     content: "";
     .triangle(right,5px,-9px,#ccc);
 }
 
-.message-richtext-image-container{
+.message-richtext-image-container {
     float: left;
     display: inline-block;
     width: 70px;
 }
-.message-richtext-image{
+.message-richtext-image {
     width: 70px;
 }
-.message-richtext-text-container{
+.message-richtext-text-container {
     display: inline-block;
     width: 130px;
     padding-top: 6px;
 }
-.message-richtext-title{
+.message-richtext-title {
     margin: 5px 10px;
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.message-richtext-tip{
+.message-richtext-tip {
     padding: 0;
     margin: 0 10px;
     font-size: small;
     color: #909090;
     cursor: pointer;
+}
+.message-loading {
+    position: absolute;
+    bottom: 0px;
+}
+.message-loading-left{
+    .message-loading;
+    right: -21px;
+}
+.message-loading-right{
+    .message-loading;
+    left: -21px;
+}
+.message-loading-image {
+    width: 20px;
 }

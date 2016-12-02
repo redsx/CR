@@ -18,7 +18,7 @@ class MessageBox extends React.Component{
         return hours+':'+minu+':'+sec;
     }
     render(){
-        let { nickname, dir, avatar, timestamp } = this.props.info.toJS();
+        let { nickname, dir, avatar, timestamp, isLoading } = this.props.info.toJS();
         let time = this.dealTimestamp(timestamp);
         return (
             <div data-flex={'dir:'+dir} className="message-list-item">
@@ -44,6 +44,13 @@ class MessageBox extends React.Component{
                             {this.props.messageContent}
                             <div className = {dir === 'left' ? 'triangle-left-outer' : 'triangle-right-outer'}></div>
                             <div className = {dir === 'left' ? 'triangle-left-inner' : 'triangle-right-inner'}></div>
+                            {
+                                isLoading?
+                                <div className = {'message-loading-' + dir}>
+                                    <img className = 'message-loading-image' src = 'http://cr.mdzzapp.com/hourglass.svg' />
+                                </div>
+                                :null
+                            }
                         </div>
                     </div>
                 </div>

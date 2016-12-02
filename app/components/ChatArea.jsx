@@ -218,7 +218,7 @@ class ChatArea extends React.Component {
         if(this.state.isTouching){
             let pHeight = this.state.loadingHeight || 1,
                 nHeight = pageY - this.state.startY,
-                speed = (1 - (pHeight/window.innerHeight))/13;
+                speed = (1 - (pHeight/window.innerHeight))/11;
             if(nHeight > 6){
                 // 防止浏览器下拉刷新，chrome浏览器中大概是15PX的下拉后触发默认刷新，微信中大概是6像素
                 e.preventDefault();
@@ -359,6 +359,7 @@ class ChatArea extends React.Component {
                                         nickname:item.nickname,
                                         avatar:item.avatar,
                                         timestamp:item.timestamp,
+                                        isLoading: item.isLoading,
                                         dir
                                     })
                                     switch (item.type) {

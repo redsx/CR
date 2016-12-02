@@ -256,6 +256,7 @@ export const ADD_HISTORY_MESSAGE = 'ADD_HISTORY_MESSAGE';
 export const CLEAR_HISTORY = 'CLEAR_HISTORY';
 export const ADD_PRIVATE_HISTORY_MESSAGE = 'ADD_PRIVATE_HISTORY_MESSAGE';
 export const CLEAR_PRIVATE_HISTORY = 'CLEAR_PRIVATE_HISTORY';
+export const MERGE_PRIVATE_MESSAGE = 'MERGE_PRIVATE_MESSAGE';
 
 export const clearHistory = (room) => {
     return {
@@ -279,6 +280,19 @@ export const sendMessage = (message) => {
             }
         })
     })
+}
+export const sendMessageWithPre = (message) => {
+    return (dispatch,getState) => {
+        let avatar = getState().getIn(['userState','avatar']),
+            timestamp = new Date().getTime();
+        dispatch(addMessage(Object.assign({},{
+            isLoading: true,
+            avatar,
+            timestamp
+        },message)));
+        message.time = timestamp;
+        return sendMessage(message);
+    }   
 }
 
 export const addHistoryMessage = (room,messages) => {
@@ -318,23 +332,48 @@ export const getRoomHistory = (info) => {
         })
     }
 }
-
+export const mergeMessage = (info) => {
+    return {
+        type: MERGE_MESSAGE,
+        info
+    }
+}
 export const addPrivateMessage = (message) => {
     return {
         type:ADD__PRIVATE_MESSAGE,
         message
     }
 }
+
 export const sendPrivateMessage = (message) => {
-    return new Promise((resolve)=>{
+    return new Promise((resolve,reject)=>{
         socket.emit('privateMessage',message, (body) => {
-            if(!body.isNotOnline && !body.isError){
+            if(!body.isError){
                 resolve(body);
             } else{
-                alert('玩家不在线，离线消息即将上线，敬请期待');
+                reject(body);
             }
         })
     })
+}
+export const sendPrivateMessageWithPre = (message) => {
+    return (dispatch,getState) => {
+        let avatar = getState().getIn(['userState','avatar']),
+            timestamp = new Date().getTime();
+        dispatch(addPrivateMessage(Object.assign({},{
+            isLoading: true,
+            avatar,
+            timestamp
+        },message)));
+        message.time = timestamp;
+        return sendPrivateMessage(message);
+    } 
+}
+export const mergePrivateMessage = (info) => {
+    return {
+        type: MERGE_PRIVATE_MESSAGE,
+        info
+    }
 }
 export const addPrivateHistory = (room,messages) => {
     return {

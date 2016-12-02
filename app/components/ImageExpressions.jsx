@@ -86,10 +86,18 @@ class ImageExpressions extends React.Component{
             show = this.refs.show,
             formdata = new FormData(),
             user = this.props.user.toJS(),
+            timestamp = new Date().getTime(),
             addMessage = this.props.addMessage,
-            addPrivateMessage = this.props.addPrivateMessage;
+            addPrivateMessage = this.props.addPrivateMessage,
+            mergeMessage = this.props.mergeMessage,
+            mergePrivateMessage = this.props.mergePrivateMessage;
         if(!imgFile || !isImgReg.test(imgFile.type)){
-            console.log('imgFile is not image');
+            this.setState({
+                progress:{
+                    type: 'text',
+                    text: '不合法的文件'
+                }
+            });
         } else if(imgFile.size > 3*1024*1024){
             this.setState({
                 progress:{
@@ -121,7 +129,8 @@ class ImageExpressions extends React.Component{
                         content:resault.data.url,
                         room: user.curRoom,
                         type: 'imageMessage',
-                        nickname: user.nickname
+                        nickname: user.nickname,
+                        time: timestamp
                     }
                     if(user.isPrivate){
                         return sendPrivateMessage(message);
@@ -136,11 +145,17 @@ class ImageExpressions extends React.Component{
                     });
                     throw new Error(resault.msg);
                 }
-            }).then((resault)=>{
+            }).then((timestamp)=>{
                 if(user.isPrivate){
-                    return addPrivateMessage(resault);
+                    return mergePrivateMessage({
+                        room: user.curRoom,
+                        timestamp
+                    });
                 }
-                addMessage(resault);
+                return mergeMessage({
+                    room: user.curRoom,
+                    timestamp
+                });
             }).catch((err)=>{
                 console.log(err);
                 this.setState({
@@ -154,6 +169,15 @@ class ImageExpressions extends React.Component{
             fileReader.readAsDataURL(imgFile);
             fileReader.onload = (event) => {
                 let imgDataUrl = event.target.result;
+                let message = {
+                    room: user.curRoom,
+                    type: 'imageMessage',
+                    nickname: user.nickname,
+                    avatar: user.avatar,
+                    content: imgDataUrl,
+                    isLoading: true,
+                    timestamp
+                };
                 this.setState({
                     preview:imgDataUrl,
                     progress:{
@@ -161,6 +185,11 @@ class ImageExpressions extends React.Component{
                         persent: 0
                     }
                 });
+                if(user.isPrivate){
+                    return addPrivateMessage(message);
+                }
+                addMessage(message);
+                
             }
             fileReader.onerror = (err) => { 
                 this.setState({
@@ -190,10 +219,14 @@ class ImageExpressions extends React.Component{
         let user = this.props.user.toJS(),
             addMessage = this.props.addMessage,
             addPrivateMessage = this.props.addPrivateMessage,
+            mergeMessage = this.props.mergeMessage,
+            mergePrivateMessage = this.props.mergePrivateMessage,
+            sendPrivateMessageWithPre = this.props.sendPrivateMessageWithPre,
+            sendMessageWithPre = this.props.sendMessageWithPre,
             deleteStorageExpression = this.props.deleteStorageExpression,
             storageSetting = this.props.storageSetting;
         if(e.shiftKey){
-            deleteStorageExpression(src)
+            deleteStorageExpression(src);
             return storageSetting();
         }
         let message = {
@@ -202,8 +235,17 @@ class ImageExpressions extends React.Component{
             type: 'imageMessage',
             nickname: user.nickname
         }
-        !user.isPrivate ? sendMessage(message).then((resault) => addMessage(resault))
-        :sendPrivateMessage(message).then((resault) => addPrivateMessage(resault))
+        !user.isPrivate ? 
+        sendMessageWithPre(message)
+        .then((timestamp) => mergeMessage({
+            room: user.curRoom,
+            timestamp
+        }))
+        :sendPrivateMessageWithPre(message)
+        .then((timestamp) => mergePrivateMessage({
+            room: user.curRoom,
+            timestamp
+        }))
     }
     handleStopPro(e){
         e.stopPropagation();
@@ -319,7 +361,8 @@ class ImageExpressions extends React.Component{
                 >
                     <input 
                         type = 'file'  
-                        style = {styles.input} 
+                        style = {styles.input}
+                        accept = 'image/png,image/gif,image/gif'
                         onChange = {(e)=>{
                             this.uploadImage(e.target.files);
                         }}

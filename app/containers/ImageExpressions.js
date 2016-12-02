@@ -1,7 +1,17 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import ImageExpressions from '../components/ImageExpressions.jsx'
-import { addPrivateMessage, addMessage, deleteStorageExpression, setImageExpState, storageSetting } from '../actions'
+import { 
+    addPrivateMessage, 
+    addMessage, 
+    sendMessageWithPre, 
+    sendPrivateMessageWithPre, 
+    mergeMessage,
+    mergePrivateMessage,
+    deleteStorageExpression, 
+    setImageExpState, 
+    storageSetting 
+} from '../actions'
 function mapStateToProps(state) {
     return {
         isShowImageExp: state.getIn(['pageState','isShowImageExp']),
@@ -10,6 +20,16 @@ function mapStateToProps(state) {
     }
 }
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ addPrivateMessage, addMessage, deleteStorageExpression, setImageExpState, storageSetting  },dispatch);
+    return bindActionCreators({ 
+        addPrivateMessage, 
+        addMessage,
+        sendMessageWithPre, 
+        sendPrivateMessageWithPre, 
+        mergeMessage,
+        mergePrivateMessage, 
+        deleteStorageExpression, 
+        setImageExpState, 
+        storageSetting  
+    },dispatch);
 }
 export default connect(mapStateToProps,mapDispatchToProps)(ImageExpressions);

@@ -148,7 +148,6 @@ module.exports = {
         }
     },
     getRoomHistory: function *(info,cb){
-        console.log('getRoomHistory info: ', info);
         let room = yield Room.findOne({name: info.roomName})
         .populate({
             path: 'histories', 

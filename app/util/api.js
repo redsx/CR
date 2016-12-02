@@ -1,6 +1,6 @@
 import { sendMessage, getRichTextContent } from '../actions'
 
-const api = function(nickname,addMessage){
+const api = function(user,addMessage){
     return {
         sendMessage: function(type,room,content,title){
             if(typeof type !== 'string'){
@@ -12,13 +12,17 @@ const api = function(nickname,addMessage){
             if(!room){
                 return console.error('[type error]: room is undefinded')
             }
-            return sendMessage({
-                nickname: nickname,
+            let message = {
+                time: new Date().getTime(),
+                nickname: user.nickname,
+                avatar: user.avatar,
                 type,
                 content,
                 room,
-            }).then((result) => {
-                addMessage(result)
+            }
+            return sendMessage(message).then((result) => {
+                message.timestamp = result;
+                addMessage(message);
             })
         },
         getCondeMessageContent: function(title,timestamp){

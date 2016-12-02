@@ -43,7 +43,7 @@ module.exports = {
                 yield room.save();
                 socket.broadcast.to(message.room).emit('newMessage',message);
                 console.log('成功存入消息');
-                cb(message);
+                message.type === 'codeMessage' ? cb(message) : cb(message.time);
             } else{
                 console.log('房间不存在！');
                 cb({
@@ -86,7 +86,6 @@ module.exports = {
                 send.content = title;
             }
             if(toUser.online){
-                console.log('message.js toUser 63:',toUser);
                 socket.broadcast.to(toUser.online.socket).emit('privateMessage',send);
             }
             let privateMessage = new Private({
@@ -98,7 +97,7 @@ module.exports = {
             });
 
             yield privateMessage.save();
-            cb(send);
+            message.type === 'codeMessage' ? cb(send) : cb(message.time);
         }
     },
     robotMessage: function *(send,cb){
@@ -153,7 +152,7 @@ module.exports = {
     getRichTextContent: function *(info,cb){
         let owner = yield User.findOne({nickname:info.owner});
         if(owner){
-            let richTextContent = yield RichText.findOne({title: info.title,timestamp: info.timestamp, owner: owner._id})
+            let richTextContent = yield RichText.findOne({timestamp: info.timestamp, owner: owner._id});
             if(richTextContent){
                 return cb({content: richTextContent.content});
             }

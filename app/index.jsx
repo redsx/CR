@@ -84,7 +84,7 @@ const handleInit = (info) => {
         return getInitUserInfo(info)(store.dispatch);
     }).then((resault)=>{
         handleReadLocalSetting(resault.nickname);
-        window.cr = new api(resault.nickname,function(message){store.dispatch(addMessage(message))});
+        window.cr = new api(resault,function(message){store.dispatch(addMessage(message))});
         return changeRoom({curRoom: resault.curRoom,isPrivate: resault.isPrivate})(store.dispatch,store.getState);
     }).then(() => {
         store.dispatch(setLoadingState(false));
