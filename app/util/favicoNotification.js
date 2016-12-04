@@ -7,7 +7,7 @@ const favicoNotification = (function (Favico,animation = 'popFade',type = '') {
     });
     var count = 0;
     var addBage = function () {
-        count<=9 ? count++ : count = 'n'
+        count<=99 ? count++ : count = 'n'
         favico.badge(count);
     };
     var resetBage = function () {
