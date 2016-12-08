@@ -25,9 +25,6 @@ class InputArea extends React.Component{
                 this.handleClick();
             }
         })
-        document.addEventListener('click', (e) => {
-            e.target != this.refs.expressionBtn && this.props.isShowExpressions ? this.props.setExpressionState(false):null;
-        })
     }
     handleClick(){
         let input = this.refs.input;
@@ -153,8 +150,7 @@ class InputArea extends React.Component{
                 <div data-flex-box='0'>
                     <div 
                         className = 'click-div'
-                        onClick = {()=>setExpressionState(!this.props.isShowExpressions)} 
-                        ref = 'expressionBtn'
+                        onClick = {()=>setExpressionState(true)} 
                     ></div>
                     <div className = 'icon-box'>
                         <i className = 'icon'>&#xe64a;</i>

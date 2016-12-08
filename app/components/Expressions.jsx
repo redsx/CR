@@ -46,9 +46,14 @@ class Expressions extends React.Component{
             >
                 {
                     isShow ? 
-                    <div className = 'animationBox'>
-                        <div className = 'expressionsBox'>
-                            {this.renderExpressions()}
+                    <div 
+                        className = 'expression-container'
+                        onClick = {()=>this.props.setExpressionState(false)}
+                    >
+                        <div className = 'animationBox'>
+                            <div className = 'expressionsBox'>
+                                {this.renderExpressions()}
+                            </div>
                         </div>
                     </div>
                     :null
