@@ -203,7 +203,7 @@ class ChatArea extends React.Component {
         this.isMount = false;
     }
     pullStart(startY){
-        if(this.messageArea.scrollTop === 0 && this.state.loadingState !== 'loadedAll'){
+        if(this.messageArea.scrollTop === 0 && this.state.loadingState !== 'loadedAll' && this.state.loadingState !== 'loading'){
             this.setState({
                 needScroll: false,
                 isTouching: true,
