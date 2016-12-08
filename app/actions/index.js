@@ -1,7 +1,7 @@
 import io from 'socket.io-client'
 import { browserHistory } from 'react-router'
 
-// export const socket = io('http://mdzzapp.com:3000');
+// export const socket = io('http://mdzzapp.com:3000',{'force new connection': true});
 // export const socket = io('http://mdzzapp.com:3001');
 export const socket = io('http://localhost:3000',{'force new connection': true});
 
@@ -176,6 +176,7 @@ export const changeRoom = (roomInfo) => {
         const state = getState().toJS();
         let preRoom = state.userState.curRoom;
         dispatch(setUserCurRoom(roomInfo));
+        dispatch(setScrollState(true));
         if(state.userState.isPrivate){
             dispatch(clearPrivateHistory(preRoom));
         } else{

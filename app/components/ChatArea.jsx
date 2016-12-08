@@ -128,7 +128,7 @@ class ChatArea extends React.Component {
             tpm = this.props.messages.toJS(),
             user = this.props.user? this.props.user.toJS() : {};
         // 判断收到消息
-        if(1 === npm.length - tpm.length && npm[0].timestamp ===  tpm[0].timestamp && npm[npm.length-1].nickname === user.nickname){
+        if(1 === npm.length - tpm.length && npm[0].timestamp !==  tpm[0].timestamp && npm[npm.length-1].nickname === user.nickname){
             this.setState({needScroll: true});
         }
     }
@@ -164,12 +164,16 @@ class ChatArea extends React.Component {
             childHeight = lastChild?lastChild.offsetHeight : 1;
             
             if(needScroll){
+                // 滚动条滚动判断包括needScroll决定是否滚动，
+                // this.props.isNeedScroll由其他组件决定是否滚动，
+                // messageArea.scrollHeight !== preScroll + childHeight最后一条消息长度＋之前滚动条
+                // 滚动条位置
+                if( messageArea.scrollHeight !== preScroll + childHeight){
+                    willScroll = true;
+                }
                 // －30容错
                 if( messageArea.offsetHeight <= preScroll - messageArea.scrollTop -30){
                     willScroll = false;
-                }
-                if( messageArea.scrollHeight !== preScroll + childHeight){
-                    willScroll = true;
                 }
                 if(isNeedScroll){
                     willScroll = true;
