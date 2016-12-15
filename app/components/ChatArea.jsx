@@ -9,7 +9,6 @@ import InfoCard from '../containers/InfoCard.js'
 import TextMessage from './TextMessage.jsx'
 import SystemMessage from './SystemMessage.jsx'
 import CodeMessage from '../containers/CodeMessage.js'
-import Drag from './Drag.jsx'
 import RoomInfo from '../containers/RoomInfo.js'
 import api from '../plugins'
 import ImageMessage from '../containers/ImageMessage.js'
@@ -392,7 +391,7 @@ class ChatArea extends React.Component {
                                         case 'pluginMessage': {
                                             const messageInfo=(function plugin(){
                                                 let isNew= false;
-                                                if(item.timestamp > api.timestamp) {
+                                                if(item.timestamp >= api.timestamp) {
                                                     isNew = true;
                                                     api.timestamp = item.timestamp;
                                                 }

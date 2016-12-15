@@ -149,23 +149,21 @@ class InputArea extends React.Component{
             <div data-flex = 'main:center cross:top' className = 'inputarea'>
                 <div data-flex-box='0'>
                     <div 
-                        className = 'click-div'
+                        className = 'icon-box'
                         onClick = {()=>setExpressionState(true)} 
-                    ></div>
-                    <div className = 'icon-box'>
+                    >
                         <i className = 'icon'>&#xe64a;</i>
                     </div>
                 </div>
                 <div data-flex-box = '0'>
                     <div 
-                        className = 'click-div'
+                        className = 'icon-box'
                         onClick = {(e) => {
                             e.stopPropagation();
                             e.nativeEvent.stopImmediatePropagation();
                             setImageExpState(!isShowImageExp);
                         }}
-                    ></div>
-                    <div className = 'icon-box'>
+                    >
                         <i className = 'icon'>&#xe63d;</i>
                     </div>
                 </div>

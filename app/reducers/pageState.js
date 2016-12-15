@@ -32,7 +32,7 @@ let defaultState = {
     isShowExpression: false,
     isShowRichText: false,
     isLoading: false,
-    listState:'activeList',
+    listState:'roomList',
     badgeCount: {},
     modalState: {
         modalInfo: {

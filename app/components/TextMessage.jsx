@@ -19,7 +19,7 @@ class TextMessage extends React.Component{
         let regLink = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
         let regExp = /#\([\u4e00-\u9fa5a-z]+\)/g;
         text = text.replace(regExp, r => `<img src="images/expressions/${r.match(/[^#()]+/)[0]}.png" alt="${r}" onerror="this.style.display=\'none\'"/>` );
-        text = text.replace(regLink, r => `<a href="${r}" target="_blank">${r}</a>`);
+        text = text.replace(regLink, r => `<a href="${r}" target="_blank" rel="noreferrer">${r}</a>`);
         return text
     }
 

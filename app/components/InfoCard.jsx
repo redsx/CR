@@ -10,7 +10,6 @@ import Avatar from '../containers/Avatar.js'
 import Setting from '../containers/Setting.js'
 import SpecialSetting from '../containers/SpecialSetting.js'
 import RoomSetting from '../containers/RoomSetting.js'
-import Drag from './Drag.jsx'
 
 import '../less/infocard.less'
 
@@ -122,19 +121,11 @@ class InfoCard extends React.Component{
             )
     }
     render(){
-        let isShow = this.props.isShow,
-            y = Math.round(window.innerHeight/2) - 200,
-            x = Math.round(window.innerWidth/2) - 165;
+        let isShow = this.props.isShow;
         return !isShow?null:(
-                <Drag
-                    x = {x}
-                    y = {y}
-                    width = {330}
-                    height = {400}
-                    component = {
-                        this.renderInfoCard()
-                    }
-                />
+                <div className = 'info-card-bg'>
+                    {this.renderInfoCard()}
+                 </div>
             )
     }
 }
