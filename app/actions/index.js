@@ -1,9 +1,9 @@
 import io from 'socket.io-client'
 import { browserHistory } from 'react-router'
 
-// export const socket = io('http://mdzzapp.com:3000',{'force new connection': true});
+export const socket = io('http://mdzzapp.com:3000',{'force new connection': true});
 // export const socket = io('http://mdzzapp.com:3001');
-export const socket = io('http://localhost:3000',{'force new connection': true});
+// export const socket = io('http://localhost:3000',{'force new connection': true});
 
 export const LOAD_MESSAGE_LIMIT = 15;
 // page UI state
@@ -864,8 +864,7 @@ export const createRoom = (info) => {
                     if(body.isOk){
                         dispatch(addActiveItem(body.roomInfo));
                         dispatch(setSnackbarState({
-                            content: body.msg,
-                            open: true
+                            open: false
                         }));
                     }
                     resolve(body);

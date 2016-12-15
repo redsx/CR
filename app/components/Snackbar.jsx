@@ -15,6 +15,8 @@ class Snackbar extends React.Component{
         let snackbar = this.props.snackbar.toJS(),
             nextSnackbar = nextProps.snackbar.toJS();
         let autoHideDuration= snackbar.autoHideDuration || 3000;
+        console.log(nextSnackbar);
+        if(!nextSnackbar.open) return this.handleClose();
         if(!this.state.open){
             this.setState({open: nextSnackbar.open});
         } else{
@@ -34,7 +36,7 @@ class Snackbar extends React.Component{
     }
     componentDidUpdate(){
         let autoHideDuration= this.props.snackbar.get('autoHideDuration') || 3000;
-        if(this.state.open){
+        if(this.state.open && autoHideDuration < 60*1000){
             this.timer = setTimeout(()=>this.setState({open:false}),autoHideDuration);
         }
     }
