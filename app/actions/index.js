@@ -1,9 +1,9 @@
 import io from 'socket.io-client'
 import { browserHistory } from 'react-router'
 
-export const socket = io('http://mdzzapp.com:3000',{'force new connection': true});
+// export const socket = io('http://mdzzapp.com:3000',{'force new connection': true});
 // export const socket = io('http://mdzzapp.com:3001');
-// export const socket = io('http://localhost:3000',{'force new connection': true});
+export const socket = io('http://localhost:3000',{'force new connection': true});
 
 export const LOAD_MESSAGE_LIMIT = 15;
 // page UI state
@@ -176,6 +176,7 @@ export const changeRoom = (roomInfo) => {
         const state = getState().toJS();
         let preRoom = state.userState.curRoom;
         dispatch(setUserCurRoom(roomInfo));
+        dispatch(clearCount(roomInfo.curRoom));
         dispatch(setScrollState(true));
         if(state.userState.isPrivate){
             dispatch(clearPrivateHistory(preRoom));
@@ -724,11 +725,9 @@ export const deleteActiveItem = (item) => {
     }
 }
 
-const initBageCount = (dispatch,histories) => {
+const initBageCount = (dispatch,histories,ignore) => {
     for(let key in histories){
-        if(key !== 'MDZZ'){
-            dispatch(addCount(key,histories[key]['length']));
-        }
+        dispatch(addCount(key,histories[key]['length']));
     }
 }
 export const getActiveList = (token) => {
@@ -738,8 +737,6 @@ export const getActiveList = (token) => {
                 if(body.isError){
                     browserHistory.push('/login');
                 } else{
-                    initBageCount(dispatch,body.roomHistories);
-                    initBageCount(dispatch,body.privateHistories);
                     dispatch(initRoomHistory(body.roomHistories));
                     dispatch(initPrivateHistory(body.privateHistories));
                     dispatch(initActiveList(body.activeList));

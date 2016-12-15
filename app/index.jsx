@@ -42,7 +42,8 @@ import {
     setLoadingState,
     setUserState,
     reconnect,
-    logout
+    logout,
+    setSnackbarState
 } from './actions'
 
 import notification from './util/notification.js'
@@ -85,6 +86,7 @@ const handleInit = (info) => {
     }).then((resault)=>{
         handleReadLocalSetting(resault.nickname);
         window.cr = new api(resault,function(message){store.dispatch(addMessage(message))});
+        
         return changeRoom({curRoom: resault.curRoom,isPrivate: resault.isPrivate})(store.dispatch,store.getState);
     }).then(() => {
         store.dispatch(setLoadingState(false));
@@ -178,6 +180,7 @@ socket.on('newMessage', (message) => {
         }
     }
 });
+    
 socket.on('forcedOffline',()=>{
     store.dispatch(logout());
     alert('账号在其他设备登录');
@@ -185,10 +188,11 @@ socket.on('forcedOffline',()=>{
 socket.on('disconnect',()=>{
     console.log('disconnect');
     const state = store.getState().toJS();
-    store.dispatch(addMessage({
+    favico.errorBage();
+    store.dispatch(setSnackbarState({
         content: '掉线重连中...',
-        room: state.userState.curRoom,
-        type: 'systemMessage'
+        open: true,
+        autoHideDuration: 61*1000
     }));
 })
 
@@ -205,6 +209,12 @@ socket.on('reconnect_failed',()=>{
 
 socket.on('reconnect',()=>{
     const state = store.getState().toJS();
+    store.dispatch(setSnackbarState({
+        content: '掉线重连成功',
+        open: false,
+        autoHideDuration: 3000
+    }));
+    favico.resetBage();
     console.log('断线重连成功');
     // offline为断线重连，需要重新init
     if(state.userState.state === 'offline'){
