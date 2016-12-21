@@ -23,6 +23,7 @@ const favicoNotification = (function (Favico,animation = 'popFade',type = '') {
         count = 0;
     };
     var errorBage = function () {
+        favico.badge(0);
         favico = new Favico({
             type: type,
             animation:animation,
