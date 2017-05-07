@@ -1,4 +1,4 @@
-## A Real-Time Chat Room built with React
+## A Real-Time Chat Room Built with React
 
 Online demo：[http://cr.mdzzapp.com](http://cr.mdzzapp.com)
 
