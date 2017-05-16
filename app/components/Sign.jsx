@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import { Link, browserHistory } from 'react-router'
+import { Link } from 'react-router-dom'
 import '../less/sign.less'
 
 class Sign extends React.Component{
@@ -106,8 +106,8 @@ class Sign extends React.Component{
                             content: '浏览器不支持localStorage'
                         })                                
                     } 
-                    localStorage.setItem('token',resault.jwt);
-                    browserHistory.push('/');
+                    localStorage.setItem('token',resault.jwt);                    
+                    this.props.history.push('/');
                 }
             });
         }else{
