@@ -1,8 +1,12 @@
 import io from 'socket.io-client'
-import { browserHistory } from 'react-router'
+//import { browserHistory } from 'react-router'
 
 // export const socket = io('http://mdzzapp.com:3000',{'force new connection': true});
 // export const socket = io('http://mdzzapp.com:3001');
+let browserHistory;
+export function setHistory(history){
+    browserHistory=history;
+}
 export const socket = io('http://localhost:3000',{'force new connection': true});
 
 export const LOAD_MESSAGE_LIMIT = 15;

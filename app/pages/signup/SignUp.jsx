@@ -15,6 +15,7 @@ class SignUp extends React.Component{
                     btnText = 'sign up'
                     link = '/login'
                     clickFunc = {signUp}
+                    history = {this.props.history}
                 />
             </div>
         );
