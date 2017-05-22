@@ -12,6 +12,8 @@ import RichText from '../../containers/RichText.js'
 import Modal from '../../containers/Modal.js'
 import browser from '../../util/browser.js'
 import api from '../../util/api.js';
+import notification from '../../util/notification.js'
+import config from '../../plugins/config.js'
 import '../../less/indexpage.less';
 import favico from '../../util/favicoNotification.js';
 import {
