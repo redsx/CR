@@ -42,7 +42,7 @@
     "mysql": "^2.11.1",
     "node-base64-image": "^1.0.1",
     "ramda": "^0.21.0",
-    "rc-queue-anim": "^0.11.12",
+    "rc-queue-anim": "^0.13.3",
     "rc-tween-one": "^0.6.20",
     "react": "^15.1.0",
     "react-addons-pure-render-mixin": "^15.3.1",
