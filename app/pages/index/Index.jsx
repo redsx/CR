@@ -50,140 +50,145 @@ import {
     setSnackbarState
 } from '../../actions'
 import store from '../../store';
+
+let historyHandle;
+function initSocket(){
+    socket.on('privateMessage', (message) => {
+        const state = store.getState().toJS();
+        if (message.type === 'textMessage') {
+            if (!cr.filterMsg(message.content)) {
+                return;
+            }
+            message.content = cr.filterMsg(message.content);
+        }
+        if (state.setting.shield.indexOf(message.nickname) === -1) {
+            const audio = document.getElementById('audio1'),
+                audioSpecial = document.getElementById('audio3'),
+                avatar = message.avatar;
+            message.room = message.nickname;
+            if (state.pageState.listState !== 'activeList') {
+                store.dispatch(setListShow('activeList'));
+            }
+            store.dispatch(addPrivateMessage(message));
+            state.userState.curRoom === message.room ? null : store.dispatch(addCount(message.room));
+            if (!state['activeList'][message.room]) {
+                store.dispatch(addActiveItem({
+                    roomName: message.room,
+                    avatar: message.avatar,
+                    isPrivate: true
+                }))
+            }
+            if (document.hidden) {
+                favico.addBage();
+                if (state.setting.audioNotification) {
+                    state.setting.special.indexOf(message.nickname) === -1 ? audio.play() : audioSpecial.play();
+                }
+                state.setting.h5Notification ? notification.showNotification(message.nickname, {
+                    body: message.type === 'pluginMessage' ? '[plugin]' : message.content,
+                    icon: message.avatar,
+                }) : null;
+            } else if (state.setting.audioNotification && state.userState.curRoom !== message.room) {
+                state.setting.special.indexOf(message.nickname) === -1 ? audio.play() : audioSpecial.play();
+            }
+        }
+    });
+    socket.on('newMessage', (message) => {
+        const state = store.getState().toJS();
+        if (message.type === 'textMessage') {
+            if (!cr.filterMsg(message.content)) {
+                return;
+            }
+            message.content = cr.filterMsg(message.content);
+        }
+        if (state.setting.shield.indexOf(message.nickname) === -1) {
+            const audio = document.getElementById('audio1'),
+                audioSpecial = document.getElementById('audio3'),
+                avatar = message.avatar,
+                reg = new RegExp('@' + state.userState.nickname, 'g');
+            store.dispatch(addMessage(message));
+            state.userState.curRoom === message.room ? null : store.dispatch(addCount(message.room));
+            if (!state['activeList'][message.room]) {
+                store.dispatch(addActiveItem({
+                    roomName: message.room,
+                    avatar: state['roomList'][message.room]['avatar'],
+                    isPrivate: false
+                }))
+            }
+            if (document.hidden) {
+                favico.addBage();
+                if (state.setting.audioNotification) {
+                    state.setting.special.indexOf(message.nickname) !== -1 || reg.test(message.content) ? audioSpecial.play() : audio.play();
+                }
+                state.setting.h5Notification && !(message.nickname === state.userState.nickname) ? notification.showNotification(message.nickname, {
+                    body: message.type === 'pluginMessage' || message.nickname === config.PLUGIN_ROBOT ? '[plugin]' : message.content,
+                    icon: message.avatar,
+                }) : null;
+            } else if (!(message.nickname === state.userState.nickname) && state.setting.audioNotification && state.userState.curRoom !== message.room) {
+                state.setting.special.indexOf(message.nickname) !== -1 || reg.test(message.content) ? audioSpecial.play() : audio.play();
+            }
+        }
+    });
+
+    socket.on('forcedOffline', () => {
+        store.dispatch(logout());
+        alert('账号在其他设备登录');
+    });
+    socket.on('disconnect', () => {
+        console.log('disconnect');
+        const state = store.getState().toJS();
+        favico.errorBage();
+        store.dispatch(setSnackbarState({
+            content: '掉线重连中...',
+            open: true,
+            autoHideDuration: 61 * 1000
+        }));
+    })
+
+    socket.on('reconnect_failed', () => {
+        console.log('重连失败');
+    })
+
+    socket.on('reconnect', () => {
+        const state = store.getState().toJS();
+        store.dispatch(setSnackbarState({
+            content: '掉线重连成功',
+            open: false,
+            autoHideDuration: 3000
+        }));
+        favico.resetBage();
+        console.log('断线重连成功');
+        // offline为断线重连，需要重新init
+        if (state.userState.state === 'offline') {
+            const token = state.userState.token;
+            if (!token) {
+                return historyHandle.push('/login');
+            }
+            reconnect(token).then((() => {
+                store.dispatch(setUserState('online'));
+                return this.handleInit({
+                    token
+                });
+            })).catch((err) => {
+                console.log(err);
+                return historyHandle.push('/login');
+            })
+
+        }
+
+    })
+    socket.on('reconnecting', () => {
+        const userState = store.getState().get('userState').toJS();
+        if (userState.state !== 'logout') {
+            store.dispatch(setUserState('offline'));
+        }
+        console.log('重新连接...');
+    })
+}
+initSocket();
 class Index extends React.Component{
     constructor(props){
         super(props);
-        
-        socket.on('privateMessage', (message) => {
-            const state = store.getState().toJS();
-            if (message.type === 'textMessage') {
-                if (!cr.filterMsg(message.content)) {
-                    return;
-                }
-                message.content = cr.filterMsg(message.content);
-            }
-            if (state.setting.shield.indexOf(message.nickname) === -1) {
-                const audio = document.getElementById('audio1'),
-                    audioSpecial = document.getElementById('audio3'),
-                    avatar = message.avatar;
-                message.room = message.nickname;
-                if (state.pageState.listState !== 'activeList') {
-                    store.dispatch(setListShow('activeList'));
-                }
-                store.dispatch(addPrivateMessage(message));
-                state.userState.curRoom === message.room ? null : store.dispatch(addCount(message.room));
-                if (!state['activeList'][message.room]) {
-                    store.dispatch(addActiveItem({
-                        roomName: message.room,
-                        avatar: message.avatar,
-                        isPrivate: true
-                    }))
-                }
-                if (document.hidden) {
-                    favico.addBage();
-                    if (state.setting.audioNotification) {
-                        state.setting.special.indexOf(message.nickname) === -1 ? audio.play() : audioSpecial.play();
-                    }
-                    state.setting.h5Notification ? notification.showNotification(message.nickname, {
-                        body: message.type === 'pluginMessage' ? '[plugin]' : message.content,
-                        icon: message.avatar,
-                    }) : null;
-                } else if (state.setting.audioNotification && state.userState.curRoom !== message.room) {
-                    state.setting.special.indexOf(message.nickname) === -1 ? audio.play() : audioSpecial.play();
-                }
-            }
-        });
-        socket.on('newMessage', (message) => {
-            const state = store.getState().toJS();
-            if (message.type === 'textMessage') {
-                if (!cr.filterMsg(message.content)) {
-                    return;
-                }
-                message.content = cr.filterMsg(message.content);
-            }
-            if (state.setting.shield.indexOf(message.nickname) === -1) {
-                const audio = document.getElementById('audio1'),
-                    audioSpecial = document.getElementById('audio3'),
-                    avatar = message.avatar,
-                    reg = new RegExp('@' + state.userState.nickname, 'g');
-                store.dispatch(addMessage(message));
-                state.userState.curRoom === message.room ? null : store.dispatch(addCount(message.room));
-                if (!state['activeList'][message.room]) {
-                    store.dispatch(addActiveItem({
-                        roomName: message.room,
-                        avatar: state['roomList'][message.room]['avatar'],
-                        isPrivate: false
-                    }))
-                }
-                if (document.hidden) {
-                    favico.addBage();
-                    if (state.setting.audioNotification) {
-                        state.setting.special.indexOf(message.nickname) !== -1 || reg.test(message.content) ? audioSpecial.play() : audio.play();
-                    }
-                    state.setting.h5Notification && !(message.nickname === state.userState.nickname) ? notification.showNotification(message.nickname, {
-                        body: message.type === 'pluginMessage' || message.nickname === config.PLUGIN_ROBOT ? '[plugin]' : message.content,
-                        icon: message.avatar,
-                    }) : null;
-                } else if (!(message.nickname === state.userState.nickname) && state.setting.audioNotification && state.userState.curRoom !== message.room) {
-                    state.setting.special.indexOf(message.nickname) !== -1 || reg.test(message.content) ? audioSpecial.play() : audio.play();
-                }
-            }
-        });
-
-        socket.on('forcedOffline', () => {
-            store.dispatch(logout());
-            alert('账号在其他设备登录');
-        });
-        socket.on('disconnect', () => {
-            console.log('disconnect');
-            const state = store.getState().toJS();
-            favico.errorBage();
-            store.dispatch(setSnackbarState({
-                content: '掉线重连中...',
-                open: true,
-                autoHideDuration: 61 * 1000
-            }));
-        })
-
-        socket.on('reconnect_failed', () => {
-            console.log('重连失败');
-        })
-
-        socket.on('reconnect', () => {
-            const state = store.getState().toJS();
-            store.dispatch(setSnackbarState({
-                content: '掉线重连成功',
-                open: false,
-                autoHideDuration: 3000
-            }));
-            favico.resetBage();
-            console.log('断线重连成功');
-            // offline为断线重连，需要重新init
-            if (state.userState.state === 'offline') {
-                const token = state.userState.token;
-                if (!token) {
-                    return this.props.history.push('/login');
-                }
-                reconnect(token).then((() => {
-                    store.dispatch(setUserState('online'));
-                    return this.handleInit({
-                        token
-                    });
-                })).catch((err) => {
-                    console.log(err);
-                    return this.props.history.push('/login');
-                })
-
-            }
-
-        })
-        socket.on('reconnecting', () => {
-            const userState = store.getState().get('userState').toJS();
-            if (userState.state !== 'logout') {
-                store.dispatch(setUserState('offline'));
-            }
-            console.log('重新连接...');
-        })
+        historyHandle=props.history;        
     }
     handleReadLocalSetting(nickname){
         let storage = localStorage.getItem(nickname);
